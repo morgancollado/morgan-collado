@@ -18,21 +18,10 @@ import Link from '@mui/material/Link';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
+import IconButton from '@mui/material/IconButton';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
 
-
-
-function Copyright() {
-  return (
-    <Typography variant="body2" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="/">
-        Morgan Collado
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
 
 const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
@@ -41,6 +30,8 @@ export default function Portfolio() {
   const [darkMode, setDarkMode] = React.useState(window.matchMedia('(prefers-color-scheme: dark)').matches
   );
 
+  const [showScrollToTop, setShowScrollToTop] = React.useState(false);
+
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
@@ -48,6 +39,21 @@ export default function Portfolio() {
   const handleEmailClick = () => {
     window.location.href = `mailto:morgan.collado@gmail.com?subject=${encodeURIComponent("Greetings")}`;
   };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleScroll = () => {
+    setShowScrollToTop(window.scrollY > 200); // Show the button when scrolled down 200px
+  };
+
+  React.useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   const theme = createTheme({
     palette: {
@@ -133,21 +139,31 @@ export default function Portfolio() {
               </Grid>
             ))}
           </Grid>
+          {showScrollToTop && (
+            <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              my: 2,
+            }}
+          >
+            <Button variant="contained" color="primary" onClick={scrollToTop}>
+              Back to Top
+            </Button>
+          </Box>
+          )}
         </Container>
       </main>
       {/* Footer */}
       <Box sx={{ p: 6, bgcolor: 'background.paper' }} component="footer">
-        <Typography variant="h6" align="center" gutterBottom>
-          Footer
-        </Typography>
-        <Typography
-          variant="subtitle1"
-          align="center"
-          component="p"
-        >
-          Something here to give the footer a purpose!
-        </Typography>
-        <Copyright />
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+          <IconButton color="primary" href="https://github.com/morgancollado" target="_blank">
+            <GitHubIcon />
+          </IconButton>
+          <IconButton color="primary" href="https://www.linkedin.com/in/morgancollado/" target="_blank">
+            <LinkedInIcon />
+          </IconButton>
+        </Box>
       </Box>
       {/* End footer */}
     </ThemeProvider>
