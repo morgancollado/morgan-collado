@@ -20,10 +20,9 @@ const AboutMe = () => {
     <Container component="main" maxWidth="md" sx={{paddingTop: 8}}>
       <Grid container spacing={2} alignItems="center">
         <Grid item xs={12} md={5}>
-          {/* Placeholder for Image */}
           <Avatar
             alt="an image of Morgan"
-            src="/headshot.jpeg" // Replace with your image path
+            src="/headshot.jpeg" 
             sx={{ width: 256, height: 256 }}
           />
         </Grid>
