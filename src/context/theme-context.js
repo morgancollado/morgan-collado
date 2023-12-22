@@ -9,13 +9,7 @@ const ThemeContext = createContext();
 // Custom ThemeProvider
 export const ThemeProvider = ({ children }) => {
   // State to hold the selected theme name
-  const [mode, setMode] = useState('light');
-
-  useEffect(() => {
-    // Read the preferred theme from persistence
-    const storedTheme = localStorage.getItem('theme') || 'light';
-    setMode(storedTheme);
-  }, []);
+  const [mode, setMode] = useState(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 
   // toggle between light and dark
   const toggleTheme = () => {
@@ -37,6 +31,26 @@ export const ThemeProvider = ({ children }) => {
     [mode],
   );
 
+  useEffect(() => {
+    const handleChange = (e) => {
+      const newMode = e.matches ? 'dark' : 'light';
+      setMode(newMode);
+      localStorage.setItem('theme', newMode);
+    };
+  
+    // Define the media query list
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  
+    // Add the event listener using addEventListener
+    mediaQuery.addEventListener('change', handleChange);
+  
+    // Set the initial theme
+    handleChange(mediaQuery);
+  
+    // Cleanup function to remove the event listener
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+  
   return (
     <ThemeContext.Provider value={{ mode, toggleTheme }}>
       <MUIThemeProvider theme={theme}>{children}</MUIThemeProvider>
