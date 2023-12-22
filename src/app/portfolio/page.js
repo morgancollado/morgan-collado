@@ -15,6 +15,7 @@ import IconButton from '@mui/material/IconButton';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 
 const projects = [
@@ -89,7 +90,7 @@ export default function Portfolio() {
               justifyContent="center"
             >
               <Button variant="contained" onClick={handleEmailClick}><Typography>Get in touch</Typography></Button>
-              <Button variant="outlined"><Typography>About me</Typography></Button>
+              <Link href="/about"><Button variant="outlined"><Typography>About me</Typography></Button></Link>
             </Stack>
           </Container>
         </Box>
