@@ -116,7 +116,8 @@ export default function Portfolio() {
               justifyContent="center"
             >
               <Button variant="contained" onClick={handleEmailClick}>
-                <Typography>Get in touch</Typography>
+                <Typography>Get in touch</Typography> 
+                {/* get in touch button because something that appears as you scroll down and opens a modal that allows a user to message me directly and displays email */}
               </Button>
               <Link href="/about">
                 <Button variant="outlined">

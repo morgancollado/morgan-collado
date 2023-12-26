@@ -4,9 +4,10 @@ import Button from "@mui/material/Button";
 import CascadingLetters from "@/components/cascading-letters";
 import { Box } from "@mui/material";
 import { useRouter } from "next/navigation";
+import PortfolioButton from "@/components/portfoilio-button";
 export default function Home() {
   const [animate, setAnimate] = useState(false);
-  const letters = "MRC".repeat(30).split("");
+  const letters = "MC".repeat(30).split("");
   const router = useRouter();
 
   const handleClick = () => {
@@ -30,15 +31,10 @@ export default function Home() {
         component: "main",
       }}
     >
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleClick}
-        style={{ margin: "20px" }}
-      >
-        Welcome
-      </Button>
-      <CascadingLetters letters={letters} isAnimating={animate} />
+      <PortfolioButton />
+      {/* change animation for welcome page so that it ties into the function of the website */}
     </Box>
   );
 }
+
+// TODO: add UI that allows user to input their own initals and control animation
