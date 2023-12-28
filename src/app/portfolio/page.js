@@ -16,40 +16,42 @@ import GitHubIcon from "@mui/icons-material/GitHub";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import ProjectDetailsModal from "@/components/project-details-modal";
+import ContactFormDialog from "@/components/contact-form-dialog";
 
 const projects = [
   {
     id: 1,
     projectName: "Trans History Quiz app",
     projectDescription: "A simple quiz game written in Swift",
-    imageLink: "https://m.media-amazon.com/images/I/51oXhJJ8FoL._AC_SX679_.jpg",
+    imageLink: "/trans-pride-flag.png",
   },
   {
     id: 2,
     projectName: "Food Details Page",
     projectDescription: "The logged out food details page for MyFitnessPal",
-    imageLink: "https://m.media-amazon.com/images/I/51oXhJJ8FoL._AC_SX679_.jpg",
+    imageLink: "/trans-pride-flag.png",
   },
   {
     id: 3,
     projectName: "Onboarding flow for MFP",
     projectDescription:
       "A revamped onboarding flow for MyFitnessPal that resulted in 80% more signups",
-    imageLink: "https://m.media-amazon.com/images/I/51oXhJJ8FoL._AC_SX679_.jpg",
+    imageLink: "/trans-pride-flag.png",
   },
   {
     id: 4,
     projectName: "Diet and fitness edit page",
     projectDescription:
       "The page customers use to edit their diet and fitness profile for MyFitnessPal including 16 different fields with their own validation logic",
-    imageLink: "https://m.media-amazon.com/images/I/51oXhJJ8FoL._AC_SX679_.jpg",
+    imageLink: "/trans-pride-flag.png",
   },
   {
     id: 5,
     projectName: "Premium landing page",
     projectDescription:
       "The premium upsell page that customers would use to begin their premium journey for MyFitnessPal",
-    imageLink: "https://m.media-amazon.com/images/I/51oXhJJ8FoL._AC_SX679_.jpg",
+    imageLink: "/trans-pride-flag.png",
   },
   {
     id: 6,
@@ -57,17 +59,23 @@ const projects = [
     projectDescription:
       "A complete audit of MyFitnessPal's NextJS app. The completion of this project ensured that the product was built with accessibility best practices",
     imageLink:
-      "https://images.squarespace-cdn.com/content/v1/5da8ba0dcb7dea389b1e60cb/6071b0e5-2583-4b1f-9890-3aaefc946b46/13790.png?format=2500w",
+      "/trans-pride-flag.png",
   },
 ];
 
 export default function Portfolio() {
   const [showScrollToTop, setShowScrollToTop] = React.useState(false);
 
-  const handleEmailClick = () => {
-    window.location.href = `mailto:morgan.collado@gmail.com?subject=${encodeURIComponent(
-      "Greetings"
-    )}`;
+  const [open, setOpen] = React.useState(false);
+  const [selectedProject, setSelectedProject] = React.useState(null);
+
+  const handleOpen = (project) => {
+    setSelectedProject(project);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
   };
 
   const scrollToTop = () => {
@@ -115,10 +123,6 @@ export default function Portfolio() {
               spacing={2}
               justifyContent="center"
             >
-              <Button variant="contained" onClick={handleEmailClick}>
-                <Typography>Get in touch</Typography> 
-                {/* get in touch button because something that appears as you scroll down and opens a modal that allows a user to message me directly and displays email */}
-              </Button>
               <Link href="/about">
                 <Button variant="outlined">
                   <Typography>About me</Typography>
@@ -157,13 +161,19 @@ export default function Portfolio() {
                     <Typography>{project.projectDescription}</Typography>
                   </CardContent>
                   <CardActions>
-                    <Button size="small">View</Button>
-                    <Button size="small">Edit</Button>
+                    <Button size="small" onClick={() => handleOpen(project)}>
+                      View
+                    </Button>
                   </CardActions>
                 </Card>
               </Grid>
             ))}
           </Grid>
+          <ProjectDetailsModal
+            open={open}
+            handleClose={handleClose}
+            project={selectedProject}
+          />
           {showScrollToTop && (
             <Box
               sx={{
@@ -177,6 +187,7 @@ export default function Portfolio() {
               </Button>
             </Box>
           )}
+          {showScrollToTop && <ContactFormDialog />}
         </Container>
       </main>
       {/* Footer */}
