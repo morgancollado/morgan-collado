@@ -79,17 +79,21 @@ export default function Portfolio() {
   };
 
   const scrollToTop = () => {
-    window?.scrollTo({ top: 0, behavior: "smooth" });
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
-  const handleScroll = () => {
-    setShowScrollToTop(window?.scrollY > 200); // Show the button when scrolled down 200px
-  };
 
   React.useEffect(() => {
-    window?.addEventListener("scroll", handleScroll);
+
+    const handleScroll = () => {
+      setShowScrollToTop(window.scrollY > 200); // Show the button when scrolled down 200px
+    };
+
+    window.addEventListener("scroll", handleScroll);
     return () => {
-      window?.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
