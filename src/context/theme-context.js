@@ -13,7 +13,7 @@ const ThemeContext = createContext();
 export const ThemeProvider = ({ children }) => {
   // State to hold the selected theme name
   const [mode, setMode] = useState(
-    window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+    window?.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
   );
 
   // toggle between light and dark
@@ -44,7 +44,7 @@ export const ThemeProvider = ({ children }) => {
     };
 
     // Define the media query list
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const mediaQuery = window?.matchMedia("(prefers-color-scheme: dark)");
 
     // Add the event listener using addEventListener
     mediaQuery.addEventListener("change", handleChange);
