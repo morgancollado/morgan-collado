@@ -1,14 +1,14 @@
 import nodemailer from "nodemailer";
 import { google } from "googleapis";
+import { NextResponse } from 'next/server'
+
 
 const OAuth2 = google.auth.OAuth2;
 
-export async function POST(req, res) {
+export async function POST(req) {
 
   // Destructure the email and message from the request body
   const { email, message } = await req.json();
-
-  console.log(email, message)
 
   // Create a new OAuth2 client with your credentials
   const oauth2Client = new OAuth2(
@@ -16,10 +16,7 @@ export async function POST(req, res) {
     process.env.GOOGLE_CLIENT_SECRET,
     "https://developers.google.com/oauthplayground" // Redirect URL
   );
-  console.log(process.env.GOOGLE_CLIENT_ID, 'id')
   
-  console.log(process.env.GOOGLE_CLIENT_SECRET, 'secret ')
-  console.log(process.env.GOOGLE_REFRESH_TOKEN, 'refresh token')
   oauth2Client.setCredentials({
     refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
   });
@@ -38,7 +35,6 @@ export async function POST(req, res) {
         refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
       },
     });
-    console.log(transporter)
 
     // Email data setup
     const mailOptions = {
@@ -52,9 +48,9 @@ export async function POST(req, res) {
     // Send email
     const result = await transporter.sendMail(mailOptions);
     console.log("Message Sent: %s", result.messageId);
-    res.status(200).json({ message: "Message sent successfully!" });
+    return NextResponse.json({ message: "Message sent successfully!" }, { status: 200 })
   } catch (error) {
     console.error("Failed to send email: ", error);
-    res.status(500).json({ error: "Failed to send message" });
+    return NextResponse.json({ error: `Internal Server Error: ${error}` }, { status: 500 })
   }
 }

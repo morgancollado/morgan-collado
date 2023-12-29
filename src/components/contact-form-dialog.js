@@ -8,6 +8,7 @@ import {
   TextField,
   DialogActions,
   Button,
+  Snackbar
 } from "@mui/material";
 import ChatIcon from "@mui/icons-material/Chat";
 import { Formik, Form, Field } from "formik";
@@ -19,25 +20,35 @@ const ContactSchema = Yup.object().shape({
 });
 
 async function sendContactForm(data) {
-  // Placeholder for your API endpoint
-  console.log(data)
-  const endpoint = "/api";
-  const response = await fetch(endpoint, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-  console.log(response.json(), "response")
-  return response.json(); // or handle errors accordingly
-}
+    const endpoint = "/api";
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+  
+    // Ensure the response is okay to parse
+    if (response.ok) {
+      const responseData = await response.json(); // Wait for the JSON response
+      return responseData;
+    } else {
+      // Handle HTTP errors here
+      throw new Error("Something went wrong. Please try again.");
+    }
+  }
+  
 
 function ContactFormDialog() {
   const [open, setOpen] = React.useState(false);
+  const [formSubmitted, setFormSubmitted] = React.useState(false);
+  const [formStatus, setFormStatus] = React.useState('')
 
   const handleClickOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   return (
     <>
@@ -57,13 +68,16 @@ function ContactFormDialog() {
           onSubmit={(values, { setSubmitting }) => {
             sendContactForm(values).then(
               (data) => {
-                // Handle success response
                 setSubmitting(false);
-                handleClose(); // Close the dialog upon success
+                setFormStatus(data.message)
+                setFormSubmitted(true)
+                handleClose()
               },
               (error) => {
-                // Handle errors here if you like
+                setFormStatus(error.toString())
+                setFormSubmitted(true)
                 setSubmitting(false);
+                handleClose()
               }
             );
           }}
@@ -72,8 +86,7 @@ function ContactFormDialog() {
             <Form>
               <DialogContent>
                 <DialogContentText>
-                  Send me a message directly or email me at
-                  morgan.collado@gmail.com!
+                  Send me a message directly
                 </DialogContentText>
                 <Field
                   as={TextField}
@@ -113,6 +126,12 @@ function ContactFormDialog() {
           )}
         </Formik>
       </Dialog>
+      <Snackbar
+        open={formSubmitted}
+        autoHideDuration={6000}
+        onClose={() => setFormSubmitted(false)}
+        message={formStatus}
+      />
     </>
   );
 }
