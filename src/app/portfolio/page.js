@@ -18,7 +18,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import ProjectDetailsModal from "@/components/project-details-modal";
 import ContactFormDialog from "@/components/contact-form-dialog";
-import { animateScroll } from 'react-scroll';
+import { animateScroll } from "react-scroll";
 
 const projects = [
   {
@@ -59,14 +59,11 @@ const projects = [
     projectName: "Accessibility audit",
     projectDescription:
       "A complete audit of MyFitnessPal's NextJS app. The completion of this project ensured that the product was built with accessibility best practices",
-    imageLink:
-      "/trans-pride-flag.png",
+    imageLink: "/trans-pride-flag.png",
   },
 ];
 
 export default function Portfolio() {
-  const [showScrollToTop, setShowScrollToTop] = React.useState(false);
-
   const [open, setOpen] = React.useState(false);
   const [selectedProject, setSelectedProject] = React.useState(null);
 
@@ -78,18 +75,6 @@ export default function Portfolio() {
   const handleClose = () => {
     setOpen(false);
   };
-
-  React.useEffect(() => {
-
-    const handleScroll = () => {
-      setShowScrollToTop(window.scrollY > 200); // Show the button when scrolled down 200px
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -172,20 +157,24 @@ export default function Portfolio() {
             handleClose={handleClose}
             project={selectedProject}
           />
-          {showScrollToTop && (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                my: 2,
-              }}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              my: 2,
+            }}
+          >
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() =>
+                animateScroll.scrollToTop({ duration: 500, smooth: true })
+              }
             >
-              <Button variant="contained" color="primary" onClick={() => animateScroll.scrollToTop({duration: 500, smooth: true})}>
-                Back to Top
-              </Button>
-            </Box>
-          )}
-          {showScrollToTop && <ContactFormDialog />}
+              Back to Top
+            </Button>
+          </Box>
+          <ContactFormDialog />
         </Container>
       </main>
       {/* Footer */}
