@@ -18,6 +18,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import ProjectDetailsModal from "@/components/project-details-modal";
 import ContactFormDialog from "@/components/contact-form-dialog";
+import { animateScroll } from 'react-scroll';
 
 const projects = [
   {
@@ -77,15 +78,6 @@ export default function Portfolio() {
   const handleClose = () => {
     setOpen(false);
   };
-
-  const isBrowser = typeof window !== "undefined";
-
-  const scrollToTop = () => {
-    if (isBrowser) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
 
   React.useEffect(() => {
 
@@ -188,7 +180,7 @@ export default function Portfolio() {
                 my: 2,
               }}
             >
-              <Button variant="contained" color="primary" onClick={scrollToTop}>
+              <Button variant="contained" color="primary" onClick={() => animateScroll.scrollToTop({duration: 500, smooth: true})}>
                 Back to Top
               </Button>
             </Box>
