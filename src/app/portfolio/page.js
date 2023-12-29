@@ -79,9 +79,7 @@ export default function Portfolio() {
   };
 
   const scrollToTop = () => {
-    if (typeof window === 'undefined') {
-     return
-    } else {
+    if (window) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
