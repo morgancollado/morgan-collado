@@ -78,8 +78,10 @@ export default function Portfolio() {
     setOpen(false);
   };
 
+  const isBrowser = typeof window !== "undefined";
+
   const scrollToTop = () => {
-    if (window) {
+    if (isBrowser) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
