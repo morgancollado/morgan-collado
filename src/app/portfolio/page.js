@@ -19,6 +19,8 @@ import Link from "next/link";
 import ProjectDetailsModal from "@/components/project-details-modal";
 import ContactFormDialog from "@/components/contact-form-dialog";
 import { animateScroll } from "react-scroll";
+import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
+import ThemeContext from "@/context/theme-context";
 
 const projects = [
   {
@@ -66,6 +68,8 @@ const projects = [
 export default function Portfolio() {
   const [open, setOpen] = React.useState(false);
   const [selectedProject, setSelectedProject] = React.useState(null);
+
+  const { mode } = React.useContext(ThemeContext);
 
   const handleOpen = (project) => {
     setSelectedProject(project);
@@ -174,7 +178,16 @@ export default function Portfolio() {
               Back to Top
             </Button>
           </Box>
-          <ContactFormDialog />
+          <GoogleReCaptchaProvider
+            reCaptchaKey="6Lc3SUApAAAAAEq5BVpE_XqS5YA89KdPog1hQJVk"
+            container={{
+              parameters: {
+                theme: `${mode}`,
+              },
+            }}
+          >
+            <ContactFormDialog />
+          </GoogleReCaptchaProvider>
         </Container>
       </main>
       {/* Footer */}
