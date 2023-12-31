@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/context/theme-context";
 import CssBaseline from "@mui/material/CssBaseline";
 import NavBar from "@/components/navbar";
 import Footer from "@/components/footer";
+import { Analytics } from '@vercel/analytics/react';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,6 +22,7 @@ export default function RootLayout({ children }) {
           <NavBar />
           {children}
           <Footer />
+          <Analytics />
         </body>
       </ThemeProvider>
     </html>
