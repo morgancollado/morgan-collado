@@ -39,14 +39,14 @@ export default function PortfolioButton() {
     router.push("/portfolio");
   };
 
-  const buttonSize = 100;
+  const buttonSize = 200;
 
   return (
     <Box >
       <motion.button
         style={{
           width: buttonSize,
-          height: buttonSize,
+          height: 140,
           borderRadius: `${buttonSize / 2}px`,
           border: "none",
           background: "none",
@@ -69,8 +69,8 @@ export default function PortfolioButton() {
         onAnimationComplete={handleAnimationComplete}
       >
         <Image
-          src="/MC-logo.png"
-          alt="MC Logo"
+          src="/collado-code-works.png"
+          alt="Collado CodeWorks Logo"
           layout="fill"
           objectFit="cover"
         />

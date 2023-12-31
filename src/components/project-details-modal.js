@@ -2,7 +2,6 @@ import React from "react";
 import Modal from "@mui/material/Modal";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
 import Image from "next/image";
 import { Box } from "@mui/material";
 import IconButton from "@mui/material/IconButton";

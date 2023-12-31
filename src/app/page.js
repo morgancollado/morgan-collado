@@ -6,7 +6,7 @@ export default function Home() {
 
   return (
     <Box
-      style={{
+      sx={{
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
