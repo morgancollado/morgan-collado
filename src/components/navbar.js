@@ -5,6 +5,7 @@ import ThemeContext from "@/context/theme-context";
 import { AppBar, Toolbar, Typography, Button } from "@mui/material";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
+import Link from "next/link";
 
 const NavBar = () => {
   const { mode, toggleTheme } = useContext(ThemeContext);
@@ -18,7 +19,9 @@ const NavBar = () => {
           noWrap
           sx={{ marginLeft: "auto" }}
         >
-          Morgan Collado
+          <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>Morgan Collado
+</Link>
+          
         </Typography>
         <Button onClick={toggleTheme} color="inherit">
           {mode === "light" ? <Brightness7Icon /> : <Brightness4Icon />}

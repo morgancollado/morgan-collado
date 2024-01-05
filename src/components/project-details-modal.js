@@ -3,9 +3,10 @@ import Modal from "@mui/material/Modal";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import Image from "next/image";
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
+import Link from "next/link";
 
 function ProjectDetailsModal({ open, handleClose, project }) {
   return (
@@ -46,7 +47,14 @@ function ProjectDetailsModal({ open, handleClose, project }) {
             <Typography variant="h6" id="project-details-title">
               {project.projectName}
             </Typography>
-            <Box sx={{ position: "relative", width: "100%", height: "300px" }}>
+            <Box
+              sx={{
+                position: "relative",
+                width: "100%",
+                height: "150px",
+                mb: 3,
+              }}
+            >
               <Image
                 src={project.imageLink}
                 alt={project.projectName}
@@ -55,8 +63,21 @@ function ProjectDetailsModal({ open, handleClose, project }) {
               />
             </Box>
             <Typography id="project-description">
-              {project.projectDescription}
+              {project.projectDetail}
             </Typography>
+            {project.blogLink && (
+              <Box sx={{ mt: 2 }}>
+                <Link
+                  href={project.blogLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button variant="contained" color="primary">
+                    Read More
+                  </Button>
+                </Link>
+              </Box>
+            )}
           </>
         )}
       </Paper>

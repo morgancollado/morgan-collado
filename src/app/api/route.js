@@ -74,7 +74,10 @@ export async function POST(req) {
         );
       }
     } else {
-      return NextResponse.json({ error: "reCAPTCHA verification failed" }, { status: 400 });
+      return NextResponse.json(
+        { error: "reCAPTCHA verification failed" },
+        { status: 400 }
+      );
     }
   } catch (error) {
     console.error("Failed to send email: ", error);
