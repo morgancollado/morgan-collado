@@ -69,7 +69,7 @@ const myFitnessPalProjects = [
 
 const colladoCodeWorksProjects = [
   {
-    id: 1,
+    id: 6,
     projectName: "morgancollado.com",
     projectDescription: "This very portfolio site. Projectception!",
     projectDetail: "Learn more about what I used to build this nifty piece of software.",
@@ -77,7 +77,7 @@ const colladoCodeWorksProjects = [
     blogLink: "/blog/building-portfolio"
   },
   {
-    id: 1,
+    id: 7,
     projectName: "Trans History Quiz app",
     projectDescription: "A simple quiz game written in Swift",
     projectDetail: "Coming soon to an iOS device near you!",
