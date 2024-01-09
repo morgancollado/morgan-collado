@@ -9,6 +9,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
+  metadataBase: new URL(`${process.env.VERCEL_URL}`),
   title: "Morgan Collado",
   description:
     "A skilled software engineer who wants to make the world a better place.",

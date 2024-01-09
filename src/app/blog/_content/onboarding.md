@@ -1,5 +1,6 @@
 ---
 title: "Onboarding Evolution at MyFitnessPal"
+description: "A blog post about creating an onboarding experience for MyFitnessPal"
 imgs: [{img: "/onboarding.png", alt: "A screen shot of one of the pages in the onboarding flow asking for your name"}, {img: "/onboarding-2.png", alt: "A screen shot of one of the pages in the onboarding flow displaying a list of options to select why you want to join"}, {img: "/onboarding-3.png", alt: "A screen shot of one of the pages in the onboarding flow displaying a modal with more information about which sex to choose"}]
 ---
 

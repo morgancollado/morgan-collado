@@ -1,5 +1,6 @@
 ---
 title: "Rails API Extension: Adaptability and Internationalization"
+description: "A blog post about writing ruby on rails code"
 imgs: [{img: "/diet-fitness-profile.png", alt: "A screen shot showing form UI for the diet and fitness profile page"}, {img: "/rails-2.png", alt: "A screen shot showing from UI with an error state under the goal weight indicating that it is too low"}, {img: "/rails-3.png", alt: "A screen shot of the bottom of the food details page showing a table of carbs fat and protein of the food"}]
 ---
 

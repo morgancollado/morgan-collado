@@ -1,5 +1,6 @@
 ---
 title: "Enhancing Accessibility: Auditing MyFitnessPal’s Next.js Front End"
+description: "A blog post about making accessible digital experiences"
 imgs: [{img: "/accessibility-audit.png", alt: "A screen shot of showing an example of semantic HTML with describing different sections of the page"}]
 ---
 

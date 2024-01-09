@@ -1,5 +1,6 @@
 ---
-title: "Revamping MyFitnessPal's Food Details Page: A Journey from Clunky to Clean"
+title: "Revamping MyFitnessPal's Food Details Page"
+description: "A blog post about creating the food details page for MyFitnessPal"
 imgs: [{img: "/food-details.png", alt: "A screen shot of the top of the food details page showing UI of nutrition data"}, {img: "/food-details-2.png", alt: "A screen shot of the middle of the food details page showing UI of how the food meets certain goals"}, {img: "/food-details-3.png", alt: "A screen shot of the bottom of the food details page showing a table of carbs fat and protein of the food"}]
 ---
 

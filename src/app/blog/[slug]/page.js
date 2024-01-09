@@ -14,6 +14,19 @@ export async function generateStaticParams() {
   }));
 }
 
+export async function generateMetadata({params}, parent) {
+  const slug = params.slug
+  const { title, description, imgs } = getPostBySlug(slug, ['title', 'description', 'imgs'])
+  const previousImages = (await parent).openGraph?.images || []
+  return {
+    title: title,
+    description: description,
+    openGraph: {
+      images: [`${imgs[0].img}`, ...previousImages]
+    }
+  }
+}
+
 const BlogPost = ({ params }) => {
   const { slug } = params;
 

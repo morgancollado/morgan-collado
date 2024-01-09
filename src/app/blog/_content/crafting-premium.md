@@ -1,5 +1,6 @@
 ---
 title: "Crafting MyFitnessPal's Premium Landing Page"
+description: "A blog post about creating the premium landing page for MyFitnessPal"
 imgs: [{img: "/premium-1.png", alt: "A screenshot of a table comparing premium features vs free features"}, {img: "/premium-2.png", alt: "A screen shot of the premium page UI that includes a button to subscribe and highlights of premium features"}, {img: "/premium-3.png", alt: "A screen shot of the premium page UI that shows two cards with subscription options for yearly and monthly plans"}]
 ---
 
