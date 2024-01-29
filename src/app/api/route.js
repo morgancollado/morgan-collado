@@ -1,8 +1,6 @@
-import nodemailer from "nodemailer";
-import { google } from "googleapis";
 import { NextResponse } from "next/server";
+import sgMail from '@sendgrid/mail';
 
-const OAuth2 = google.auth.OAuth2;
 
 export async function POST(req) {
   // Destructure the email and message from the request body
@@ -25,34 +23,14 @@ export async function POST(req) {
     const recaptchaData = await recaptchaResponse.json();
 
     if (recaptchaData.success) {
-      // Create a new OAuth2 client with your credentials
-      const oauth2Client = new OAuth2(
-        process.env.GOOGLE_CLIENT_ID,
-        process.env.GOOGLE_CLIENT_SECRET,
-        "https://developers.google.com/oauthplayground" // Redirect URL
-      );
 
-      oauth2Client.setCredentials({
-        refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
-      });
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY)
       try {
-        const accessToken = await oauth2Client.getAccessToken();
-        // Create reusable transporter object using SMTP transport
-        const transporter = nodemailer.createTransport({
-          service: "gmail",
-          auth: {
-            type: "OAuth2",
-            user: process.env.EMAIL_USER,
-            accessToken: accessToken.token,
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
-          },
-        });
+
 
         // Email data setup
         const mailOptions = {
-          from: email, // sender address
+          from: "contactform@morgancollado.com", // sender address
           to: "morgan.collado@gmail.com", // receiver, your email
           subject: "New Message from Website", // Subject line
           text: `Email: ${email}\nMessage: ${message}`, // plain text body
@@ -60,8 +38,7 @@ export async function POST(req) {
         };
 
         // Send email
-        const result = await transporter.sendMail(mailOptions);
-        console.log("Message Sent: %s", result.messageId);
+        await sgMail.send(mailOptions);
         return NextResponse.json(
           { message: "Message sent successfully!" },
           { status: 200 }
