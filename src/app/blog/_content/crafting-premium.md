@@ -1,10 +1,10 @@
 ---
-title: "Crafting MyFitnessPal's Premium Landing Page"
-description: "A blog post about creating the premium landing page for MyFitnessPal"
+title: "Crafting a popular fitness app's Premium Landing Page"
+description: "A blog post about creating the premium landing page for a popular fitness app"
 imgs: [{img: "/premium-1.png", alt: "A screenshot of a table comparing premium features vs free features"}, {img: "/premium-2.png", alt: "A screen shot of the premium page UI that includes a button to subscribe and highlights of premium features"}, {img: "/premium-3.png", alt: "A screen shot of the premium page UI that shows two cards with subscription options for yearly and monthly plans"}]
 ---
 
-As a software engineer, there's a special kind of excitement that comes from building something that not only serves its purpose but also empowers others to iterate and innovate. I had the opportunity to work on the premium landing page for MyFitnessPal, a project that combined the need for technical precision with a flair for flexibility. One of the core requirements was the integration with Split, a feature flagging tool that allows non-technical team members to modify the UI dynamically. Here’s how we tackled this challenge and what it taught us about the collaborative nature of modern software development.
+As a software engineer, there's a special kind of excitement that comes from building something that not only serves its purpose but also empowers others to iterate and innovate. I had the opportunity to work on the premium landing page for a popular fitness app, a project that combined the need for technical precision with a flair for flexibility. One of the core requirements was the integration with Split, a feature flagging tool that allows non-technical team members to modify the UI dynamically. Here’s how we tackled this challenge and what it taught us about the collaborative nature of modern software development.
 
 The mission was clear: create a premium landing page that could easily adapt to various designs and content, allowing the business team to experiment with different approaches to increase premium subscriptions. This meant that the React components I was to build had to be extraordinarily flexible, capable of accepting a wide array of parameters to alter their behavior and appearance.
 

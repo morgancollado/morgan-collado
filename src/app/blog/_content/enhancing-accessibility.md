@@ -1,10 +1,10 @@
 ---
-title: "Enhancing Accessibility: Auditing MyFitnessPal’s Next.js Front End"
+title: "Enhancing Accessibility: Auditing a popular fitness app’s Next.js Front End"
 description: "A blog post about making accessible digital experiences"
 imgs: [{img: "/accessibility-audit.png", alt: "A screen shot of showing an example of semantic HTML with describing different sections of the page"}]
 ---
 
-Creating an accessible digital environment is not just an option; it's a responsibility. One of the tasks that I took on was to audit MyFitnessPal's Next.js front end application, ensuring that it adhered to accessibility best practices. This task was not only about compliance but also about embracing the ethos of inclusivity in the digital space. 
+Creating an accessible digital environment is not just an option; it's a responsibility. One of the tasks that I took on was to audit a popular fitness app's Next.js front end application, ensuring that it adhered to accessibility best practices. This task was not only about compliance but also about embracing the ethos of inclusivity in the digital space. 
 
 At the heart of web accessibility lies semantic HTML. The way we structure our documents using HTML tags does more than just organize content—it communicates the purpose and meaning of that content to browsers and assistive technologies. For example, properly tagged headings, lists, and buttons tell screen readers how to interpret the parts of the page, making the content more navigable and understandable for users with visual or cognitive impairments.
 
@@ -16,4 +16,4 @@ Accessibility is a team effort. A significant part of the audit involved educati
 
 The audit was not a one-time event but a starting point for ongoing improvement. Making things accessible requires constant intentional action, with standards evolving and user needs changing. It's a commitment to continuously learn, adapt, and enhance our applications to ensure everyone can use them. This project reinforced the notion that making digital tools accessible is a necessary and integral part of software development.
 
-The accessibility audit of MyFitnessPal's Next.js front end application was a profound learning experience. It highlighted the importance of semantic HTML, the effectiveness of tools like axe, and the indispensable insights gained from screen reader testing. But more than that, it underscored the importance of accessibility as a core aspect of ethical and responsible software development. As we continue to build and improve our digital landscapes, let's carry forward the lessons learned and the commitment to creating an inclusive, accessible online world for everyone.
+The accessibility audit of a popular fitness app's Next.js front end application was a profound learning experience. It highlighted the importance of semantic HTML, the effectiveness of tools like axe, and the indispensable insights gained from screen reader testing. But more than that, it underscored the importance of accessibility as a core aspect of ethical and responsible software development. As we continue to build and improve our digital landscapes, let's carry forward the lessons learned and the commitment to creating an inclusive, accessible online world for everyone.

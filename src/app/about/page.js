@@ -47,7 +47,7 @@ const AboutMe = () => {
             </Typography>
             <Typography gutterBottom variant="body1">
               Post-graduation, my skills and determination led me to a role at
-              MyFitnessPal, a place where I have spent the past three years
+              a popular fitness app, a place where I have spent the past three years
               crafting user interfaces enjoyed by millions. My time here has
               been a blend of innovation, learning, and real-world impact,
               fueling my excitement for technology and its possibilities.

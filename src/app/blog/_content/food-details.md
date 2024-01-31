@@ -1,10 +1,10 @@
 ---
-title: "Revamping MyFitnessPal's Food Details Page"
-description: "A blog post about creating the food details page for MyFitnessPal"
+title: "Revamping a popular fitness app's Food Details Page"
+description: "A blog post about creating the food details page for a popular fitness app"
 imgs: [{img: "/food-details.png", alt: "A screen shot of the top of the food details page showing UI of nutrition data"}, {img: "/food-details-2.png", alt: "A screen shot of the middle of the food details page showing UI of how the food meets certain goals"}, {img: "/food-details-3.png", alt: "A screen shot of the bottom of the food details page showing a table of carbs fat and protein of the food"}]
 ---
 
-Let's talk about revamping the Food Details page for MyFitnessPal. It involved creating MyFitnessPal's first public instance of GraphQL to elegantly model the food data and serve it efficiently to the app. Let me walk you through the journey, from confronting initial challenges to implementing a sleek, modern solution.
+Let's talk about revamping the Food Details page for a popular fitness app. It involved creating a popular fitness app's first public instance of GraphQL to elegantly model the food data and serve it efficiently to the app. Let me walk you through the journey, from confronting initial challenges to implementing a sleek, modern solution.
 
 When we first started peeling back the layers of the existing Food Details page, we encountered a tangle of bad coding practices that had accumulated over time. The client-side was burdened with on-the-fly calculations, leading to glaring inconsistencies and a user experience that was less than ideal. It was clear that a makeover was overdue, and not just a superficial one. We needed to fundamentally rethink the way we handled data, ensuring reliability, efficiency, and a seamless user experience.
 
