@@ -61,7 +61,7 @@ const AboutMe = () => {
           </Grid>
         </Grid>
         <Box mt={4} display="flex" justifyContent="flex-end">
-          <Link href="/portfolio" passHref>
+          <Link href="/" passHref>
             <Button
               variant="contained"
               color="primary"
