@@ -120,9 +120,8 @@ export default function Portfolio() {
             <Typography component="h1" variant="h2" align="center" gutterBottom>
               Crafting Elegant and Purposeful Solutions
             </Typography>
-            <Typography variant="h5" align="center" paragraph>
-              With over 3 years of experience, I create accessible, intuitive
-              software that helps people.
+            <Typography component="h2" variant="h5" align="center" paragraph>
+              I create accessible software that improve lives.
             </Typography>
             <Stack
               sx={{ pt: 4 }}
@@ -135,6 +134,9 @@ export default function Portfolio() {
                   <Typography>About me</Typography>
                 </Button>
               </Link>
+              <Button variant="outlined" component="a" href="/resume.pdf" download="Resume.pdf">
+                <Typography>Resume</Typography>
+              </Button>
             </Stack>
           </Container>
         </Box>
