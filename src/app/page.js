@@ -31,7 +31,7 @@ const myFitnessPalProjects = [
   },
   {
     id: 2,
-    projectName: "Onboarding flow for MFP",
+    projectName: "Onboarding flow for a popular fitness app",
     projectDescription:
       "A revamped onboarding flow for a popular fitness app that resulted in 80% more signups",
     projectDetail: "I was tasked with creating a new onboarding flow for prospective users",
