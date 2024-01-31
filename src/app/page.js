@@ -134,7 +134,7 @@ export default function Portfolio() {
                   <Typography>About me</Typography>
                 </Button>
               </Link>
-              <Button variant="outlined" component="a" href="/resume.pdf" download="Resume.pdf">
+              <Button variant="outlined" component="a" href="/resume.pdf" download="MorganColladoResume.pdf">
                 <Typography>Resume</Typography>
               </Button>
             </Stack>
