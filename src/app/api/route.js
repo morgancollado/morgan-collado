@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import sgMail from '@sendgrid/mail';
 
-
 export async function POST(req) {
   // Destructure the email and message from the request body
   const { email, message, reCaptchaToken } = await req.json();

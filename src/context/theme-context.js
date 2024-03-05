@@ -3,6 +3,7 @@
 import React, { createContext, useState, useEffect } from "react";
 import { createTheme, ThemeProvider as MUIThemeProvider } from "@mui/material/styles";
 
+
 // Create a context
 const ThemeContext = createContext();
 
@@ -56,6 +57,9 @@ export const ThemeProvider = ({ children }) => {
         palette: {
           mode, // Switching the dark mode on and off
           // other theme customizations
+        },
+        typography: {
+          fontFamily: '"Playfair Display", serif',
         },
         // ... other options
       }),

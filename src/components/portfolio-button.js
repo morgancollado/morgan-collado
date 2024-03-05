@@ -36,23 +36,22 @@ export default function PortfolioButton() {
   };
 
   const handleAnimationComplete = () => {
-    router.push("/portfolio");
+    setAnimating(false)
   };
 
-  const buttonSize = 200;
+  const buttonSize = 100;
 
   return (
     <Box >
       <motion.button
         style={{
           width: buttonSize,
-          height: 140,
+          height: 70,
           borderRadius: `${buttonSize / 2}px`,
           border: "none",
           background: "none",
           cursor: "pointer",
           outline: "none",
-          position: "absolute",
           top: "50%",
           left: "50%",
           translateX: "-50%",

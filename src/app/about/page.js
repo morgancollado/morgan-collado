@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import ContactFormDialog from "@/components/contact-form-dialog";
 import { motion } from "framer-motion";
 
 const AboutMe = () => {
@@ -30,15 +31,14 @@ const AboutMe = () => {
             />
           </Grid>
           <Grid item xs={12} md={7}>
-            <Typography variant="h3" component="h1" gutterBottom>
-              About Me
+            <Typography variant="h5" component="h1" gutterBottom>
+            Crafting Elegant and Purposeful Solutions
             </Typography>
-            <Typography variant="h5" component="h2" gutterBottom>
+            <Typography variant="h6" component="h2" gutterBottom>
               Hello World, My name is Morgan.
             </Typography>
             <Typography gutterBottom variant="body1">
-              A tech enthusiast with a rich journey that began in the bustling
-              corridors of Apple as tech support. It was there I discovered my
+              A poet turned software engineer with a rich journey that started at Apple as tech support. I discovered there my
               knack for resolving complex technical issues, which ignited a
               passion for understanding and building the products I was
               supporting. Determined to dive deeper, I enrolled in a coding
@@ -55,9 +55,9 @@ const AboutMe = () => {
             <Typography gutterBottom variant="body1">
               As I look forward to the next phase of my career, I am eager to
               bring my strong technical foundation, problem-solving skills, and
-              user-centric approach to new challenges and opportunities. Let us
-              build something great together!
+              user-centric approach to new challenges and opportunities. Click on the contact form below to get in touch and let us build something great together!
             </Typography>
+            
           </Grid>
         </Grid>
         <Box mt={4} display="flex" justifyContent="flex-end">
@@ -71,6 +71,7 @@ const AboutMe = () => {
             </Button>
           </Link>
         </Box>
+        <ContactFormDialog />
       </Container>
     </motion.div>
   );

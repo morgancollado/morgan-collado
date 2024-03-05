@@ -19,6 +19,9 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import BackToTop from "@/components/back-to-top";
+import IconButton from "@mui/material/IconButton";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
 
 const myFitnessPalProjects = [
   {
@@ -113,18 +116,18 @@ export default function Portfolio() {
           sx={{
             bgcolor: "background.paper",
             pt: 3,
-            pb: 6,
+            pb: 2,
           }}
         >
           <Container maxWidth="sm">
-            <Typography component="h1" variant="h2" align="center" gutterBottom>
-              Crafting Elegant and Purposeful Solutions
+            <Typography component="h1" variant="h3" align="center" gutterBottom>
+              Morgan Collado
             </Typography>
-            <Typography component="h2" variant="h5" align="center" paragraph>
+            <Typography component="h2" variant="h6" align="center" paragraph>
               I create accessible software that improve lives.
             </Typography>
             <Stack
-              sx={{ pt: 4 }}
+              sx={{ pt: 2 }}
               direction="row"
               spacing={2}
               justifyContent="center"
@@ -140,13 +143,29 @@ export default function Portfolio() {
             </Stack>
           </Container>
         </Box>
+        <Box sx={{ display: "flex", justifyContent: "center", pb: 1}}>
+        <IconButton
+          color="primary"
+          href="https://github.com/morgancollado"
+          target="_blank"
+        >
+          <GitHubIcon />
+        </IconButton>
+        <IconButton
+          color="primary"
+          href="https://www.linkedin.com/in/morgancollado/"
+          target="_blank"
+        >
+          <LinkedInIcon />
+        </IconButton>
+      </Box>
         <Container maxWidth="md">
           {/* End hero unit */}
           <Typography variant="h5" align="center" gutterBottom>
             Projects
           </Typography>
           <Box sx={{ padding: 1 }}>
-            <Accordion>
+            <Accordion defaultExpanded>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant="h6">Popular Fitness App Projects</Typography>
               </AccordionSummary>

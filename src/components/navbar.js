@@ -5,6 +5,7 @@ import ThemeContext from "@/context/theme-context";
 import { AppBar, Toolbar, Typography, Button } from "@mui/material";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
+import { Home } from "@mui/icons-material";
 import Link from "next/link";
 
 const NavBar = () => {
@@ -13,16 +14,17 @@ const NavBar = () => {
   return (
     <AppBar position="relative">
       <Toolbar>
-        <Typography
-          variant="h6"
-          color="inherit"
-          noWrap
-          sx={{ marginLeft: "auto" }}
+        <Link
+          href="/"
+          style={{
+            textDecoration: "none",
+            color: "inherit",
+            marginLeft: "auto",
+          }}
         >
-          <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>Morgan Collado
-</Link>
-          
-        </Typography>
+          <Home sx={{ mt: 0.5 }} />
+        </Link>
+
         <Button onClick={toggleTheme} color="inherit">
           {mode === "light" ? <Brightness7Icon /> : <Brightness4Icon />}
         </Button>
