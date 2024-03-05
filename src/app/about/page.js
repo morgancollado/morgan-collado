@@ -13,8 +13,13 @@ import Link from "next/link";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ContactFormDialog from "@/components/contact-form-dialog";
 import { motion } from "framer-motion";
+import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
+import ThemeContext from "@/context/theme-context";
+
 
 const AboutMe = () => {
+
+  const { mode } = React.useContext(ThemeContext)
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { duration: 1 } },
@@ -71,7 +76,16 @@ const AboutMe = () => {
             </Button>
           </Link>
         </Box>
-        <ContactFormDialog />
+        <GoogleReCaptchaProvider
+            reCaptchaKey="6Lc3SUApAAAAAEq5BVpE_XqS5YA89KdPog1hQJVk"
+            container={{
+              parameters: {
+                theme: `${mode}`,
+              },
+            }}
+          >
+            <ContactFormDialog />
+          </GoogleReCaptchaProvider>
       </Container>
     </motion.div>
   );
