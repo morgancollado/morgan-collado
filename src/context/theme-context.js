@@ -56,6 +56,9 @@ export const ThemeProvider = ({ children }) => {
       createTheme({
         palette: {
           mode, // Switching the dark mode on and off
+          primary: {
+            main: mode === 'light' ? '#422b65' : '#b4ecdd',
+          },
           // other theme customizations
         },
         typography: {
