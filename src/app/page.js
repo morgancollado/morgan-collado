@@ -88,6 +88,15 @@ const colladoCodeWorksProjects = [
   },
 ];
 
+const everlyHealth = [{
+  id: 8,
+  projectName: "AdHoc Reminders",
+  projectDescription: "Reminders",
+  projectDetail: "Lets talk about reminders.",
+  imageLink: "/food-details.png",
+  blogLink: "/blog/food-details",
+}]
+
 export default function Portfolio() {
   const [open, setOpen] = React.useState(false);
   const [selectedProject, setSelectedProject] = React.useState(null);
@@ -192,6 +201,26 @@ export default function Portfolio() {
               <AccordionDetails>
                 <Grid container spacing={4}>
                   {colladoCodeWorksProjects.map((project) => (
+                    <Grid item key={project.id} xs={12} sm={6} md={4}>
+                      <ProjectCard
+                        key={project.id}
+                        project={project}
+                        handleOpen={handleOpen}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              </AccordionDetails>
+            </Accordion>
+          </Box>
+          <Box sx={{ padding: 1 }}>
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography variant="h6">Health tech company</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Grid container spacing={4}>
+                  {everlyHealth.map((project) => (
                     <Grid item key={project.id} xs={12} sm={6} md={4}>
                       <ProjectCard
                         key={project.id}
