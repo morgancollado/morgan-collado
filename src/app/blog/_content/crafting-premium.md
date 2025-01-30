@@ -11,11 +11,8 @@ The mission was clear: create a premium landing page that could easily adapt to 
 Integrating Split into our landing page was a pivotal part of the project. Split is a powerful tool that enables product teams, marketers, and other non-technical stakeholders to make changes to the user interface without writing a single line of code. By leveraging Split's feature flagging capabilities, we could dynamically alter the layout, content, and even the behavior of the landing page based on real-time decisions.
 
 This approach had several benefits:
-
 Rapid Experimentation: By allowing non-technical team members to modify the UI, we could quickly iterate on different designs and messages, speeding up the experimentation process.
-
 Decoupled Deployments: Changes to the landing page's look and feel could be made without deploying new code, reducing the risk associated with frequent deployments.
-
 Personalized Experiences: With Split, we could tailor the landing page to different user segments, providing a more personalized and effective user experience.
 
 To accommodate the dynamic nature of the landing page, I focused on building React components that were as flexible as possible. This meant designing components that could accept a wide range of parameters for content, styling, and functionality. Each component was like a Swiss Army knife, ready to adapt to whatever form the product team needed.

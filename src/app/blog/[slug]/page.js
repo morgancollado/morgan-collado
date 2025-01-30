@@ -1,8 +1,8 @@
 import * as React from "react";
 import { Box, Grid, Typography } from "@mui/material";
 import { getAllPosts, getPostBySlug } from "../_lib/helpers";
-import CustomCarousel from "@/components/custom-carousel";
 import BackToTop from "@/components/back-to-top";
+import Image from "next/image";
 
 export const dynamicParams = false;
 
@@ -36,21 +36,55 @@ const BlogPost = ({ params }) => {
     "imgs",
   ]);
   let splitContent = content.split("\n\n");
+  const contentElements = [];
+  let imageIndex = 0;
+
+  splitContent.forEach((paragraph, idx) => {
+    contentElements.push(
+      <Typography
+        key={`para-${idx}`}
+        sx={{ paddingY: 2, textAlign: "left" }}
+        variant="body1"
+      >
+        {paragraph}
+      </Typography>
+    );
+
+    if ((idx + 1) % 2 === 0 && imageIndex < imgs.length) {
+      contentElements.push(
+        <Box
+          key={`img-${imageIndex}`}
+          sx={{
+            position: "relative",
+            width: "100%",
+            aspectRatio: "16/9",
+          }}
+        >
+          <Image
+            src={imgs[imageIndex].img}
+            alt={`Blog image ${imgs[imageIndex].alt}`}
+            fill 
+          />
+        </Box>
+      );
+      imageIndex++;
+    }
+  });
+
   return (
     <Box sx={{ flexGrow: 1, padding: 5 }}>
-      <Grid container spacing={2} justifyContent="center" alignItems="center">
+      <Grid container justifyContent="center">
         <Grid item xs={12} md={6}>
-          <CustomCarousel imgs={imgs} />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Typography variant="h4" component="h1" gutterBottom>
+          <Typography
+            variant="h2"
+            component="h1"
+            gutterBottom
+            align="center"
+            sx={{ mb: 4 }}
+          >
             {title}
           </Typography>
-          {splitContent.map((content, index) => (
-            <Typography key={index} sx={{ padding: 1 }}>
-              {content}
-            </Typography>
-          ))}
+          {contentElements}
         </Grid>
       </Grid>
       <BackToTop />

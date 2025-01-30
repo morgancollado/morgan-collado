@@ -15,11 +15,8 @@ To allow changes to user diet and fitness profiles, we exposed certain logic thr
 One of the most intricate parts of this project was dealing with different measurement units. Users from various parts of the world prefer different units for weight, and our application needed to accommodate stones, pounds, and kilograms. We implemented a conversion system within our API that could:
 
 Detect the unit of incoming data based on user preferences or explicit input.
-
 Convert the incoming weight into a standard unit of measurement for consistent storage in our database.
-
 Ensure that when data is retrieved or manipulated, it can be presented back in the user's preferred unit.
-
 This system required an understanding of the nuances of measurement units and careful consideration of edge cases and potential pitfalls.
 
 Throughout this project, I gained invaluable insights into API design, particularly the importance of understanding the client's needs and ensuring that our logic aligns with those requirements. It was a lesson in both adaptability and precision, as we needed to be flexible enough to handle various data types and rigorous in our testing and validation to ensure the API behaved as intended.

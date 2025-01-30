@@ -88,14 +88,31 @@ const colladoCodeWorksProjects = [
   },
 ];
 
-const everlyHealth = [{
+const everlyHealth = [
+  {
   id: 8,
   projectName: "AdHoc Reminders",
-  projectDescription: "Reminders",
-  projectDetail: "Lets talk about reminders.",
-  imageLink: "/food-details.png",
-  blogLink: "/blog/food-details",
-}]
+  projectDescription: "Sending reminders whenever we wanted.",
+  projectDetail: "Sending reminders outside of the initial build was tedious and required engineering work. Here is how I built a tool to make sending messages delightful.",
+  imageLink: "/reminder.jpg",
+  blogLink: "/blog/adhoc-reminders",
+},
+{
+  id: 9,
+  projectName: "Campaign Generation Tool",
+  projectDescription: "Campaigns for every program.",
+  projectDetail: "Creating campaigns was a manual process. Lets discuss the tool I built to make creating campaigns easy peezy.",
+  imageLink: "/campaigns.jpg",
+  blogLink: "/blog/campaign-generation",
+},
+{
+  id: 10,
+  projectName: "Batch creation of result test types",
+  projectDescription: "Creating test types in bulk.",
+  projectDetail: "Creating test types one by one required repetitive use of a form. I created a service that took a spread sheet of data and created objects accordingly, saving time and lessening mistakes.",
+  imageLink: "/tests.jpg",
+}
+]
 
 export default function Portfolio() {
   const [open, setOpen] = React.useState(false);
@@ -176,6 +193,26 @@ export default function Portfolio() {
           <Box sx={{ padding: 1 }}>
             <Accordion defaultExpanded>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography variant="h6">Medical Diagnostics Company Projects</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Grid container spacing={4}>
+                  {everlyHealth.map((project) => (
+                    <Grid item key={project.id} xs={12} sm={6} md={4}>
+                      <ProjectCard
+                        key={project.id}
+                        project={project}
+                        handleOpen={handleOpen}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              </AccordionDetails>
+            </Accordion>
+          </Box>
+          <Box sx={{ padding: 1 }}>
+            <Accordion >
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant="h6">Popular Fitness App Projects</Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -201,26 +238,6 @@ export default function Portfolio() {
               <AccordionDetails>
                 <Grid container spacing={4}>
                   {colladoCodeWorksProjects.map((project) => (
-                    <Grid item key={project.id} xs={12} sm={6} md={4}>
-                      <ProjectCard
-                        key={project.id}
-                        project={project}
-                        handleOpen={handleOpen}
-                      />
-                    </Grid>
-                  ))}
-                </Grid>
-              </AccordionDetails>
-            </Accordion>
-          </Box>
-          <Box sx={{ padding: 1 }}>
-            <Accordion>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="h6">Health tech company</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Grid container spacing={4}>
-                  {everlyHealth.map((project) => (
                     <Grid item key={project.id} xs={12} sm={6} md={4}>
                       <ProjectCard
                         key={project.id}
