@@ -14,17 +14,30 @@ export async function generateStaticParams() {
   }));
 }
 
-export async function generateMetadata({params}, parent) {
-  const slug = params.slug
-  const { title, description, imgs } = getPostBySlug(slug, ['title', 'description', 'imgs'])
-  const previousImages = (await parent).openGraph?.images || []
+export async function generateMetadata({ params }) {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  const slug = params.slug;
+  const { title, description, imgs } = getPostBySlug(slug, [
+    "title",
+    "description",
+    "imgs",
+  ]);
+  const absoluteImageUrl = new URL(imgs[0].img, baseUrl).href;
+
   return {
     title: title,
     description: description,
     openGraph: {
-      images: [`${imgs[0].img}`, ...previousImages]
-    }
-  }
+      images: [
+        {
+          url: absoluteImageUrl,
+          alt: imgs[0].alt,
+          width: 800,
+          height: 600,
+        },
+      ],
+    },
+  };
 }
 
 const BlogPost = ({ params }) => {
@@ -63,7 +76,7 @@ const BlogPost = ({ params }) => {
           <Image
             src={imgs[imageIndex].img}
             alt={`Blog image ${imgs[imageIndex].alt}`}
-            fill 
+            fill
           />
         </Box>
       );
