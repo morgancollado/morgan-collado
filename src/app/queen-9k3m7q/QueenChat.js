@@ -48,6 +48,12 @@ export default function QueenChat() {
   const [portraitOk, setPortraitOk] = useState(true);
   const [hydrated, setHydrated] = useState(false);
 
+  // null = checking, true = gated, false = unlocked
+  const [locked, setLocked] = useState(null);
+  const [password, setPassword] = useState("");
+  const [authError, setAuthError] = useState("");
+  const [authBusy, setAuthBusy] = useState(false);
+
   const listRef = useRef(null);
   const textareaRef = useRef(null);
 
@@ -57,13 +63,29 @@ export default function QueenChat() {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/queen/auth", { method: "GET" });
+        const data = await res.json();
+        if (!cancelled) setLocked(!data?.authorized);
+      } catch {
+        if (!cancelled) setLocked(true);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
     if (hydrated) saveHistory(messages);
   }, [messages, hydrated]);
 
   useEffect(() => {
     const el = listRef.current;
     if (el) el.scrollTop = el.scrollHeight;
-  }, [messages]);
+  }, [messages, locked]);
 
   useEffect(() => {
     const ta = textareaRef.current;
@@ -71,6 +93,31 @@ export default function QueenChat() {
     ta.style.height = "auto";
     ta.style.height = Math.min(ta.scrollHeight, 200) + "px";
   }, [input]);
+
+  const submitPassword = async (e) => {
+    e.preventDefault();
+    if (!password || authBusy) return;
+    setAuthBusy(true);
+    setAuthError("");
+    try {
+      const res = await fetch("/api/queen/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      if (res.ok) {
+        setPassword("");
+        setLocked(false);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setAuthError(data?.error || "Wrong password.");
+      }
+    } catch {
+      setAuthError("Couldn't reach the gate. Try again.");
+    } finally {
+      setAuthBusy(false);
+    }
+  };
 
   const send = useCallback(async () => {
     const trimmed = input.trim();
@@ -99,6 +146,15 @@ export default function QueenChat() {
           error: true,
         },
       ]);
+      setSending(false);
+      return;
+    }
+
+    if (res.status === 401) {
+      // Access expired — bounce back to the gate, keep the message.
+      setMessages((prev) => prev.slice(0, -1));
+      setInput(trimmed);
+      setLocked(true);
       setSending(false);
       return;
     }
@@ -183,102 +239,150 @@ export default function QueenChat() {
     messages.length > 0 &&
     messages[messages.length - 1]?.role === "user";
 
+  const portrait = (
+    <div className={styles.portraitFrame}>
+      {portraitOk ? (
+        <img
+          className={styles.portrait}
+          src={PORTRAIT_URL}
+          alt="The Queen"
+          referrerPolicy="no-referrer"
+          loading="eager"
+          onError={() => setPortraitOk(false)}
+        />
+      ) : (
+        <div className={styles.portraitFallback} aria-hidden="true">
+          Q
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div className={styles.root}>
       <div className={styles.grain} aria-hidden="true" />
-      <header className={styles.header}>
-        <div className={styles.portraitFrame}>
-          {portraitOk ? (
-            <img
-              className={styles.portrait}
-              src={PORTRAIT_URL}
-              alt="The Queen"
-              referrerPolicy="no-referrer"
-              loading="eager"
-              onError={() => setPortraitOk(false)}
-            />
-          ) : (
-            <div className={styles.portraitFallback} aria-hidden="true">
-              Q
-            </div>
-          )}
+
+      {locked === null ? (
+        <div className={styles.loading}>
+          <span className={styles.dot} />
         </div>
-        <h1 className={styles.title}>The Queen</h1>
-        <button
-          type="button"
-          className={styles.clearButton}
-          onClick={clearConversation}
-          disabled={sending || messages.length === 0}
-          aria-label="Clear conversation"
-        >
-          clear
-        </button>
-      </header>
-
-      <div className={styles.list} ref={listRef}>
-        {messages.length === 0 && hydrated && (
-          <div className={styles.empty}>
-            The throne is empty. Speak, and the Queen will answer.
+      ) : locked ? (
+        <div className={styles.gate}>
+          <div className={styles.gateCard}>
+            {portrait}
+            <h1 className={styles.title}>The Queen</h1>
+            <p className={styles.gateText}>
+              State the password, mate. No password, no audience.
+            </p>
+            <form className={styles.gateForm} onSubmit={submitPassword}>
+              <input
+                className={styles.gateInput}
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                autoFocus
+                autoComplete="current-password"
+                disabled={authBusy}
+              />
+              {authError && (
+                <div className={styles.gateError}>{authError}</div>
+              )}
+              <button
+                type="submit"
+                className={styles.gateButton}
+                disabled={authBusy || !password}
+              >
+                Enter
+              </button>
+            </form>
           </div>
-        )}
-        {messages.map((m, i) => (
-          <div
-            key={i}
-            className={
-              m.role === "user"
-                ? styles.userRow
-                : m.error
-                  ? styles.errorRow
-                  : styles.queenRow
-            }
-          >
-            <div
-              className={
-                m.role === "user"
-                  ? styles.userBubble
-                  : m.error
-                    ? styles.errorBubble
-                    : styles.queenBubble
-              }
+        </div>
+      ) : (
+        <>
+          <header className={styles.header}>
+            {portrait}
+            <h1 className={styles.title}>The Queen</h1>
+            <button
+              type="button"
+              className={styles.clearButton}
+              onClick={clearConversation}
+              disabled={sending || messages.length === 0}
+              aria-label="Clear conversation"
             >
-              {m.content}
-            </div>
-          </div>
-        ))}
-        {waitingForFirstToken && (
-          <div className={styles.queenRow}>
-            <div className={styles.typing} aria-label="The Queen is typing">
-              <span className={styles.dot} />
-            </div>
-          </div>
-        )}
-      </div>
+              clear
+            </button>
+          </header>
 
-      <form
-        className={styles.composer}
-        onSubmit={(e) => {
-          e.preventDefault();
-          send();
-        }}
-      >
-        <textarea
-          ref={textareaRef}
-          className={styles.textarea}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={onKeyDown}
-          placeholder="Address the throne..."
-          rows={1}
-          disabled={sending}
-        />
-        <button
-          type="submit"
-          className={styles.sendButton}
-          disabled={sending || !input.trim()}
-        >
-          Send
-        </button>
-      </form>
+          <div className={styles.list} ref={listRef}>
+            {messages.length === 0 && hydrated && (
+              <div className={styles.empty}>
+                The throne is empty. Speak, and the Queen will answer.
+              </div>
+            )}
+            {messages.map((m, i) => (
+              <div
+                key={i}
+                className={
+                  m.role === "user"
+                    ? styles.userRow
+                    : m.error
+                      ? styles.errorRow
+                      : styles.queenRow
+                }
+              >
+                <div
+                  className={
+                    m.role === "user"
+                      ? styles.userBubble
+                      : m.error
+                        ? styles.errorBubble
+                        : styles.queenBubble
+                  }
+                >
+                  {m.content}
+                </div>
+              </div>
+            ))}
+            {waitingForFirstToken && (
+              <div className={styles.queenRow}>
+                <div
+                  className={styles.typing}
+                  aria-label="The Queen is typing"
+                >
+                  <span className={styles.dot} />
+                </div>
+              </div>
+            )}
+          </div>
+
+          <form
+            className={styles.composer}
+            onSubmit={(e) => {
+              e.preventDefault();
+              send();
+            }}
+          >
+            <textarea
+              ref={textareaRef}
+              className={styles.textarea}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={onKeyDown}
+              placeholder="Address the throne..."
+              rows={1}
+              disabled={sending}
+            />
+            <button
+              type="submit"
+              className={styles.sendButton}
+              disabled={sending || !input.trim()}
+            >
+              Send
+            </button>
+          </form>
+        </>
+      )}
     </div>
   );
 }

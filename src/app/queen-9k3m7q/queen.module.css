@@ -315,3 +315,120 @@
   opacity: 0.45;
   cursor: default;
 }
+
+.loading {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.gate {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 1;
+}
+
+.gateCard {
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+}
+
+.gate .portraitFrame {
+  width: 76px;
+  height: 76px;
+}
+
+.gate .portraitFallback {
+  font-size: 34px;
+}
+
+.gateText {
+  margin: 0;
+  color: rgba(232, 223, 200, 0.6);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.gateForm {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.gateInput {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #f3ead2;
+  border: 1px solid rgba(201, 169, 97, 0.3);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 16px;
+  text-align: center;
+  letter-spacing: 0.12em;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.gateInput::placeholder {
+  color: rgba(232, 223, 200, 0.3);
+  letter-spacing: normal;
+}
+
+.gateInput:focus {
+  border-color: rgba(201, 169, 97, 0.7);
+}
+
+.gateInput:disabled {
+  opacity: 0.6;
+}
+
+.gateError {
+  color: #f0c8b8;
+  font-size: 13px;
+  font-style: italic;
+}
+
+.gateButton {
+  width: 100%;
+  height: 46px;
+  background: linear-gradient(180deg, #c9a961, #8a7438);
+  color: #1a1410;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  transition:
+    transform 0.08s ease,
+    filter 0.15s ease;
+}
+
+.gateButton:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.gateButton:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.gateButton:disabled {
+  opacity: 0.45;
+  cursor: default;
+}

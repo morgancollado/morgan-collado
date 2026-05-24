@@ -51,6 +51,16 @@ the only access control — **do not share it publicly**.
 Add `ANTHROPIC_API_KEY` to `.env.local` (see `.env.local.example`) and to the
 Vercel project's environment variables.
 
+### Password
+
+Set `QUEEN_PASSWORD` to gate the page behind a single shared password (no
+accounts). When set, visitors must enter it before they can chat, and the
+`/api/queen/chat` endpoint rejects unauthorized requests too. A successful
+unlock sets an httpOnly cookie (30-day expiry); the raw password is never
+stored in the cookie or sent to the client. Leave `QUEEN_PASSWORD` blank or
+unset to disable the gate entirely. To change the password, update the env var
+(locally and in Vercel) — existing unlocked sessions will be invalidated.
+
 ### Rotating the API key
 
 Generate a new key in the Anthropic console, replace the value in `.env.local`

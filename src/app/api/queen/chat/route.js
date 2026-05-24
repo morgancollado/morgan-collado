@@ -1,4 +1,5 @@
 import { QUEEN_SYSTEM_PROMPT } from "@/lib/queen-prompt";
+import { isAuthorized } from "@/lib/queen-auth";
 
 export const runtime = "edge";
 
@@ -40,6 +41,10 @@ function jsonError(message, status) {
 }
 
 export async function POST(req) {
+  if (!(await isAuthorized(req))) {
+    return jsonError("Locked. Enter the password to talk to the Queen.", 401);
+  }
+
   const ip = getIp(req);
   if (!rateLimit(ip)) return jsonError(RATE_LIMIT_MESSAGE, 429);
 
