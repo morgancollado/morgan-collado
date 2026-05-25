@@ -3,7 +3,7 @@ import { isAuthorized } from "@/lib/queen-auth";
 
 export const runtime = "edge";
 
-const MODEL = "claude-opus-4-7";
+const MODEL = "claude-sonnet-4-6";
 const MAX_TOKENS = 1024;
 const RATE_LIMIT = 20;
 const RATE_WINDOW_MS = 60 * 60 * 1000;

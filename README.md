@@ -75,5 +75,5 @@ starts — by design; it's a personal toy, not abuse infrastructure.
 
 ### Model
 
-`claude-opus-4-7` (set as a constant at the top of the route file —
+`claude-sonnet-4-6` (set as a constant at the top of the route file —
 `MODEL` — so it's easy to swap).
