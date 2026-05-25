@@ -15,11 +15,21 @@ const NavBar = () => {
     <AppBar position="relative">
       <Toolbar>
         <Link
-          href="/"
+          href="/blog"
           style={{
             textDecoration: "none",
             color: "inherit",
             marginLeft: "auto",
+          }}
+        >
+          <Button color="inherit">Blog</Button>
+        </Link>
+
+        <Link
+          href="/"
+          style={{
+            textDecoration: "none",
+            color: "inherit",
           }}
         >
           <Home sx={{ mt: 0.5 }} />
