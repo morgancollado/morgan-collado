@@ -34,3 +34,46 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+## Private chatbot route
+
+There's a private chatbot at `/queen-9k3m7q` (a personal gift page; not linked
+from anywhere on the site). The route is `noindex, nofollow` and the URL is
+the only access control — **do not share it publicly**.
+
+- Page: `src/app/queen-9k3m7q/`
+- API: `src/app/api/queen/chat/route.js` (edge runtime, streaming)
+- System prompt: `src/lib/queen-prompt.js` (source of truth in
+  `src/lib/queen-prompt.txt`)
+
+### Setup
+
+Add `ANTHROPIC_API_KEY` to `.env.local` (see `.env.local.example`) and to the
+Vercel project's environment variables.
+
+### Password
+
+Set `QUEEN_PASSWORD` to gate the page behind a single shared password (no
+accounts). When set, visitors must enter it before they can chat, and the
+`/api/queen/chat` endpoint rejects unauthorized requests too. A successful
+unlock sets an httpOnly cookie (30-day expiry); the raw password is never
+stored in the cookie or sent to the client. Leave `QUEEN_PASSWORD` blank or
+unset to disable the gate entirely. To change the password, update the env var
+(locally and in Vercel) — existing unlocked sessions will be invalidated.
+
+### Rotating the API key
+
+Generate a new key in the Anthropic console, replace the value in `.env.local`
+locally and in Vercel's project env (Production / Preview / Development as
+needed), and revoke the old key. No code change required.
+
+### Rate limit
+
+20 messages per IP per hour, enforced in-memory in the edge route. The 429
+response returns a themed error message. State does **not** survive cold
+starts — by design; it's a personal toy, not abuse infrastructure.
+
+### Model
+
+`claude-sonnet-4-6` (set as a constant at the top of the route file —
+`MODEL` — so it's easy to swap).
