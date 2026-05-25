@@ -11,15 +11,11 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import ContactFormDialog from "@/components/contact-form-dialog";
 import { motion } from "framer-motion";
-import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
-import ThemeContext from "@/context/theme-context";
 
 
 const AboutMe = () => {
 
-  const { mode } = React.useContext(ThemeContext)
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { duration: 1 } },
@@ -60,7 +56,7 @@ const AboutMe = () => {
             <Typography gutterBottom variant="body1">
               As I look forward to the next phase of my career, I am eager to
               bring my strong technical foundation, problem-solving skills, and
-              user-centric approach to new challenges and opportunities. Click on the contact form below to get in touch and let us build something great together!
+              user-centric approach to new challenges and opportunities.
             </Typography>
             
           </Grid>
@@ -76,16 +72,6 @@ const AboutMe = () => {
             </Button>
           </Link>
         </Box>
-        <GoogleReCaptchaProvider
-            reCaptchaKey="6Lc3SUApAAAAAEq5BVpE_XqS5YA89KdPog1hQJVk"
-            container={{
-              parameters: {
-                theme: `${mode}`,
-              },
-            }}
-          >
-            <ContactFormDialog />
-          </GoogleReCaptchaProvider>
       </Container>
     </motion.div>
   );

@@ -10,9 +10,6 @@ import Container from "@mui/material/Container";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import ProjectDetailsModal from "@/components/project-details-modal";
-import ContactFormDialog from "@/components/contact-form-dialog";
-import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
-import ThemeContext from "@/context/theme-context";
 import ProjectCard from "@/components/project-card";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
@@ -117,8 +114,6 @@ const everlyHealth = [
 export default function Portfolio() {
   const [open, setOpen] = React.useState(false);
   const [selectedProject, setSelectedProject] = React.useState(null);
-
-  const { mode } = React.useContext(ThemeContext);
 
   const handleOpen = (project) => {
     setSelectedProject(project);
@@ -256,16 +251,6 @@ export default function Portfolio() {
             project={selectedProject}
           />
           <BackToTop />
-          <GoogleReCaptchaProvider
-            reCaptchaKey="6Lc3SUApAAAAAEq5BVpE_XqS5YA89KdPog1hQJVk"
-            container={{
-              parameters: {
-                theme: `${mode}`,
-              },
-            }}
-          >
-            <ContactFormDialog />
-          </GoogleReCaptchaProvider>
         </Container>
       </main>
     </motion.div>
