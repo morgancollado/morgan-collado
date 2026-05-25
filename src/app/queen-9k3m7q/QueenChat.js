@@ -54,6 +54,7 @@ export default function QueenChat() {
   const [authError, setAuthError] = useState("");
   const [authBusy, setAuthBusy] = useState(false);
 
+  const rootRef = useRef(null);
   const listRef = useRef(null);
   const textareaRef = useRef(null);
 
@@ -93,6 +94,31 @@ export default function QueenChat() {
     ta.style.height = "auto";
     ta.style.height = Math.min(ta.scrollHeight, 200) + "px";
   }, [input]);
+
+  // Keep the composer above the on-screen keyboard. iOS Safari does not
+  // shrink a `position: fixed` element when the keyboard opens, so we track
+  // the visual viewport and size the container to it.
+  useEffect(() => {
+    const vv =
+      typeof window !== "undefined" ? window.visualViewport : null;
+    const root = rootRef.current;
+    if (!vv || !root) return;
+    const update = () => {
+      root.style.height = `${vv.height}px`;
+      root.style.transform = `translateY(${vv.offsetTop}px)`;
+      const el = listRef.current;
+      if (el) el.scrollTop = el.scrollHeight;
+    };
+    update();
+    vv.addEventListener("resize", update);
+    vv.addEventListener("scroll", update);
+    return () => {
+      vv.removeEventListener("resize", update);
+      vv.removeEventListener("scroll", update);
+      root.style.height = "";
+      root.style.transform = "";
+    };
+  }, []);
 
   const submitPassword = async (e) => {
     e.preventDefault();
@@ -175,39 +201,58 @@ export default function QueenChat() {
       return;
     }
 
-    setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
-
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
+    let started = false;
     try {
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         const chunk = decoder.decode(value, { stream: true });
         if (!chunk) continue;
-        if (!streaming) setStreaming(true);
-        setMessages((prev) => {
-          const out = prev.slice();
-          const last = out[out.length - 1];
-          if (last && last.role === "assistant" && !last.error) {
-            out[out.length - 1] = { ...last, content: last.content + chunk };
-          }
-          return out;
-        });
+        if (!started) {
+          // First token: drop the typing dot and open the bubble.
+          started = true;
+          setStreaming(true);
+          setMessages((prev) => [
+            ...prev,
+            { role: "assistant", content: chunk },
+          ]);
+        } else {
+          setMessages((prev) => {
+            const out = prev.slice();
+            const last = out[out.length - 1];
+            if (last && last.role === "assistant" && !last.error) {
+              out[out.length - 1] = {
+                ...last,
+                content: last.content + chunk,
+              };
+            }
+            return out;
+          });
+        }
+      }
+      if (!started) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: "The Queen went quiet. Try again in a moment.",
+            error: true,
+          },
+        ]);
       }
     } catch {
-      setMessages((prev) => {
-        const out = prev.slice();
-        const last = out[out.length - 1];
-        if (last && last.role === "assistant" && last.content === "") {
-          out[out.length - 1] = {
+      if (!started) {
+        setMessages((prev) => [
+          ...prev,
+          {
             role: "assistant",
             content: "The line went dead. Try again in a moment.",
             error: true,
-          };
-        }
-        return out;
-      });
+          },
+        ]);
+      }
     } finally {
       setSending(false);
       setStreaming(false);
@@ -259,7 +304,7 @@ export default function QueenChat() {
   );
 
   return (
-    <div className={styles.root}>
+    <div className={styles.root} ref={rootRef}>
       <div className={styles.grain} aria-hidden="true" />
 
       {locked === null ? (
