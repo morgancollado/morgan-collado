@@ -45,7 +45,7 @@ const Footer = () => {
           color: (t) => (t.palette.mode === "light" ? "#5a4d3f" : "#a89c8d"),
         }}
       >
-        © {year} Morgan Collado  ·  Set by hand, type and code
+        © {year} Morgan Collado  ·  Set by code
       </Typography>
     </Box>
   );
