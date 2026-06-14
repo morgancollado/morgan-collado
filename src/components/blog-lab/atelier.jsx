@@ -2,16 +2,13 @@
 
 import { useRef } from "react";
 import { Box, Typography } from "@mui/material";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useSpring,
-} from "framer-motion";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useReducedMotion } from "@/app/blog-lab/_lib/motion";
 import { formatDate } from "@/lib/format-date";
+import Grain from "@/components/blog-lab/grain";
+import Spine from "@/components/blog-lab/spine";
 
 function altHash(alt = "") {
   let h = 0;
@@ -246,89 +243,6 @@ function makeComponents(reduced) {
       </Box>
     ),
   };
-}
-
-function Grain() {
-  return (
-    <Box
-      aria-hidden
-      sx={{
-        position: "fixed",
-        inset: 0,
-        pointerEvents: "none",
-        zIndex: 1,
-        mixBlendMode: (t) => (t.palette.mode === "light" ? "multiply" : "overlay"),
-        opacity: 0.18,
-        backgroundImage:
-          "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.7 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")",
-      }}
-    />
-  );
-}
-
-function Spine({ progress, reduced }) {
-  const leaf1Opacity = useTransform(progress, [0, 0.1, 0.4], [0, 0, 1]);
-  const leaf2Opacity = useTransform(progress, [0, 0.4, 0.7], [0, 0, 1]);
-  return (
-    <Box
-      aria-hidden
-      sx={{
-        position: { md: "sticky" },
-        top: 0,
-        height: { xs: 60, md: "100vh" },
-        width: { xs: "100%", md: 80 },
-        display: "flex",
-        alignItems: "stretch",
-        justifyContent: "center",
-        pointerEvents: "none",
-      }}
-    >
-      <svg
-        viewBox="0 0 80 800"
-        preserveAspectRatio="none"
-        width="100%"
-        height="100%"
-        style={{ overflow: "visible" }}
-      >
-        {/* faint guide line */}
-        <path
-          d="M40 0 C 20 100, 60 200, 40 300 S 20 500, 40 600 S 60 720, 40 800"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1"
-          opacity="0.08"
-        />
-        {/* animated drawn line */}
-        <motion.path
-          d="M40 0 C 20 100, 60 200, 40 300 S 20 500, 40 600 S 60 720, 40 800"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          style={
-            reduced
-              ? { pathLength: 1, opacity: 0.5 }
-              : { pathLength: progress, opacity: 0.55 }
-          }
-        />
-        {/* flourish leaves */}
-        <motion.g style={reduced ? { opacity: 1 } : { opacity: leaf1Opacity }}>
-          <path
-            d="M40 280 q -14 -6, -20 4 q 8 10, 20 4"
-            fill="currentColor"
-            opacity="0.5"
-          />
-        </motion.g>
-        <motion.g style={reduced ? { opacity: 1 } : { opacity: leaf2Opacity }}>
-          <path
-            d="M40 560 q 14 -6, 20 4 q -8 10, -20 4"
-            fill="currentColor"
-            opacity="0.5"
-          />
-        </motion.g>
-      </svg>
-    </Box>
-  );
 }
 
 export default function Atelier({ title, content, date, category, description }) {
