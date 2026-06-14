@@ -500,39 +500,39 @@ export default function AtelierBroadsheet({
         </Box>
       </Box>
 
-      {/* Body with spine */}
+      {/* Fixed scroll spine — follows the whole page on desktop */}
       <Box
+        aria-hidden
+        sx={{
+          display: { xs: "none", md: "block" },
+          position: "fixed",
+          top: 0,
+          left: "max(24px, calc(50vw - 400px))",
+          height: "100vh",
+          width: 80,
+          zIndex: 3,
+          pointerEvents: "none",
+        }}
+      >
+        <Spine progress={smooth} reduced={reduced} withDingbat />
+      </Box>
+
+      {/* Body — centered article */}
+      <Box
+        component="article"
         sx={{
           position: "relative",
           zIndex: 2,
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "1fr",
-            md: "80px minmax(0, 68ch) 80px",
-          },
-          maxWidth: "1100px",
+          maxWidth: "68ch",
           mx: "auto",
-          px: { xs: 3, md: 0 },
+          px: { xs: 3, md: 4 },
           pt: { xs: 6, md: 9 },
+          counterReset: "movement figure",
         }}
       >
-        <Box sx={{ display: { xs: "none", md: "block" } }}>
-          <Spine progress={smooth} reduced={reduced} withDingbat />
-        </Box>
-
-        <Box
-          component="article"
-          sx={{
-            counterReset: "movement figure",
-            position: "relative",
-          }}
-        >
-          <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
-            {content}
-          </ReactMarkdown>
-        </Box>
-
-        <Box />
+        <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+          {content}
+        </ReactMarkdown>
       </Box>
 
       {/* Colophon (broadsheet) */}
