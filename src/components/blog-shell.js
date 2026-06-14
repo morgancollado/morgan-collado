@@ -9,6 +9,7 @@ import { useReducedMotion } from "@/lib/motion";
 import { formatDate } from "@/lib/format-date";
 import Grain from "@/components/grain";
 import Spine from "@/components/spine";
+import BackToTop from "@/components/back-to-top";
 
 const SERIF_BODY =
   "'Iowan Old Style', 'Apple Garamond', Baskerville, 'Times New Roman', Times, Georgia, serif";
@@ -554,6 +555,8 @@ export default function BlogShell({
           {content}
         </ReactMarkdown>
       </Box>
+
+      <BackToTop />
 
       {/* Colophon */}
       <Box
