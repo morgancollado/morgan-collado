@@ -2,7 +2,6 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 import { usePathname } from "next/navigation";
-import PortfolioButton from "./portfolio-button";
 
 const Footer = () => {
   const pathname = usePathname();
@@ -17,15 +16,25 @@ const Footer = () => {
         color: (t) => (t.palette.mode === "light" ? "#1c1614" : "#ede6d8"),
         borderTop: "1px solid",
         borderColor: "currentColor",
-        py: { xs: 4, md: 6 },
+        py: { xs: 3, md: 4 },
         px: 3,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: 2.5,
+        gap: 1,
       }}
     >
-      <PortfolioButton />
+      <Box
+        sx={{
+          color: "primary.main",
+          fontFamily: "var(--font-playfair)",
+          fontStyle: "italic",
+          letterSpacing: 10,
+          fontSize: "0.9rem",
+        }}
+      >
+        ❦
+      </Box>
       <Typography
         sx={{
           fontFamily: "var(--font-playfair)",

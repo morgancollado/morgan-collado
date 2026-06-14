@@ -1,18 +1,15 @@
 "use client";
 
 import * as React from "react";
-import { useContext, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { Box, IconButton, Typography } from "@mui/material";
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
-import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 
 import { useReducedMotion } from "@/lib/motion";
-import ThemeContext from "@/context/theme-context";
 import ProjectDetailsModal from "@/components/project-details-modal";
-import ContactFormDialog from "@/components/contact-form-dialog";
 import BackToTop from "@/components/back-to-top";
 import Grain from "@/components/grain";
 import Spine from "@/components/spine";
@@ -275,7 +272,6 @@ function ProjectPlate({ project, onOpen, reduced }) {
 
 export default function Portfolio() {
   const reduced = useReducedMotion();
-  const { mode } = useContext(ThemeContext);
   const [open, setOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const ref = useRef(null);
@@ -682,12 +678,6 @@ export default function Portfolio() {
         project={selectedProject}
       />
       <BackToTop />
-      <GoogleReCaptchaProvider
-        reCaptchaKey="6Lc3SUApAAAAAEq5BVpE_XqS5YA89KdPog1hQJVk"
-        container={{ parameters: { theme: mode } }}
-      >
-        <ContactFormDialog />
-      </GoogleReCaptchaProvider>
     </Box>
   );
 }

@@ -1,14 +1,13 @@
 "use client";
 
-import React, { useContext } from "react";
-import { Box, Typography } from "@mui/material";
+import React from "react";
+import { Box, IconButton, Typography } from "@mui/material";
 import { motion } from "framer-motion";
-import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
 
-import ThemeContext from "@/context/theme-context";
 import { useReducedMotion } from "@/lib/motion";
 import Grain from "@/components/grain";
-import ContactFormDialog from "@/components/contact-form-dialog";
 
 const SERIF_BODY =
   "'Iowan Old Style', 'Apple Garamond', Baskerville, 'Times New Roman', Times, Georgia, serif";
@@ -37,7 +36,6 @@ const dropCapSx = {
 };
 
 export default function AboutPage() {
-  const { mode } = useContext(ThemeContext);
   const reduced = useReducedMotion();
 
   const dateStr = new Date().toLocaleDateString("en-US", {
@@ -316,10 +314,50 @@ export default function AboutPage() {
         <Typography sx={paragraphSx}>
           As I look forward to the next phase of my career, I am eager to bring
           my strong technical foundation, problem-solving skills, and
-          user-centric approach to new challenges and opportunities. Click on
-          the contact card below to get in touch and let us build something
-          great together.
+          user-centric approach to new challenges and opportunities. Find me on
+          the social networks below — I would love to build something great
+          together.
         </Typography>
+
+        <Box
+          sx={{
+            mt: 5,
+            display: "flex",
+            justifyContent: "center",
+            gap: 1.5,
+          }}
+        >
+          <IconButton
+            href="https://github.com/morgancollado"
+            target="_blank"
+            aria-label="GitHub"
+            sx={{
+              color: "primary.main",
+              border: "1px solid",
+              borderColor: "currentColor",
+              borderRadius: 0,
+              width: 36,
+              height: 36,
+            }}
+          >
+            <GitHubIcon fontSize="small" />
+          </IconButton>
+          <IconButton
+            href="https://www.linkedin.com/in/morgancollado/"
+            target="_blank"
+            aria-label="LinkedIn"
+            sx={{
+              color: "primary.main",
+              border: "1px solid",
+              borderColor: "currentColor",
+              borderRadius: 0,
+              width: 36,
+              height: 36,
+            }}
+          >
+            <LinkedInIcon fontSize="small" />
+          </IconButton>
+        </Box>
 
         <Box
           sx={{
@@ -355,15 +393,8 @@ export default function AboutPage() {
         }}
       >
         Composed in Playfair Display upon a digital press. <br />
-        Edited by the author, who is reachable below.
+        Edited by the author.
       </Box>
-
-      <GoogleReCaptchaProvider
-        reCaptchaKey="6Lc3SUApAAAAAEq5BVpE_XqS5YA89KdPog1hQJVk"
-        container={{ parameters: { theme: mode } }}
-      >
-        <ContactFormDialog />
-      </GoogleReCaptchaProvider>
     </Box>
   );
 }
