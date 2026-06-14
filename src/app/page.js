@@ -9,15 +9,13 @@ import GitHubIcon from "@mui/icons-material/GitHub";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 
-import { playfair } from "./blog-lab/_lib/fonts";
-import { DuotoneFilters } from "./blog-lab/_lib/duotone";
-import { useReducedMotion } from "./blog-lab/_lib/motion";
+import { useReducedMotion } from "@/lib/motion";
 import ThemeContext from "@/context/theme-context";
 import ProjectDetailsModal from "@/components/project-details-modal";
 import ContactFormDialog from "@/components/contact-form-dialog";
 import BackToTop from "@/components/back-to-top";
-import Grain from "@/components/blog-lab/grain";
-import Spine from "@/components/blog-lab/spine";
+import Grain from "@/components/grain";
+import Spine from "@/components/spine";
 
 const SERIF_BODY =
   "'Iowan Old Style', 'Apple Garamond', Baskerville, 'Times New Roman', Times, Georgia, serif";
@@ -303,7 +301,6 @@ export default function Portfolio() {
   return (
     <Box
       ref={ref}
-      className={playfair.variable}
       sx={{
         position: "relative",
         bgcolor: (t) => (t.palette.mode === "light" ? "#faf6ec" : "#0d0a14"),
@@ -313,7 +310,6 @@ export default function Portfolio() {
         pb: 8,
       }}
     >
-      <DuotoneFilters />
       <Grain />
 
       {/* Folio dateline */}

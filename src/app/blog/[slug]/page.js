@@ -1,6 +1,5 @@
 import { getAllPosts, getPostBySlug } from "../_lib/helpers";
 import BlogShell from "@/components/blog-shell";
-import Markdown from "@/components/markdown";
 
 export const dynamicParams = false;
 
@@ -42,22 +41,22 @@ export async function generateMetadata({ params }) {
 const BlogPost = ({ params }) => {
   const { slug } = params;
 
-  const { title, content, imgs, date, category, layout, hero } = getPostBySlug(
-    slug,
-    ["title", "content", "imgs", "date", "category", "layout", "hero"]
-  );
+  const { title, description, content, date, category } = getPostBySlug(slug, [
+    "title",
+    "description",
+    "content",
+    "date",
+    "category",
+  ]);
 
   return (
     <BlogShell
       title={title}
+      description={description}
+      content={content}
       date={date}
       category={category}
-      layout={layout}
-      hero={hero}
-      imgs={imgs}
-    >
-      <Markdown>{content}</Markdown>
-    </BlogShell>
+    />
   );
 };
 
