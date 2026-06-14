@@ -1,12 +1,17 @@
 ---
 title: "Enhancing Accessibility: Auditing a popular fitness app’s Next.js Front End"
 description: "A blog post about making accessible digital experiences"
+date: "2023-05-01"
+category: "Popular Fitness App"
+layout: "prose"
 imgs: [{img: "/accessibility-audit.png", alt: "A screen shot of showing an example of semantic HTML with describing different sections of the page"}]
 ---
 
 Creating an accessible digital environment is not just an option; it's a responsibility. One of the tasks that I took on was to audit a popular fitness app's Next.js front end application, ensuring that it adhered to accessibility best practices. This task was not only about compliance but also about embracing the ethos of inclusivity in the digital space. 
 
 At the heart of web accessibility lies semantic HTML. The way we structure our documents using HTML tags does more than just organize content—it communicates the purpose and meaning of that content to browsers and assistive technologies. For example, properly tagged headings, lists, and buttons tell screen readers how to interpret the parts of the page, making the content more navigable and understandable for users with visual or cognitive impairments.
+
+![A screen shot of showing an example of semantic HTML with describing different sections of the page](/accessibility-audit.png)
 
 To begin the audit, I employed various tools designed to detect accessibility issues, with a particular focus on axe's Chrome extension. This powerful tool scans web pages to identify accessibility violations, such as missing alt text for images, improper use of ARIA attributes, and inadequate color contrast. It became an invaluable asset in pinpointing areas where our application fell short of accessibility standards.
 

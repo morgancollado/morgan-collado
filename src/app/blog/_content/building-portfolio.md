@@ -1,6 +1,9 @@
 ---
 title: "Crafting a Personal Space"
 description: "A blog post about creating this website"
+date: "2024-01-15"
+category: "Collado CodeWorks"
+layout: "gallery"
 imgs: [{img: "/portfolio-screencap.png", alt: "A screen shot of the home page of this site"}, {img: "/portfolio-2.png", alt: "A screen shot of the portfolio page of this site"}, {img: "/portfolio-3.png", alt: "A screen shot of the contact form for this site"}]
 ---
 
