@@ -3,6 +3,13 @@ import { Box, Container, Typography } from "@mui/material";
 
 const PROTOTYPES = [
   {
+    num: "0",
+    name: "The Atelier Broadsheet",
+    href: "/blog-lab/atelier-broadsheet",
+    tagline: "Iteration: Broadsheet's print styles + Atelier's scroll UX. Parallax masthead, ornamental spine, tilted plates, grain, mint swash.",
+    tier: "Iteration — start here",
+  },
+  {
     num: "I",
     name: "The Broadsheet",
     href: "/blog-lab/broadsheet",
