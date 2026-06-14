@@ -1,12 +1,17 @@
 ---
 title: "Enhancing Accessibility: Auditing a popular fitness app’s Next.js Front End"
 description: "A blog post about making accessible digital experiences"
+date: "2023-05-01"
+category: "Popular Fitness App"
+layout: "prose"
 imgs: [{img: "/accessibility-audit.png", alt: "A screen shot of showing an example of semantic HTML with describing different sections of the page"}]
 ---
 
 Accessibility is not a feature. It is the baseline. A site that is unusable with a screen reader is a site that has decided, without saying so out loud, who its users are. And who they are not. I was asked to audit a Next.js front end for accessibility, and what I want to talk about here is less the audit itself and more what an audit actually is when you take it seriously.
 
 The first thing I did was open the markup. Most accessibility problems are not exotic. They are `div`s pretending to be buttons. They are headings that skip from `h2` to `h5`. They are images without alt text and form inputs with no associated label. Semantic HTML is the cheapest accessibility tool there is, and the one teams most often skip, because reaching for a `div` is faster than thinking about what the element actually is. So the audit started by giving every element its real name back.
+
+![A screen shot of showing an example of semantic HTML with describing different sections of the page](/accessibility-audit.png)
 
 axe’s Chrome extension did the obvious work. It flagged the missing alt text. It flagged the contrast failures. It flagged the ARIA attributes that had been added in places where the right answer was to delete them and use a real element. axe is good at what it does, and what it does is catch the violations that are mechanically detectable. That is most of the long tail. It is not the hard part.
 

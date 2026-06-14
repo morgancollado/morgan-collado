@@ -1,6 +1,9 @@
 ---
 title: "Rails API Extension: Adaptability and Internationalization"
 description: "A blog post about writing ruby on rails code"
+date: "2023-02-01"
+category: "Popular Fitness App"
+layout: "wide"
 imgs: [{img: "/diet-fitness-profile.png", alt: "A screen shot showing form UI for the diet and fitness profile page"}, {img: "/rails-2.png", alt: "A screen shot showing from UI with an error state under the goal weight indicating that it is too low"}, {img: "/rails-3.png", alt: "A screen shot of the bottom of the food details page showing a table of carbs fat and protein of the food"}]
 ---
 
@@ -8,11 +11,15 @@ Extending an existing API is one of those jobs that sounds dull until you are in
 
 The first piece was a new serializer. Serializers are unglamorous and important. They decide what the outside world sees when it asks our API a question. They are the right place to draw the line between what our database happens to store and what our consumers are allowed to depend on. I wrote a serializer that exposed exactly the fields the new front end needed, in the shape the front end wanted to consume them, and nothing else. If a future consumer wants more, that is a conversation. It is not a default.
 
+![A screen shot showing form UI for the diet and fitness profile page](/diet-fitness-profile.png)
+
 The second piece was exposing the profile update logic through the API. This sounds straightforward. It is not. The moment you accept profile updates from a new client, you are inviting a new set of authentication and authorization questions, and you are also inviting the possibility that your changes will ripple out to surfaces you did not know depended on them. I spent more time than I would like to admit walking the codebase, finding the existing consumers, and making sure that the new endpoint did not quietly change the contract for anyone else. The interesting engineering happens in those audits, not in the endpoint itself.
 
 The third piece is the one I keep thinking about.
 
 Our users weigh themselves in stones, in pounds, and in kilograms, depending on where they live. The old system pretended otherwise. It had grown up around pounds because the team that wrote it lived somewhere that uses pounds, and every other unit was bolted on later as an afterthought. If you have ever wondered why a product feels subtly hostile to users in another country, this is usually why. The defaults reflect the engineers, not the users.
+
+![A screen shot showing form UI with an error state under the goal weight indicating that it is too low](/rails-2.png)
 
 So I built a conversion layer at the API boundary. Incoming requests declare their unit or inherit it from the user’s preference. The data is converted to a canonical internal unit at the door, stored that way, and converted back on the way out. The internal representation is one thing. The presentation is whatever the user told us they want. The application stopped being a translator and went back to being an application.
 

@@ -1,6 +1,9 @@
 ---
 title: "Building ease"
 description: "A blog post about creating an application that allowed user to reduce the time it took to complete their job."
+date: "2024-06-01"
+category: "Medical Diagnostics Company"
+layout: "prose"
 imgs: [{img: "/campaign-form.png", alt: "A screenshot of an online form with 3 input elements for the different copy data."}]
 ---
 
@@ -9,6 +12,8 @@ Writing HTML isn’t hard, but it is tedious and necessary since HTML is a found
 I looked into the developer documentation of our email marketing platform, Iterable, and saw that it had an endpoint capable of receiving a payload of data to generate new campaigns based on a given template. I knew I could write a tool to integrate with this endpoint and make creating new campaigns a snap.
 
 Our primary monolith was written in Ruby on Rails and already housed most of our program configuration data. I created a new model to store the email copy choices that our partners made for their programs. Because I was already familiar with Rails, it was easy to extend the functionality of our admin panel to include this feature. I added logic to the program show page to render a button that would open the form for inputting campaign data if there was no associated campaign data. If the data did exist, the page would render that data and give the option to make changes. Extending this functionality within the tool the team already knew made adoption of the new process easy. Once the campaign copy data was saved within our application, the user could click a button to generate the campaigns. They would select which campaigns to generate, and after clicking “Generate,” they would see the freshly minted emails in our email marketing platform, ready to send.
+
+![A screenshot of an online form with 3 input elements for the different copy data.](/campaign-form.png)
 
 Under the hood, our Rails monolith used a plain old Ruby object to package the campaign data and send it to Iterable to generate the HTML for the new campaigns. In this way, a process that would take hours and require painstaking attention to detail became automated by the power of computers. By creating a single source of truth for this information and then communicating it programmatically, we were able to reduce errors and make it easier to configure what our customers needed. More importantly, this tool created a layer of abstraction between our templates and our copy, which allowed the team to better support different configurations. For instance, if a customer wants a different design or different copy, we can build our templates out to quickly change things as specified by the customer’s needs.
 

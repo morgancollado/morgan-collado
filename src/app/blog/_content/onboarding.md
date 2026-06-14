@@ -1,6 +1,9 @@
 ---
 title: "Onboarding Evolution at a popular fitness app"
 description: "A blog post about creating an onboarding experience for a popular fitness app"
+date: "2022-11-01"
+category: "Popular Fitness App"
+layout: "wide"
 imgs: [{img: "/onboarding.png", alt: "A screen shot of one of the pages in the onboarding flow asking for your name"}, {img: "/onboarding-2.png", alt: "A screen shot of one of the pages in the onboarding flow displaying a list of options to select why you want to join"}, {img: "/onboarding-3.png", alt: "A screen shot of one of the pages in the onboarding flow displaying a modal with more information about which sex to choose"}]
 ---
 
@@ -8,11 +11,17 @@ Onboarding is the conversation a product has with someone who has not yet decide
 
 I started by breaking the page apart. One screen, one question. That is not a clever idea. It is the bare minimum a mobile-first product owes its users. The result is a flow that feels less like an intake form and more like a conversation. You answer something. We acknowledge it. We ask the next thing. Nobody is staring down a wall of inputs.
 
+![A screen shot of one of the pages in the onboarding flow asking for your name](/onboarding.png)
+
 A progress bar sits at the top of every step. I am usually skeptical of progress indicators, because they are easy to make dishonest — the kind that race ahead and then crawl at the end. This one tells the truth. It moves in real proportion to where the user is in the flow. And it does so because users deserve to know how much of their time they are signing up to spend. Telling them is also, conveniently, a small reward each step.
+
+![A screen shot of one of the pages in the onboarding flow displaying a list of options to select why you want to join](/onboarding-2.png)
 
 Accessibility was not bolted on at the end. It was the frame around every decision. Real semantic HTML. Real labels associated with their inputs. Focus order that makes sense. Error messages that announce themselves. I worked closely with the design team so that what they handed me in Figma already reflected those constraints, rather than having to retrofit them in code. The cheapest accessibility fix is the one you make before the design ships.
 
 The validations got more attention than I expected. We use Yup, which makes complex validation legible. Some of those validations are mechanical — fields that have to be a number, dates that have to be in the past. Others are judgment calls that the product is allowed to make. A weight goal that is dangerously low is not a goal we are going to silently accept. The app’s mission is health, and the onboarding is the first place that mission shows up. I would rather slow a user down here than let them set a target that hurts them.
+
+![A screen shot of one of the pages in the onboarding flow displaying a modal with more information about which sex to choose](/onboarding-3.png)
 
 There is a question lurking under all of this that I think a lot of onboarding flows duck. What are you willing to ask, and what do you do with the answer? An onboarding that asks for sex and then renders an inflexible gender model into the database is doing a small violence to a real set of users. Defaults are not neutral. An onboarding form is, in its way, a political document. I am not going to pretend we got every piece of it right. I am going to say that we treated those questions as questions rather than as checkboxes, and that the team kept iterating on them after I left.
 
