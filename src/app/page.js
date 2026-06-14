@@ -287,6 +287,19 @@ export default function Portfolio() {
   const titleY = useTransform(smooth, [0, 0.15], ["0%", "-25%"]);
   const titleOpacity = useTransform(smooth, [0, 0.12], [1, 0.25]);
 
+  // Article scroll — drives the vine. Starts as the article reaches the
+  // viewport top (after the masthead parallaxes up) and completes as the
+  // last Movement exits.
+  const articleRef = useRef(null);
+  const { scrollYProgress: articleProgress } = useScroll({
+    target: articleRef,
+    offset: ["start start", "end end"],
+  });
+  const articleSmooth = useSpring(articleProgress, {
+    stiffness: 80,
+    damping: 30,
+  });
+
   const handleOpen = (p) => {
     setSelectedProject(p);
     setOpen(true);
@@ -495,142 +508,147 @@ export default function Portfolio() {
         </Box>
       </Box>
 
-      {/* Body with spine */}
+      {/* Fixed scroll spine — drawn by article scroll progress */}
       <Box
+        aria-hidden
+        sx={{
+          display: { xs: "none", lg: "block" },
+          position: "fixed",
+          top: 0,
+          left: "max(24px, calc(50vw - 554px))",
+          height: "100vh",
+          width: 80,
+          zIndex: 3,
+          pointerEvents: "none",
+        }}
+      >
+        <Spine progress={articleSmooth} reduced={reduced} withDingbat />
+      </Box>
+
+      {/* Body — centered article (article scroll drives the vine) */}
+      <Box
+        ref={articleRef}
+        component="article"
         sx={{
           position: "relative",
           zIndex: 2,
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "1fr",
-            md: "80px minmax(0, 1fr) 80px",
-          },
-          maxWidth: "1280px",
+          maxWidth: "900px",
           mx: "auto",
-          px: { xs: 3, md: 0 },
+          px: { xs: 3, md: 4 },
           pt: { xs: 6, md: 9 },
+          counterReset: "movement figure",
         }}
       >
-        <Box sx={{ display: { xs: "none", md: "block" } }}>
-          <Spine progress={smooth} reduced={reduced} withDingbat />
-        </Box>
-
-        <Box component="article" sx={{ counterReset: "movement figure" }}>
-          {SECTIONS.map((section) => (
+        {SECTIONS.map((section) => (
+          <Box
+            key={section.label}
+            component="section"
+            sx={{
+              mb: { xs: 10, md: 14 },
+              "&:last-of-type": { mb: 0 },
+            }}
+          >
+            {/* Section heading with ghosted numeral */}
             <Box
-              key={section.label}
-              component="section"
               sx={{
-                mb: { xs: 10, md: 14 },
-                "&:last-of-type": { mb: 0 },
+                textAlign: "center",
+                mb: 7,
+                position: "relative",
+                counterIncrement: "movement",
+                pt: { xs: 4, md: 6 },
+                "&::before": {
+                  content: "counter(movement, decimal-leading-zero)",
+                  position: "absolute",
+                  top: { xs: "-2rem", md: "-3rem" },
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  fontSize: "clamp(5rem, 11vw, 9rem)",
+                  fontFamily: "var(--font-playfair)",
+                  fontStyle: "italic",
+                  fontWeight: 700,
+                  color: "primary.main",
+                  opacity: 0.1,
+                  lineHeight: 1,
+                  pointerEvents: "none",
+                  zIndex: 0,
+                },
               }}
             >
-              {/* Section heading with ghosted numeral */}
-              <Box
+              <Typography
+                variant="overline"
                 sx={{
-                  textAlign: "center",
-                  mb: 7,
+                  letterSpacing: 6,
+                  color: "primary.main",
+                  display: "block",
+                  mb: 1,
+                  fontFamily: "var(--font-playfair)",
+                  fontStyle: "italic",
                   position: "relative",
-                  counterIncrement: "movement",
-                  pt: { xs: 4, md: 6 },
-                  "&::before": {
-                    content: "counter(movement, decimal-leading-zero)",
-                    position: "absolute",
-                    top: { xs: "-2rem", md: "-3rem" },
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    fontSize: "clamp(5rem, 11vw, 9rem)",
-                    fontFamily: "var(--font-playfair)",
-                    fontStyle: "italic",
-                    fontWeight: 700,
-                    color: "primary.main",
-                    opacity: 0.1,
-                    lineHeight: 1,
-                    pointerEvents: "none",
-                    zIndex: 0,
-                  },
+                  zIndex: 1,
                 }}
               >
-                <Typography
-                  variant="overline"
-                  sx={{
-                    letterSpacing: 6,
-                    color: "primary.main",
-                    display: "block",
-                    mb: 1,
-                    fontFamily: "var(--font-playfair)",
-                    fontStyle: "italic",
-                    position: "relative",
-                    zIndex: 1,
-                  }}
-                >
-                  {section.label}
-                </Typography>
-                <Typography
-                  component="h2"
-                  sx={{
-                    fontFamily: "var(--font-playfair)",
-                    fontStyle: "italic",
-                    fontSize: "clamp(1.7rem, 3.6vw, 2.3rem)",
-                    lineHeight: 1.1,
-                    mb: 2,
-                    position: "relative",
-                    zIndex: 1,
-                  }}
-                >
-                  {section.title}
-                </Typography>
-                <Box
-                  sx={{
-                    width: "40px",
-                    height: "1px",
-                    bgcolor: "currentColor",
-                    opacity: 0.4,
-                    mx: "auto",
-                    mb: 2,
-                  }}
-                />
-                <Typography
-                  sx={{
-                    fontFamily: "var(--font-playfair)",
-                    fontStyle: "italic",
-                    fontSize: "1rem",
-                    color: (t) =>
-                      t.palette.mode === "light" ? "#5a4d3f" : "#a89c8d",
-                    maxWidth: "44ch",
-                    mx: "auto",
-                    position: "relative",
-                    zIndex: 1,
-                  }}
-                >
-                  {section.subtitle}
-                </Typography>
-              </Box>
-
-              {/* Project plates */}
+                {section.label}
+              </Typography>
+              <Typography
+                component="h2"
+                sx={{
+                  fontFamily: "var(--font-playfair)",
+                  fontStyle: "italic",
+                  fontSize: "clamp(1.7rem, 3.6vw, 2.3rem)",
+                  lineHeight: 1.1,
+                  mb: 2,
+                  position: "relative",
+                  zIndex: 1,
+                }}
+              >
+                {section.title}
+              </Typography>
               <Box
                 sx={{
-                  display: "grid",
-                  gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
-                  gap: { xs: 5, md: 8 },
-                  maxWidth: "900px",
+                  width: "40px",
+                  height: "1px",
+                  bgcolor: "currentColor",
+                  opacity: 0.4,
                   mx: "auto",
+                  mb: 2,
+                }}
+              />
+              <Typography
+                sx={{
+                  fontFamily: "var(--font-playfair)",
+                  fontStyle: "italic",
+                  fontSize: "1rem",
+                  color: (t) =>
+                    t.palette.mode === "light" ? "#5a4d3f" : "#a89c8d",
+                  maxWidth: "44ch",
+                  mx: "auto",
+                  position: "relative",
+                  zIndex: 1,
                 }}
               >
-                {section.projects.map((project) => (
-                  <ProjectPlate
-                    key={project.id}
-                    project={project}
-                    onOpen={handleOpen}
-                    reduced={reduced}
-                  />
-                ))}
-              </Box>
+                {section.subtitle}
+              </Typography>
             </Box>
-          ))}
-        </Box>
 
-        <Box />
+            {/* Project plates */}
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+                gap: { xs: 5, md: 8 },
+              }}
+            >
+              {section.projects.map((project) => (
+                <ProjectPlate
+                  key={project.id}
+                  project={project}
+                  onOpen={handleOpen}
+                  reduced={reduced}
+                />
+              ))}
+            </Box>
+          </Box>
+        ))}
       </Box>
 
       {/* Colophon */}
