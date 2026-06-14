@@ -1,6 +1,9 @@
 ---
 title: "Onboarding Evolution at a popular fitness app"
 description: "A blog post about creating an onboarding experience for a popular fitness app"
+date: "2022-11-01"
+category: "Popular Fitness App"
+layout: "wide"
 imgs: [{img: "/onboarding.png", alt: "A screen shot of one of the pages in the onboarding flow asking for your name"}, {img: "/onboarding-2.png", alt: "A screen shot of one of the pages in the onboarding flow displaying a list of options to select why you want to join"}, {img: "/onboarding-3.png", alt: "A screen shot of one of the pages in the onboarding flow displaying a modal with more information about which sex to choose"}]
 ---
 
