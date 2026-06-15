@@ -10,7 +10,7 @@ There is a particular kind of model in every aging codebase that started life wi
 
 The two intruders were a clinician's drug-enforcement registration and their controlled-substance registration. Call them the DEA and the CSR. The thing about those two is that they are not certifications in any meaningful sense. You do not earn credits on a DEA. You do not complete coursework against a CSR. They are *trackers* — things you watch expire and renew, full stop. But they had been wedged into the certifications table as a tracker-certification hybrid, which forced a tracker-or-certification branch into what felt like every method in the application, and entangled two simple expiry-watchers with the entire credit-and-task machinery they had no business touching.
 
-The job was to pull them out into models of their own. And the lesson of the job — the one I would write on the wall — is that a core-model refactor is not a table problem. It is a graph problem. The migration is the easy part. Finding everyone who *reads* the data is the week.
+The job was to pull them out into models of their own. And the lesson of the job — the one I would write on the wall — is that the table was never the hard part. A core-model refactor is a graph problem. The migration is hours of work. Finding everyone who *reads* the data is the week.
 
 ## The target shape
 

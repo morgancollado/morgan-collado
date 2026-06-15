@@ -26,13 +26,13 @@ It is not true. From the vendor's own documentation, which is safe to quote:
 
 > Twilio is not able to sign Business Associate Agreements for SendGrid … customers should not use SendGrid for any purpose or in any manner involving Protected Health Information.
 
-Read that against what a clinician inbox carries. Free-form message bodies. Replies from patients and from arbitrary third parties. PHI, routinely, by the very nature of the feature. Routing that mail through SendGrid would not be a gray area. It would be a breach, in writing, against the provider's explicit instruction not to do exactly this.
+Read that against what a clinician inbox carries. Free-form message bodies. Replies from patients and from arbitrary third parties. PHI, routinely, by the very nature of the feature. Routing that mail through SendGrid would be a breach, in writing, committed against the provider's own explicit instruction not to do exactly this. There is no gray area to retreat into.
 
 So the decision did not need tuning. It needed *reversing,* before the feature could ship at all. And the framing flipped with it: building net-new email transport stopped being the "optional cost-savings, maybe later" line item it had been filed under, and became *mandatory for compliance.* The cheapest version of the feature was now the one that did not exist.
 
 ## Redoing it honestly: eliminate, then score
 
-The way you make a decision like this defensibly is not to pick a favorite and justify it. It is to eliminate everything that legally cannot work, and only then to score what remains. Most of the field falls at the first gate.
+You do not make a decision like this defensibly by picking a favorite and building a case for it. You make it by elimination: rule out everything that legally cannot work, and only then score what survives. Most of the field falls at the first gate.
 
 Eliminated because they will not sign a BAA, or cannot legally carry PHI: SendGrid, Postmark, SparkPost, Brevo, Mailjet, SMTP2GO, SocketLabs. Eliminated for a more interesting reason — a BAA exists, but the *service* can't meet a two-way inbox requirement: an outbound-only transactional service with no inbound parsing; per-seat office suites whose economics break past a few hundred clinicians and which are not a programmatic signed-webhook transport in the first place; a newer provider whose BAA is enterprise-gated and whose inbound support was immature.
 

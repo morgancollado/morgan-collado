@@ -6,11 +6,11 @@ category: "Healthcare Compliance Platform"
 layout: "prose"
 ---
 
-We encrypt patient data at rest. That is not a feature we advertise; it is the floor we stand on. When the product you are building carries protected health information through every surface a clinician touches, encryption stops being a checkbox and becomes a habit of mind. You encrypt the column. You write a constraint to keep it honest. You move on.
+We encrypt patient data at rest. It is the floor the whole product stands on. When you are building something that carries protected health information through every surface a clinician touches, encryption becomes reflexive — a habit of the hands. You encrypt the column. You write a constraint to keep it honest. You move on.
 
 And then, one quiet afternoon in staging, the first emoji-dense reply arrived, and the whole thing came apart.
 
-I want to tell you about that bug, because it is not really a bug about emoji, and it is not really a bug about email. It is a bug about a mistake that is very easy to make and very hard to see: writing a database constraint that *believes* it is measuring one thing while it is actually measuring another. The database was honest the entire time. We were the ones who misunderstood what we had asked it to do.
+I want to tell you about that bug, because the emoji and the email are the least of it. Underneath them is a mistake that is very easy to make and very hard to see: a database constraint that *believes* it is measuring one thing while it quietly measures another. The database was honest the entire time. We were the ones who misunderstood what we had asked it to do.
 
 ## What we encrypt, and why
 
@@ -44,7 +44,7 @@ It was wrong from the first second it existed.
 
 ## Why Postgres disagreed with us
 
-Here is the thing the constraint did not know, because we never told it: `body_preview` is encrypted. The string sitting in that column is not a preview of anybody's message. It is an encryption envelope — a little JSON structure that wraps the ciphertext together with the headers the decryptor needs to undo it. Roughly:
+Here is the thing the constraint did not know, because we never told it: `body_preview` is encrypted. The string sitting in that column is an encryption envelope — a little JSON structure that wraps the ciphertext together with the headers the decryptor needs to undo it. None of the words anyone typed survive into it intact. Roughly:
 
 ```
 {"p":"<base64 ciphertext>","h":{ ...key + algorithm headers... }}
@@ -52,7 +52,7 @@ Here is the thing the constraint did not know, because we never told it: `body_p
 
 `char_length` is a function of perfect integrity. It counted exactly what was in the column. The problem is that what was in the column was the envelope, not the meaning. A 256-character multibyte preview, once compressed, encrypted, base64-encoded, and wrapped, lands somewhere around fifteen hundred characters of envelope. The constraint was sizing a coat for a person and measuring the shipping box.
 
-So the honest question is not why it eventually failed. The honest question is why it didn't fail immediately.
+So the puzzle is the delay. A constraint that was wrong from its first byte sailed through review, through the test suite, through weeks of real staging traffic without a single complaint. Something was hiding it.
 
 ## The good part: why it hid for weeks
 
@@ -94,7 +94,7 @@ expect(msg.ciphertext_for(:body_preview).length).to be > 320 # the regression is
 expect { msg.save! }.not_to raise_error
 ```
 
-If you write that test with `"a" * 256`, deflate crushes it under the old bound and your test goes green without ever exercising the bug. The assertion that the ciphertext exceeds the *old* limit is not decoration. It is the test proving to you that it is actually standing where the failure was.
+If you write that test with `"a" * 256`, deflate crushes it under the old bound and your test goes green without ever exercising the bug. The assertion that the ciphertext exceeds the *old* limit is the test proving to itself that it stands where the failure actually was. Strip that line out and you are left with a green check mark and no way to know whether it means anything.
 
 ## What I keep, after all of it
 

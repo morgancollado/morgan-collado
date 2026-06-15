@@ -60,11 +60,11 @@ Here is the practical heart of it, and every one of these reads as arbitrary fus
 
 Build task lists by *adding* identifiers, never by starting from the full set and filtering down. `tasks = []; ids = [1, 2, 3]; ids << 9 if first_renewal?`. An allowlist you can read top to bottom answers "what runs in this state?" at a glance; a denylist makes you hold the whole set in your head and subtract. Positive construction is legible; subtraction is a puzzle.
 
-Let the defaults be the common case and stay silent. A flag that is true almost everywhere defaults to true, so you only ever write it when you mean *false* — when a cycle is too short and a task has to slide to the next one. Writing the default explicitly is not thoroughness. It is noise that hides the one place the value actually matters.
+Let the defaults be the common case and stay silent. A flag that is true almost everywhere defaults to true, so you only ever write it when you mean *false* — when a cycle is too short and a task has to slide to the next one. Spelling the default out in every file adds nothing but noise, and the noise buries the one place the value actually carries meaning.
 
 Gate "the Nth renewal" on the framework's own notion of the current cycle, not on a naive count of how many cycles a taskable has been through, because that count is unreliable the moment off-cycle attachment enters the picture. The thing that looks like it counts cycles does not count the cycles you think it does.
 
-And the one I love, because it is pure hard-won domain knowledge: a spec sheet's values are *display text, not code.* When a requirements document lists a sub-category as "N/A," that does not become the literal string `'N/A'` in your data. It becomes the canonical empty-option value the rest of the system already uses — the same one, for every state and every user type. Mistake the human-readable spec sheet for the data model and you will scatter a dozen spellings of "nothing" across the system and spend a season reconciling them.
+And the one I love, because it is pure hard-won domain knowledge: a spec sheet describes the rule; it does not define your data model. When a requirements document lists a sub-category as "N/A," the literal string `'N/A'` should appear nowhere in your data. What belongs there is the canonical empty-option value the rest of the system already uses — the same one, for every state and every user type. Mistake the human-readable spec sheet for the data model and you will scatter a dozen spellings of "nothing" across the system and spend a season reconciling them.
 
 Oh — and task titles do not end with a period. Look back at the human-trafficking task. That is a convention too, and a convention nobody wrote down is a convention that drifts.
 

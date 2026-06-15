@@ -47,7 +47,7 @@ The cryptographic check is the famous one. The topic pin is the one that actuall
 
 The verifier from the box is not as boolean-safe as it looks. It rescues its own verification error and nothing else, which means a body missing its `Signature` field escapes as a `TypeError`, and a body that is valid JSON but not an *object* — `[]`, `null`, `"x"`, `123` — throws a `NoMethodError` the instant you index into it expecting a hash.
 
-Think about who controls that input. Anyone who can reach the endpoint. So a stranger can hand you junk that crashes your handler into a `500`, and a `500` to a notification service is not a dead end — it is an invitation to *retry*. You have built a machine that turns attacker-controlled garbage into a retry storm against your own infrastructure.
+Think about who controls that input. Anyone who can reach the endpoint. So a stranger can hand you junk that crashes your handler into a `500` — and a notification service reads a `500` as *try again later.* So it does. You have built a machine that turns attacker-controlled garbage into a retry storm against your own infrastructure.
 
 The fix is a parser that fails closed by returning nil for anything that is not a JSON object, used by every boolean path that would otherwise raise:
 
@@ -60,7 +60,7 @@ rescue JSON::ParserError
 end
 ```
 
-*A 5xx on attacker input is not a bug, it is a vulnerability — and a retry storm besides. Validate the shape, then return 400.*
+*Attacker input that 5xxs your endpoint is a vulnerability and a retry generator at once. Validate the shape first, then return 400.*
 
 ## An audit log that vanishes exactly when you need it
 
@@ -70,7 +70,7 @@ We audit sensitive writes. The first implementation wrote the audit row *after* 
 
 The fix is to write the audit row *inside the same transaction* as the thing it audits, so that a failed audit rolls the write back and releases the idempotency claim. Now the retry performs the work *and* records it, together or not at all. An audit that is not in the same transaction as the action it describes is not an audit. It is a hope.
 
-A reviewer surfaced the corollary, which is sharper than the original: an audit control that covers only one of two equivalent write paths is not a control. We had justified an unaudited direct-send path by pointing at the audited draft path, as if the existence of an audit *somewhere* covered the write *everywhere*. It does not. Every path that produces the effect has to be the path you audit.
+A reviewer surfaced the corollary, which is sharper than the original: an audit control that covers only one of two equivalent write paths controls nothing. We had justified an unaudited direct-send path by pointing at the audited draft path, as if the existence of an audit *somewhere* covered the write *everywhere*. It does not. Every path that produces the effect has to be the path you audit.
 
 *Audit in the same transaction as the thing it documents, and check every sibling path that produces the same effect — or you do not have a control, you have a story you tell yourself.*
 

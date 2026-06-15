@@ -10,7 +10,7 @@ The story everyone tells about coding with an AI agent is that the AI writes the
 
 What actually ships features is process. A fierce review pass before every pull request, performed against the diff and not against anyone's memory of the diff. Hand-off prompts written so completely that a fresh agent with no context could execute them cold. And a version-controlled memory, committed to the repository, so that the lessons an agent learns survive the agent forgetting everything the moment the session ends.
 
-I have come to believe the leverage in AI-assisted engineering is not the model at all. It is the scaffolding you wrap around it. An agent is a tremendously capable worker with two specific, predictable flaws, and durable process is how you build around both.
+I have come to believe the leverage in AI-assisted engineering is mostly scaffolding — the structure you build around the model matters more than the model. An agent is a tremendously capable worker with two specific, predictable flaws, and durable process is how you build around both.
 
 ## The two failure modes you are designing against
 
@@ -62,4 +62,4 @@ That is the credibility of the whole approach, actually. It fails where you woul
 
 The leverage is not the model. It is the memory and the checklists you wrap around it. An agent with a committed memory and a pre-PR review ritual ships like a careful teammate — one who remembers the project's traps and reads the diff before it speaks. An agent without either ships like an enthusiastic intern with amnesia, re-deriving your decisions every morning and trusting its own recollection of code it cannot actually remember writing.
 
-The difference between those two is not a better prompt. It is a process you were willing to build and keep.
+The difference between those two agents is entirely a matter of process: whether someone built the rituals, and then kept them.
