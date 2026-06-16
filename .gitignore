@@ -13,6 +13,9 @@
 /.next/
 /out/
 
+# generated social-share images (built from /public/*.svg)
+/public/og/
+
 # production
 /build
 

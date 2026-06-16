@@ -1,4 +1,5 @@
 import { getAllPosts, getPostBySlug } from "../_lib/helpers";
+import { getProjectBySlug, socialImageFor } from "@/lib/projects";
 import BlogShell from "@/components/blog-shell";
 
 export const dynamicParams = false;
@@ -22,16 +23,23 @@ export async function generateMetadata({ params }) {
 
   const metadata = { title, description };
 
-  if (imgs?.[0]) {
+  // Use the same image the home page shows for this article. Fall back to the
+  // post's first inline image for articles that aren't featured on the home page.
+  const card = getProjectBySlug(slug);
+  const social = card
+    ? { src: socialImageFor(card.imageLink), alt: card.projectName }
+    : imgs?.[0]
+    ? { src: imgs[0].img, alt: imgs[0].alt }
+    : null;
+
+  if (social) {
+    const url = baseUrl ? new URL(social.src, baseUrl).href : social.src;
     metadata.openGraph = {
-      images: [
-        {
-          url: baseUrl ? new URL(imgs[0].img, baseUrl).href : imgs[0].img,
-          alt: imgs[0].alt,
-          width: 800,
-          height: 600,
-        },
-      ],
+      images: [{ url, alt: social.alt }],
+    };
+    metadata.twitter = {
+      card: "summary_large_image",
+      images: [url],
     };
   }
 
