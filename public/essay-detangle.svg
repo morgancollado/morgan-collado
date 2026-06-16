@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-label="A tangle of threads combed apart into three separate sibling models">
+  <rect width="640" height="400" fill="#efe9dd"/>
+  <rect x="18" y="18" width="604" height="364" fill="none" stroke="#2a2030" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- left: the tangled god-model (three threads knotted together) -->
+  <g fill="none" stroke-linecap="round">
+    <path d="M70 150 C 200 150, 110 300, 250 280" stroke="#2a2030" stroke-width="3.4"/>
+    <path d="M70 215 C 190 215, 120 150, 250 215" stroke="#6b5b7a" stroke-width="3.4"/>
+    <path d="M70 282 C 150 300, 190 150, 250 150" stroke="#9a8aa6" stroke-width="3.4"/>
+    <!-- a knot bead where they cross -->
+    <circle cx="150" cy="220" r="13" fill="#cdbfd6" stroke="#2a2030" stroke-width="2.4"/>
+  </g>
+
+  <!-- center: the detangle -->
+  <g stroke="#6b5b7a" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.85">
+    <path d="M286 215 C 318 215, 332 215, 372 215" stroke-dasharray="2 11"/>
+    <path d="M366 215 l 14 0 l -7 -7 m 7 7 l -7 7"/>
+  </g>
+
+  <!-- right: three combed-apart strands resolving into sibling nodes under a shared base -->
+  <g fill="none" stroke-linecap="round">
+    <path d="M400 165 L 470 165" stroke="#2a2030" stroke-width="3.2"/>
+    <path d="M400 215 L 470 215" stroke="#6b5b7a" stroke-width="3.2"/>
+    <path d="M400 265 L 470 265" stroke="#9a8aa6" stroke-width="3.2"/>
+  </g>
+
+  <!-- shared base node + tree connectors -->
+  <g stroke="#2a2030" stroke-width="2.6" fill="#f7f3ea" stroke-linejoin="round">
+    <g fill="none" opacity="0.9">
+      <path d="M540 165 H 566 V 215 H 590"/>
+      <path d="M540 265 H 566 V 215"/>
+    </g>
+    <!-- the three sibling models -->
+    <rect x="476" y="146" width="64" height="38" rx="6" fill="#cdbfd6"/>
+    <rect x="476" y="196" width="64" height="38" rx="6" fill="#ffffff"/>
+    <rect x="476" y="246" width="64" height="38" rx="6" fill="#ffffff"/>
+    <!-- shared STI base -->
+    <rect x="590" y="194" width="22" height="42" rx="5" fill="#f7f3ea"/>
+  </g>
+</svg>

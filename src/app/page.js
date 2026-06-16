@@ -154,6 +154,16 @@ const healthcarePlatformProjects = [
     imageLink: "/essay-ciphertext.svg",
     blogLink: "/blog/ciphertext-check-constraint",
   },
+  {
+    id: 14,
+    projectName: "A Core-Model Refactor Is a Graph Problem",
+    projectDescription:
+      "Pulling two registration types out of a god-model, and finding every reader the hard way.",
+    projectDetail:
+      "Untangling DEA and CSR registrations from an overloaded STI certifications table into sibling models — and chasing down every view, importer, and ops tool that quietly read the old shape.",
+    imageLink: "/essay-detangle.svg",
+    blogLink: "/blog/detangling-god-model",
+  },
 ];
 
 const SECTIONS = [
