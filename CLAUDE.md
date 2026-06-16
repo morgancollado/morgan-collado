@@ -63,3 +63,9 @@
 - **Minimal Impact**: Changes should only touch what's necessary. Avoid introducing bugs.
 
 Omit co authored by claude on your commits. Keep commit messages brief imperatives of what was implemented
+
+Commits must be authored as the user's own GitHub account, never as Claude. In web/remote
+sessions, before committing, ensure git is configured with:
+- `user.name = "Morgan Collado"`
+- `user.email = "64807763+morgancollado@users.noreply.github.com"` (GitHub noreply, so commits link to the user's account without exposing personal email)
+Never add a `Co-authored-by: Claude` trailer or any Claude/Anthropic attribution.
