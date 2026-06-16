@@ -38,6 +38,11 @@ const editorialLinkSx = {
   paddingBottom: "2px",
   borderBottom: "1px solid currentColor",
   "&:hover": { borderBottomStyle: "dashed" },
+  "&:focus-visible": {
+    outline: "2px solid",
+    outlineColor: "primary.main",
+    outlineOffset: "3px",
+  },
 };
 
 const captionLabelSx = {
@@ -337,7 +342,8 @@ export default function Portfolio() {
             <IconButton
               href="https://github.com/morgancollado"
               target="_blank"
-              aria-label="GitHub"
+              rel="noopener noreferrer"
+              aria-label="GitHub (opens in new tab)"
               sx={{
                 color: "primary.main",
                 border: "1px solid",
@@ -352,7 +358,8 @@ export default function Portfolio() {
             <IconButton
               href="https://www.linkedin.com/in/morgancollado/"
               target="_blank"
-              aria-label="LinkedIn"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn (opens in new tab)"
               sx={{
                 color: "primary.main",
                 border: "1px solid",

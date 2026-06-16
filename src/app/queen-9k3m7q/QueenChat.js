@@ -308,7 +308,7 @@ export default function QueenChat() {
       <div className={styles.grain} aria-hidden="true" />
 
       {locked === null ? (
-        <div className={styles.loading}>
+        <div className={styles.loading} role="status" aria-label="Loading">
           <span className={styles.dot} />
         </div>
       ) : locked ? (
@@ -326,12 +326,17 @@ export default function QueenChat() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
+                aria-label="Password"
+                aria-invalid={!!authError}
+                aria-describedby="gate-error"
                 autoFocus
                 autoComplete="current-password"
                 disabled={authBusy}
               />
               {authError && (
-                <div className={styles.gateError}>{authError}</div>
+                <div id="gate-error" className={styles.gateError} role="alert">
+                  {authError}
+                </div>
               )}
               <button
                 type="submit"
@@ -359,7 +364,13 @@ export default function QueenChat() {
             </button>
           </header>
 
-          <div className={styles.list} ref={listRef}>
+          <div
+            className={styles.list}
+            ref={listRef}
+            role="log"
+            aria-live="polite"
+            aria-label="Conversation with the Queen"
+          >
             {messages.length === 0 && hydrated && (
               <div className={styles.empty}>
                 The throne is empty. Speak, and the Queen will answer.
@@ -385,6 +396,13 @@ export default function QueenChat() {
                         : styles.queenBubble
                   }
                 >
+                  <span className={styles.srOnly}>
+                    {m.role === "user"
+                      ? "You said: "
+                      : m.error
+                        ? "Error: "
+                        : "The Queen said: "}
+                  </span>
                   {m.content}
                 </div>
               </div>

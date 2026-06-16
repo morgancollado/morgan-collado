@@ -146,6 +146,11 @@ function ProjectDetailsModal({ open, handleClose, project }) {
                   borderBottom: "1px solid currentColor",
                   display: "inline-block",
                   "&:hover": { borderBottomStyle: "dashed" },
+                  "&:focus-visible": {
+                    outline: "2px solid",
+                    outlineColor: "primary.main",
+                    outlineOffset: "3px",
+                  },
                 }}
               >
                 Read the essay →
