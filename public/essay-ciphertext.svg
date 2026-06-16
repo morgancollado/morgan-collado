@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-label="A sealed, encrypted envelope being measured with a caliper">
+  <rect width="640" height="400" fill="#efe9dd"/>
+  <rect x="18" y="18" width="604" height="364" fill="none" stroke="#2a2030" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- caliper across the top, measuring the envelope's width -->
+  <g stroke="#2a2030" stroke-width="2.6" fill="none" stroke-linecap="round">
+    <line x1="150" y1="72" x2="490" y2="72"/>
+    <path d="M150 56 L150 110"/>
+    <path d="M490 56 L490 110"/>
+    <!-- jaw blocks -->
+    <rect x="138" y="60" width="14" height="40" fill="#cdbfd6" stroke-width="2.4"/>
+    <rect x="488" y="60" width="14" height="40" fill="#cdbfd6" stroke-width="2.4"/>
+    <!-- tick marks -->
+    <g stroke-width="2" opacity="0.7">
+      <line x1="200" y1="72" x2="200" y2="82"/>
+      <line x1="250" y1="72" x2="250" y2="82"/>
+      <line x1="300" y1="72" x2="300" y2="80"/>
+      <line x1="350" y1="72" x2="350" y2="82"/>
+      <line x1="400" y1="72" x2="400" y2="82"/>
+      <line x1="440" y1="72" x2="440" y2="80"/>
+    </g>
+  </g>
+
+  <!-- the envelope -->
+  <g stroke="#2a2030" stroke-width="2.8" stroke-linejoin="round">
+    <rect x="150" y="140" width="340" height="220" rx="6" fill="#ffffff"/>
+    <!-- flap -->
+    <path d="M150 140 L320 268 L490 140" fill="#f7f3ea"/>
+    <!-- wax seal / lock -->
+    <circle cx="320" cy="276" r="30" fill="#cdbfd6"/>
+    <g fill="none" stroke="#2a2030" stroke-width="2.8">
+      <rect x="309" y="274" width="22" height="20" rx="3" fill="#efe9dd"/>
+      <path d="M313 274 v-6 a7 7 0 0 1 14 0 v6"/>
+    </g>
+  </g>
+
+  <!-- ciphertext scramble spilling from the envelope mouth -->
+  <g font-family="monospace" font-size="16" fill="#6b5b7a" opacity="0.9" letter-spacing="1">
+    <text x="184" y="328">8f3a&#160;&#160;c1&#160;&#160;9d&#160;&#160;7b&#160;&#160;e0&#160;&#160;42</text>
+    <text x="184" y="349" opacity="0.7">b2&#160;&#160;5e&#160;&#160;d4&#160;&#160;0a&#160;&#160;91&#160;&#160;3c</text>
+  </g>
+</svg>

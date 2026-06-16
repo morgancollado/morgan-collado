@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-label="A sheaf of certificates being read and sorted into labelled pigeonholes">
+  <rect width="640" height="400" fill="#efe9dd"/>
+  <rect x="18" y="18" width="604" height="364" fill="none" stroke="#2a2030" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- left: a sheaf of certificates, fanned -->
+  <g stroke="#2a2030" stroke-width="2.4" fill="#f7f3ea" stroke-linejoin="round">
+    <g transform="rotate(-9 150 230)">
+      <rect x="74" y="150" width="150" height="190" rx="4"/>
+    </g>
+    <g transform="rotate(-3 150 220)">
+      <rect x="80" y="138" width="150" height="190" rx="4"/>
+    </g>
+    <g transform="rotate(4 150 210)">
+      <rect x="86" y="126" width="150" height="190" rx="4" fill="#ffffff"/>
+      <!-- text lines on the top sheet -->
+      <g stroke-width="5" stroke-linecap="round" opacity="0.85">
+        <line x1="104" y1="156" x2="196" y2="156"/>
+      </g>
+      <g stroke-width="3" stroke-linecap="round" opacity="0.55">
+        <line x1="104" y1="180" x2="208" y2="180"/>
+        <line x1="104" y1="198" x2="208" y2="198"/>
+        <line x1="104" y1="216" x2="180" y2="216"/>
+      </g>
+      <!-- a seal / ribbon -->
+      <circle cx="120" cy="270" r="20" fill="#cdbfd6" stroke-width="2.4"/>
+      <path d="M112 286 L106 312 L120 302 L134 312 L128 286" fill="#cdbfd6" stroke-width="2.4"/>
+    </g>
+  </g>
+
+  <!-- the eye that reads (the model) -->
+  <g transform="translate(150 78)" stroke="#2a2030" stroke-width="2.6" fill="none" stroke-linecap="round">
+    <path d="M-34 0 Q0 -28 34 0 Q0 28 -34 0 Z" fill="#ffffff"/>
+    <circle cx="0" cy="0" r="9.5" fill="#2a2030"/>
+    <circle cx="3" cy="-3" r="2.4" fill="#efe9dd" stroke="none"/>
+    <line x1="0" y1="-30" x2="0" y2="-42"/>
+    <line x1="26" y1="-20" x2="35" y2="-30"/>
+    <line x1="-26" y1="-20" x2="-35" y2="-30"/>
+  </g>
+
+  <!-- flowing arrows toward the pigeonholes -->
+  <g stroke="#6b5b7a" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.85">
+    <path d="M250 180 C 312 160, 332 150, 392 150" stroke-dasharray="2 11"/>
+    <path d="M250 222 C 312 222, 332 222, 392 222" stroke-dasharray="2 11"/>
+    <path d="M250 264 C 312 286, 332 296, 392 296" stroke-dasharray="2 11"/>
+    <path d="M386 150 l 14 0 l -7 -7 m 7 7 l -7 7"/>
+    <path d="M386 222 l 14 0 l -7 -7 m 7 7 l -7 7"/>
+    <path d="M386 296 l 14 0 l -7 -7 m 7 7 l -7 7"/>
+  </g>
+
+  <!-- right: pigeonholes / sorted bins -->
+  <g stroke="#2a2030" stroke-width="2.6" fill="none">
+    <rect x="430" y="104" width="172" height="222" fill="#f7f3ea"/>
+    <line x1="430" y1="178" x2="602" y2="178"/>
+    <line x1="430" y1="252" x2="602" y2="252"/>
+    <line x1="516" y1="104" x2="516" y2="326"/>
+    <!-- filed papers (tucked sheets) -->
+    <g fill="#ffffff" stroke-width="2.2">
+      <rect x="446" y="120" width="54" height="44"/>
+      <rect x="532" y="120" width="54" height="44"/>
+      <rect x="446" y="194" width="54" height="44"/>
+    </g>
+    <!-- check ticks on filed bins -->
+    <g stroke="#2a2030" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M551 286 l 9 11 l 18 -22"/>
+    </g>
+  </g>
+</svg>

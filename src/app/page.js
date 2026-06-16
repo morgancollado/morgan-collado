@@ -123,6 +123,39 @@ const colladoCodeWorksProjects = [
   },
 ];
 
+const healthcarePlatformProjects = [
+  {
+    id: 11,
+    projectName: "The Model Reads the Mail",
+    projectDescription:
+      "Automating CME categorization — LLMs at the messy boundary, deterministic rules where it counts.",
+    projectDetail:
+      "How we automated a fully-manual categorization process: the model extracts, deterministic rules decide, and a self-mining rulebook turns every human judgment into a reusable one.",
+    imageLink: "/essay-categorize.svg",
+    blogLink: "/blog/auto-categorizing-cme",
+  },
+  {
+    id: 12,
+    projectName: "Rituals, Not Vibes",
+    projectDescription:
+      "Shipping features with an AI agent through durable process, not clever prompts.",
+    projectDetail:
+      "The unglamorous operating model that actually ships features with a coding agent: committed memory, a fierce pre-PR review, and self-contained hand-offs.",
+    imageLink: "/essay-rituals.svg",
+    blogLink: "/blog/rituals-pairing-ai-agent",
+  },
+  {
+    id: 13,
+    projectName: "The Constraint That Measured Ciphertext",
+    projectDescription:
+      "A length check that passed every test for weeks — until an emoji-dense reply blew it up.",
+    projectDetail:
+      "A three-way collision of Rails encryption, Postgres, and zlib: why a database constraint on an encrypted column measures the wrong string, and how compression hid it.",
+    imageLink: "/essay-ciphertext.svg",
+    blogLink: "/blog/ciphertext-check-constraint",
+  },
+];
+
 const SECTIONS = [
   {
     label: "Movement 01",
@@ -143,6 +176,13 @@ const SECTIONS = [
     title: "At Collado CodeWorks",
     subtitle: "Independent work, in-progress experiments, and this very site.",
     projects: colladoCodeWorksProjects,
+  },
+  {
+    label: "Movement 04",
+    title: "At the Healthcare Compliance Platform",
+    subtitle:
+      "LLMs at the messy edges, encryption that bites back, and the rituals that keep an AI agent honest in a regulated domain.",
+    projects: healthcarePlatformProjects,
   },
 ];
 
@@ -667,7 +707,7 @@ export default function Portfolio() {
         }}
       >
         Composed in Playfair Display upon a digital press. <br />
-        Set in two columns and three movements by the author,
+        Set in two columns and four movements by the author,
         <br />
         who insists on doing too much.
       </Box>
