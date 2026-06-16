@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-label="An open ledger of committed checklists with a recurring-ritual loop and a quill">
+  <rect width="640" height="400" fill="#efe9dd"/>
+  <rect x="18" y="18" width="604" height="364" fill="none" stroke="#2a2030" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- the recurring ritual loop, drawn behind -->
+  <g stroke="#6b5b7a" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.8">
+    <path d="M320 60 a 132 40 0 1 0 0.1 0" stroke-dasharray="2 12"/>
+    <path d="M452 66 l 6 -16 l 14 12 m -14 -12 l -16 6"/>
+  </g>
+
+  <!-- open ledger / book -->
+  <g>
+    <!-- shadow page edges -->
+    <path d="M320 96 C 246 78, 168 84, 120 104 L120 320 C 168 300, 246 294, 320 312 Z"
+          fill="#f7f3ea" stroke="#2a2030" stroke-width="2.6" stroke-linejoin="round"/>
+    <path d="M320 96 C 394 78, 472 84, 520 104 L520 320 C 472 300, 394 294, 320 312 Z"
+          fill="#ffffff" stroke="#2a2030" stroke-width="2.6" stroke-linejoin="round"/>
+    <line x1="320" y1="96" x2="320" y2="312" stroke="#2a2030" stroke-width="2.6"/>
+
+    <!-- left page: ruled "memory" lines -->
+    <g stroke="#9a8aa6" stroke-width="2.2" stroke-linecap="round" opacity="0.75">
+      <line x1="150" y1="138" x2="292" y2="132"/>
+      <line x1="150" y1="166" x2="292" y2="161"/>
+      <line x1="150" y1="194" x2="292" y2="190"/>
+      <line x1="150" y1="222" x2="292" y2="219"/>
+      <line x1="150" y1="250" x2="292" y2="248"/>
+      <line x1="150" y1="278" x2="292" y2="277"/>
+    </g>
+
+    <!-- right page: a checklist with ticked boxes -->
+    <g>
+      <g fill="none" stroke="#2a2030" stroke-width="2.4">
+        <rect x="350" y="128" width="20" height="20" rx="3"/>
+        <rect x="350" y="170" width="20" height="20" rx="3"/>
+        <rect x="350" y="212" width="20" height="20" rx="3"/>
+        <rect x="350" y="254" width="20" height="20" rx="3"/>
+      </g>
+      <g stroke="#2a2030" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <path d="M354 138 l 6 7 l 12 -15"/>
+        <path d="M354 180 l 6 7 l 12 -15"/>
+        <path d="M354 222 l 6 7 l 12 -15"/>
+      </g>
+      <g stroke="#9a8aa6" stroke-width="2.4" stroke-linecap="round" opacity="0.8">
+        <line x1="386" y1="138" x2="492" y2="138"/>
+        <line x1="386" y1="180" x2="492" y2="180"/>
+        <line x1="386" y1="222" x2="492" y2="222"/>
+        <line x1="386" y1="264" x2="470" y2="264"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- quill -->
+  <g stroke="#2a2030" stroke-width="2.6" fill="#f7f3ea" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M508 300 C 470 250, 452 214, 470 176 C 500 214, 512 256, 524 300 Z"/>
+    <line x1="487" y1="244" x2="514" y2="240" stroke-width="2"/>
+    <line x1="479" y1="222" x2="503" y2="216" stroke-width="2"/>
+    <line x1="497" y1="270" x2="520" y2="268" stroke-width="2"/>
+  </g>
+</svg>
