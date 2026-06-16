@@ -1,7 +1,15 @@
 // Rasterize the SVG card art in /public into PNGs for social link previews.
 // Most platforms (iMessage, X, Facebook, LinkedIn, Slack) won't render an SVG
 // as an og:image, so each SVG card gets a PNG twin written to /public/og.
-// Run automatically before `dev` and `build` (see package.json).
+//
+// The generated PNGs are committed to the repo, so this is a one-off dev tool —
+// it is intentionally NOT part of `build`. (sharp's native @img packages make
+// Next's build-trace globber overflow on Vercel, so sharp is not a project
+// dependency.) After editing an SVG card, regenerate with:
+//
+//   npm i -D sharp && node scripts/generate-og-images.mjs && npm rm sharp
+//
+// then commit the updated /public/og PNGs.
 
 import { readdir, mkdir } from "node:fs/promises";
 import { join, dirname } from "node:path";
