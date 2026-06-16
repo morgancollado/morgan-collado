@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-label="A spreadsheet of data creating a rack of test types in bulk">
+  <rect width="640" height="400" fill="#efe9dd"/>
+  <rect x="18" y="18" width="604" height="364" fill="none" stroke="#2a2030" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- left: the spreadsheet of data -->
+  <g stroke="#2a2030" stroke-width="2.6" stroke-linejoin="round">
+    <rect x="56" y="120" width="208" height="168" rx="4" fill="#ffffff"/>
+    <!-- header row -->
+    <rect x="56" y="120" width="208" height="34" fill="#cdbfd6"/>
+    <!-- column lines -->
+    <line x1="125" y1="120" x2="125" y2="288" stroke-width="2"/>
+    <line x1="195" y1="120" x2="195" y2="288" stroke-width="2"/>
+    <!-- row lines -->
+    <line x1="56" y1="154" x2="264" y2="154" stroke-width="2"/>
+    <line x1="56" y1="188" x2="264" y2="188" stroke-width="2" opacity="0.6"/>
+    <line x1="56" y1="221" x2="264" y2="221" stroke-width="2" opacity="0.6"/>
+    <line x1="56" y1="254" x2="264" y2="254" stroke-width="2" opacity="0.6"/>
+    <!-- a few cell ticks -->
+    <g stroke-width="3" stroke-linecap="round" opacity="0.5">
+      <line x1="74" y1="171" x2="108" y2="171"/>
+      <line x1="142" y1="171" x2="178" y2="171"/>
+      <line x1="212" y1="171" x2="248" y2="171"/>
+      <line x1="74" y1="204" x2="108" y2="204"/>
+      <line x1="142" y1="237" x2="178" y2="237"/>
+    </g>
+  </g>
+
+  <!-- center: arrow -->
+  <g stroke="#6b5b7a" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.85">
+    <path d="M286 204 C 318 204, 332 204, 372 204" stroke-dasharray="2 11"/>
+    <path d="M366 204 l 14 0 l -7 -7 m 7 7 l -7 7"/>
+  </g>
+
+  <!-- right: a rack of test tubes created in bulk -->
+  <g stroke="#2a2030" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
+    <!-- tubes -->
+    <g fill="#ffffff">
+      <path d="M412 150 v118 a16 16 0 0 0 32 0 v-118 Z"/>
+      <path d="M462 150 v118 a16 16 0 0 0 32 0 v-118 Z"/>
+      <path d="M512 150 v118 a16 16 0 0 0 32 0 v-118 Z"/>
+      <path d="M562 150 v118 a16 16 0 0 0 32 0 v-118 Z"/>
+    </g>
+    <!-- liquid -->
+    <g fill="#cdbfd6" stroke="none">
+      <path d="M412 232 v36 a16 16 0 0 0 32 0 v-36 Z"/>
+      <path d="M462 220 v48 a16 16 0 0 0 32 0 v-48 Z"/>
+      <path d="M512 240 v28 a16 16 0 0 0 32 0 v-28 Z"/>
+      <path d="M562 214 v54 a16 16 0 0 0 32 0 v-54 Z"/>
+    </g>
+    <!-- liquid surface lines + tube outlines re-stroked on top -->
+    <g fill="none">
+      <path d="M412 150 v118 a16 16 0 0 0 32 0 v-118"/>
+      <path d="M462 150 v118 a16 16 0 0 0 32 0 v-118"/>
+      <path d="M512 150 v118 a16 16 0 0 0 32 0 v-118"/>
+      <path d="M562 150 v118 a16 16 0 0 0 32 0 v-118"/>
+    </g>
+    <!-- rack rail holding the tubes -->
+    <line x1="400" y1="150" x2="606" y2="150" stroke-width="3.4"/>
+  </g>
+</svg>

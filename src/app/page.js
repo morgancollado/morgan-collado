@@ -30,7 +30,7 @@ const everlyHealth = [
     projectDescription: "Sending reminders whenever we wanted.",
     projectDetail:
       "Sending reminders outside of the initial build was tedious and required engineering work. Here is how I built a tool to make sending messages delightful.",
-    imageLink: "/reminder.jpg",
+    imageLink: "/diagnostics-reminders.svg",
     blogLink: "/blog/adhoc-reminders",
   },
   {
@@ -39,7 +39,7 @@ const everlyHealth = [
     projectDescription: "Campaigns for every program.",
     projectDetail:
       "Creating campaigns was a manual process. Lets discuss the tool I built to make creating campaigns easy peezy.",
-    imageLink: "/campaigns.jpg",
+    imageLink: "/diagnostics-campaigns.svg",
     blogLink: "/blog/campaign-generation",
   },
   {
@@ -48,7 +48,7 @@ const everlyHealth = [
     projectDescription: "Creating test types in bulk.",
     projectDetail:
       "Creating test types one by one required repetitive use of a form. I created a service that took a spread sheet of data and created objects accordingly, saving time and lessening mistakes.",
-    imageLink: "/tests.jpg",
+    imageLink: "/diagnostics-tests.svg",
   },
 ];
 
@@ -159,30 +159,30 @@ const healthcarePlatformProjects = [
 const SECTIONS = [
   {
     label: "Movement 01",
+    title: "At the Healthcare Compliance Platform",
+    subtitle:
+      "LLMs at the messy edges, encryption that bites back, and the rituals that keep an AI agent honest in a regulated domain.",
+    projects: healthcarePlatformProjects,
+  },
+  {
+    label: "Movement 02",
     title: "At the Medical Diagnostics Company",
     subtitle:
       "Patient outreach, internal tooling, and the messy edges of healthcare communication.",
     projects: everlyHealth,
   },
   {
-    label: "Movement 02",
+    label: "Movement 03",
     title: "At the Popular Fitness App",
     subtitle:
       "Onboarding, accessibility, and the front-end shape of a household name.",
     projects: myFitnessPalProjects,
   },
   {
-    label: "Movement 03",
+    label: "Movement 04",
     title: "At Collado CodeWorks",
     subtitle: "Independent work, in-progress experiments, and this very site.",
     projects: colladoCodeWorksProjects,
-  },
-  {
-    label: "Movement 04",
-    title: "At the Healthcare Compliance Platform",
-    subtitle:
-      "LLMs at the messy edges, encryption that bites back, and the rituals that keep an AI agent honest in a regulated domain.",
-    projects: healthcarePlatformProjects,
   },
 ];
 

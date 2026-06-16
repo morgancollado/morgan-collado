@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-label="One copy template generating many email campaigns through a tool">
+  <rect width="640" height="400" fill="#efe9dd"/>
+  <rect x="18" y="18" width="604" height="364" fill="none" stroke="#2a2030" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- left: the single source-of-truth template -->
+  <g stroke="#2a2030" stroke-width="2.6" stroke-linejoin="round">
+    <rect x="58" y="110" width="156" height="200" rx="6" fill="#ffffff"/>
+    <rect x="58" y="110" width="156" height="40" rx="6" fill="#cdbfd6"/>
+    <path d="M58 144 h156" fill="none"/>
+    <g stroke-width="3" stroke-linecap="round" opacity="0.55">
+      <line x1="80" y1="178" x2="192" y2="178"/>
+      <line x1="80" y1="200" x2="192" y2="200"/>
+      <line x1="80" y1="222" x2="170" y2="222"/>
+      <line x1="80" y1="258" x2="192" y2="258"/>
+      <line x1="80" y1="280" x2="158" y2="280"/>
+    </g>
+  </g>
+
+  <!-- center: the generation gear -->
+  <g transform="translate(312 210)" stroke="#2a2030" stroke-width="2.6" fill="#f7f3ea" stroke-linejoin="round">
+    <g>
+      <circle cx="0" cy="0" r="26"/>
+      <circle cx="0" cy="0" r="10" fill="#cdbfd6"/>
+      <g stroke-linecap="round">
+        <line x1="0" y1="-26" x2="0" y2="-38"/>
+        <line x1="0" y1="26" x2="0" y2="38"/>
+        <line x1="-26" y1="0" x2="-38" y2="0"/>
+        <line x1="26" y1="0" x2="38" y2="0"/>
+        <line x1="-18" y1="-18" x2="-27" y2="-27"/>
+        <line x1="18" y1="18" x2="27" y2="27"/>
+        <line x1="18" y1="-18" x2="27" y2="-27"/>
+        <line x1="-18" y1="18" x2="-27" y2="27"/>
+      </g>
+    </g>
+  </g>
+  <g stroke="#6b5b7a" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.85">
+    <path d="M222 210 C 250 210, 262 210, 278 210" stroke-dasharray="2 11"/>
+    <path d="M362 210 C 386 210, 398 210, 410 210" stroke-dasharray="2 11"/>
+    <path d="M404 210 l 14 0 l -7 -7 m 7 7 l -7 7"/>
+  </g>
+
+  <!-- right: a fan of generated email envelopes -->
+  <g stroke="#2a2030" stroke-width="2.6" stroke-linejoin="round">
+    <g transform="rotate(-8 500 220)">
+      <rect x="430" y="150" width="150" height="100" rx="6" fill="#f7f3ea"/>
+    </g>
+    <g transform="rotate(-2 500 215)">
+      <rect x="440" y="142" width="150" height="100" rx="6" fill="#f7f3ea"/>
+    </g>
+    <g transform="rotate(5 500 210)">
+      <rect x="448" y="134" width="150" height="100" rx="6" fill="#ffffff"/>
+      <path d="M448 140 L523 196 L598 140" fill="none" stroke-width="2.4"/>
+    </g>
+  </g>
+</svg>
