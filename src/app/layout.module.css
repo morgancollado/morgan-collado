@@ -1,0 +1,17 @@
+.skipLink {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 10000;
+  padding: 10px 16px;
+  background: #422b65;
+  color: #faf6ec;
+  font-family: var(--font-playfair), serif;
+  font-style: italic;
+  text-decoration: none;
+  border-radius: 0 0 4px 0;
+}
+
+.skipLink:focus {
+  left: 0;
+}

@@ -32,7 +32,11 @@ const BackToTop = () => {
           borderBottom: "1px solid currentColor",
           "&:hover, &:focus-visible": {
             borderBottomStyle: "dashed",
-            outline: "none",
+          },
+          "&:focus-visible": {
+            outline: "2px solid",
+            outlineColor: "primary.main",
+            outlineOffset: "3px",
           },
         }}
       >

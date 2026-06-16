@@ -7,6 +7,7 @@ import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { playfair } from "@/lib/playfair";
 import { DuotoneFilters } from "@/lib/duotone";
+import styles from "./layout.module.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,9 +24,12 @@ export default function RootLayout({ children }) {
       <ThemeProvider>
         <CssBaseline />
         <body className={inter.className}>
+          <a href="#main-content" className={styles.skipLink}>
+            Skip to content
+          </a>
           <DuotoneFilters />
           <NavBar />
-          {children}
+          <main id="main-content">{children}</main>
           <Footer />
           <Analytics />
           <SpeedInsights />

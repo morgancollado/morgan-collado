@@ -109,7 +109,7 @@
 .clearButton {
   background: none;
   border: none;
-  color: rgba(232, 223, 200, 0.35);
+  color: rgba(232, 223, 200, 0.6);
   font-size: 11px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -121,6 +121,11 @@
 
 .clearButton:hover:not(:disabled) {
   color: rgba(201, 169, 97, 0.85);
+}
+
+.clearButton:focus-visible {
+  outline: 2px solid #c9a961;
+  outline-offset: 2px;
 }
 
 .clearButton:disabled {
@@ -143,7 +148,7 @@
 
 .empty {
   margin: auto;
-  color: rgba(232, 223, 200, 0.35);
+  color: rgba(232, 223, 200, 0.6);
   font-style: italic;
   text-align: center;
   font-size: 14px;
@@ -276,11 +281,16 @@
 }
 
 .textarea::placeholder {
-  color: rgba(232, 223, 200, 0.3);
+  color: rgba(232, 223, 200, 0.55);
 }
 
 .textarea:focus {
   border-color: rgba(201, 169, 97, 0.7);
+}
+
+.textarea:focus-visible {
+  outline: 2px solid #c9a961;
+  outline-offset: 2px;
 }
 
 .textarea:disabled {
@@ -313,6 +323,11 @@
 
 .sendButton:active:not(:disabled) {
   transform: translateY(1px);
+}
+
+.sendButton:focus-visible {
+  outline: 2px solid #c9a961;
+  outline-offset: 2px;
 }
 
 .sendButton:disabled {
@@ -387,12 +402,17 @@
 }
 
 .gateInput::placeholder {
-  color: rgba(232, 223, 200, 0.3);
+  color: rgba(232, 223, 200, 0.55);
   letter-spacing: normal;
 }
 
 .gateInput:focus {
   border-color: rgba(201, 169, 97, 0.7);
+}
+
+.gateInput:focus-visible {
+  outline: 2px solid #c9a961;
+  outline-offset: 2px;
 }
 
 .gateInput:disabled {
@@ -430,6 +450,23 @@
 
 .gateButton:active:not(:disabled) {
   transform: translateY(1px);
+}
+
+.gateButton:focus-visible {
+  outline: 2px solid #c9a961;
+  outline-offset: 2px;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .gateButton:disabled {

@@ -21,7 +21,11 @@ const navLinkSx = {
   "&:hover, &:focus-visible": {
     borderBottomColor: "currentColor",
     color: "primary.main",
-    outline: "none",
+  },
+  "&:focus-visible": {
+    outline: "2px solid",
+    outlineColor: "primary.main",
+    outlineOffset: "3px",
   },
 };
 
@@ -65,6 +69,11 @@ const NavBar = () => {
             textDecoration: "none",
             letterSpacing: 2,
             "&:hover": { color: "primary.main" },
+            "&:focus-visible": {
+              outline: "2px solid",
+              outlineColor: "primary.main",
+              outlineOffset: "3px",
+            },
           }}
         >
           M · C
@@ -80,7 +89,9 @@ const NavBar = () => {
             onClick={toggleTheme}
             color="inherit"
             size="small"
-            aria-label="toggle theme"
+            aria-label={
+              mode === "light" ? "Switch to dark mode" : "Switch to light mode"
+            }
             sx={{ ml: 1 }}
           >
             {mode === "light" ? (
