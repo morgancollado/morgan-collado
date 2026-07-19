@@ -8,6 +8,7 @@ export default function sitemap() {
   return [
     { url: SITE_URL, lastModified: newest },
     { url: `${SITE_URL}/about` },
+    { url: `${SITE_URL}/contact` },
     { url: `${SITE_URL}/blog`, lastModified: newest },
     ...posts.map((post) => ({
       url: `${SITE_URL}/blog/${post.slug}`,

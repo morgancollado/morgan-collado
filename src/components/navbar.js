@@ -85,6 +85,9 @@ const NavBar = () => {
           <Box component={Link} href="/about" sx={navLinkSx}>
             About
           </Box>
+          <Box component={Link} href="/contact" sx={navLinkSx}>
+            Contact
+          </Box>
           <IconButton
             onClick={toggleTheme}
             color="inherit"
