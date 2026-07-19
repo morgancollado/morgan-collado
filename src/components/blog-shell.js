@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Link from "next/link";
 import { Box, Typography } from "@mui/material";
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import ReactMarkdown from "react-markdown";
@@ -353,6 +354,8 @@ export default function BlogShell({
   date,
   category,
   description,
+  readingTime,
+  related = [],
 }) {
   const reduced = useReducedMotion();
 
@@ -421,6 +424,7 @@ export default function BlogShell({
         <span>Vol. I, No. III</span>
         <span>{category}</span>
         <span>{formatDate(date)}</span>
+        {readingTime && <span>{readingTime} min</span>}
         <span>Morgan Collado</span>
       </Box>
 
@@ -557,6 +561,68 @@ export default function BlogShell({
       </Box>
 
       <BackToTop />
+
+      {/* Continue reading — other essays from the same section */}
+      {related.length > 0 && (
+        <Box
+          component="nav"
+          aria-label="Continue reading"
+          sx={{
+            position: "relative",
+            zIndex: 2,
+            maxWidth: "68ch",
+            mx: "auto",
+            px: { xs: 3, md: 5 },
+            mt: 10,
+            pt: 4,
+            borderTop: "1px solid",
+            borderColor: "currentColor",
+            textAlign: "center",
+          }}
+        >
+          <Typography
+            component="h2"
+            sx={{
+              fontVariantCaps: "small-caps",
+              fontFamily: "var(--font-playfair)",
+              letterSpacing: 3,
+              fontSize: "0.78rem",
+              mb: 2.5,
+              color: "primary.main",
+            }}
+          >
+            Continue reading — {category}
+          </Typography>
+          <Box component="ul" sx={{ listStyle: "none", p: 0, m: 0 }}>
+            {related.map((post) => (
+              <Box component="li" key={post.slug} sx={{ mb: 1.5 }}>
+                <Box
+                  component={Link}
+                  href={`/blog/${post.slug}`}
+                  sx={{
+                    fontFamily: "var(--font-playfair)",
+                    fontStyle: "italic",
+                    fontSize: "1.1rem",
+                    color: "inherit",
+                    textDecoration: "none",
+                    borderBottom: "1px solid",
+                    borderColor: "currentColor",
+                    pb: "1px",
+                    "&:hover": { borderBottomStyle: "dashed" },
+                    "&:focus-visible": {
+                      outline: "2px solid",
+                      outlineColor: "primary.main",
+                      outlineOffset: "3px",
+                    },
+                  }}
+                >
+                  {post.title}
+                </Box>
+              </Box>
+            ))}
+          </Box>
+        </Box>
+      )}
 
       {/* Colophon */}
       <Box

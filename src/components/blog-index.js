@@ -76,7 +76,13 @@ function HoverThumb({ active, reduced }) {
 
 export default function BlogIndex({ posts }) {
   const [active, setActive] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const reduced = useReducedMotion();
+
+  const categories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
+  const shown = selectedCategory
+    ? posts.filter((p) => p.category === selectedCategory)
+    : posts;
 
   const handleEnter = (post) => () => {
     const img = post.imgs?.[0];
@@ -179,7 +185,7 @@ export default function BlogIndex({ posts }) {
             color: (t) =>
               t.palette.mode === "light" ? "#5a4d3f" : "#a89c8d",
             maxWidth: "52ch",
-            mb: 8,
+            mb: 4,
             lineHeight: 1.6,
             fontStyle: "italic",
           }}
@@ -187,6 +193,53 @@ export default function BlogIndex({ posts }) {
           — Every essay, by the year it was made. Hover a title to glimpse
           its subject. —
         </Typography>
+
+        {/* Sections of the paper */}
+        <Box
+          role="group"
+          aria-label="Filter essays by section"
+          sx={{ display: "flex", flexWrap: "wrap", gap: 1.5, mb: 6 }}
+        >
+          {[null, ...categories].map((category) => {
+            const isActive = selectedCategory === category;
+            return (
+              <Box
+                key={category ?? "all"}
+                component="button"
+                type="button"
+                aria-pressed={isActive}
+                onClick={() => setSelectedCategory(category)}
+                sx={{
+                  cursor: "pointer",
+                  fontFamily: "var(--font-playfair)",
+                  fontVariantCaps: "small-caps",
+                  letterSpacing: 3,
+                  fontSize: "0.72rem",
+                  px: 1.5,
+                  py: 0.75,
+                  border: "1px solid currentColor",
+                  borderRadius: 0,
+                  bgcolor: isActive ? "primary.main" : "transparent",
+                  color: isActive
+                    ? (t) => (t.palette.mode === "light" ? "#faf6ec" : "#0d0a14")
+                    : "inherit",
+                  transition: "background-color .2s, color .2s",
+                  "&:hover": {
+                    borderStyle: isActive ? "solid" : "dashed",
+                    color: isActive ? undefined : "primary.main",
+                  },
+                  "&:focus-visible": {
+                    outline: "2px solid",
+                    outlineColor: "primary.main",
+                    outlineOffset: "2px",
+                  },
+                }}
+              >
+                {category ?? "All sections"}
+              </Box>
+            );
+          })}
+        </Box>
 
         <Box
           component="ol"
@@ -199,7 +252,7 @@ export default function BlogIndex({ posts }) {
           }}
           onMouseLeave={handleLeave}
         >
-          {posts.map((post, i) => (
+          {shown.map((post, i) => (
             <Box
               key={post.slug}
               component="li"

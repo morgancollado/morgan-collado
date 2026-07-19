@@ -41,6 +41,11 @@ export function getPostBySlug(slug, fields) {
     return posts
   }
 
+  export function readingTimeMinutes(content = "") {
+    const words = content.split(/\s+/).filter(Boolean).length
+    return Math.max(1, Math.round(words / 225))
+  }
+
   export function getAllPostsSorted(fields) {
     const withDate = fields.includes('date') ? fields : [...fields, 'date']
     return getAllPosts(withDate).sort((a, b) =>

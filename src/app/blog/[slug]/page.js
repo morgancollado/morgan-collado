@@ -1,15 +1,22 @@
-import { getAllPosts, getPostBySlug } from "../_lib/helpers";
+import {
+  getAllPosts,
+  getAllPostsSorted,
+  getPostBySlug,
+  readingTimeMinutes,
+} from "../_lib/helpers";
 import { getProjectBySlug, socialImageFor } from "@/lib/projects";
 import { SITE_URL } from "@/lib/site";
 import BlogShell from "@/components/blog-shell";
 
 // The same image the home page shows for this article. Falls back to the
 // post's first inline image for articles that aren't featured on the home page.
-function socialImage(slug, imgs) {
+function socialImage(slug, imgs, title) {
   const card = getProjectBySlug(slug);
   if (card) return { src: socialImageFor(card.imageLink), alt: card.projectName };
   const first = imgs?.[0];
-  return first ? { src: first.img, alt: first.alt } : null;
+  if (first) return { src: first.img, alt: first.alt };
+  // Letterpress title card rendered at build time by /blog/[slug]/og.
+  return { src: `/blog/${slug}/og`, alt: title };
 }
 
 export const dynamicParams = false;
@@ -32,7 +39,7 @@ export async function generateMetadata({ params }) {
 
   const metadata = { title, description };
 
-  const social = socialImage(slug, imgs);
+  const social = socialImage(slug, imgs, title);
   if (social) {
     const url = new URL(social.src, SITE_URL).href;
     metadata.openGraph = {
@@ -55,7 +62,12 @@ const BlogPost = ({ params }) => {
     ["title", "description", "content", "date", "category", "imgs"]
   );
 
-  const social = socialImage(slug, imgs);
+  const readingTime = readingTimeMinutes(content);
+  const related = getAllPostsSorted(["slug", "title", "date", "category"])
+    .filter((post) => post.category === category && post.slug !== slug)
+    .slice(0, 3);
+
+  const social = socialImage(slug, imgs, title);
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -83,6 +95,8 @@ const BlogPost = ({ params }) => {
         content={content}
         date={date}
         category={category}
+        readingTime={readingTime}
+        related={related}
       />
     </>
   );
