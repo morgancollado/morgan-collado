@@ -121,6 +121,23 @@ export default function BlogIndex({ posts }) {
         <span>Vol. I, No. II</span>
         <span>Writing</span>
         <span>{dateStr}</span>
+        <Box
+          component="a"
+          href="/feed.xml"
+          sx={{
+            color: "inherit",
+            textDecoration: "none",
+            borderBottom: "1px solid currentColor",
+            "&:hover": { borderBottomStyle: "dashed" },
+            "&:focus-visible": {
+              outline: "2px solid",
+              outlineColor: "primary.main",
+              outlineOffset: "2px",
+            },
+          }}
+        >
+          RSS ❧
+        </Box>
         <span>Morgan Collado</span>
       </Box>
 
