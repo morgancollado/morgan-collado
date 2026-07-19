@@ -3,7 +3,6 @@ title: "The Model Reads the Mail"
 description: "Automating CME categorization — LLMs at the messy boundary, deterministic rules where it matters."
 date: "2026-03-01"
 category: "Healthcare Compliance Platform"
-layout: "prose"
 ---
 
 The interesting question about putting a language model into production is not the one everybody asks. Everybody asks: *can the model do the task?* It is the wrong question, or at least it is the easy half of the right one. The question that actually decides whether you have built something trustworthy is narrower and harder. **Which part of the task should the model own, and which part must never, under any circumstances, be probabilistic?**

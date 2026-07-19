@@ -3,7 +3,6 @@ title: "The Lies Your Staging Environment Tells You"
 description: "Six edge-case bugs from a two-way clinician inbox — none of them are really about email."
 date: "2026-03-15"
 category: "Healthcare Compliance Platform"
-layout: "prose"
 ---
 
 Building an email feature looks like CRUD. You receive a message, you store it, you show it, you send a reply. Four verbs, all of them familiar, none of them frightening. If you scoped the work off that description you would budget a week and feel generous about it.

@@ -3,7 +3,6 @@ title: "Rituals, Not Vibes"
 description: "How I actually ship features with an AI coding agent — durable process over clever prompts."
 date: "2026-06-01"
 category: "Engineering Practice"
-layout: "prose"
 ---
 
 The story everyone tells about coding with an AI agent is that the AI writes the code. It is a good story. It is also not the part that ships anything. The part that ships things is unglamorous and a little tedious, and it has almost nothing to do with how good the model is at writing a function.

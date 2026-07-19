@@ -3,7 +3,6 @@ title: "The Constraint That Measured Ciphertext"
 description: "A Rails PHI bug that passed every test for weeks, then an emoji blew it up."
 date: "2026-02-01"
 category: "Healthcare Compliance Platform"
-layout: "prose"
 ---
 
 We encrypt patient data at rest. It is the floor the whole product stands on. When you are building something that carries protected health information through every surface a clinician touches, encryption becomes reflexive — a habit of the hands. You encrypt the column. You write a constraint to keep it honest. You move on.

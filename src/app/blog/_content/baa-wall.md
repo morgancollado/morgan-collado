@@ -3,7 +3,6 @@ title: "The Constraint That Wasn't in Any Diagram"
 description: "You can't sign a BAA with SendGrid — and we'd already shipped code against the wrong assumption."
 date: "2026-04-01"
 category: "Healthcare Compliance Platform"
-layout: "wide"
 ---
 
 We had an architecture decision record. A real one, written down, reviewed, agreed upon. It chose a popular email provider — one "with a BAA," the document said — as the transport for a new clinician inbox. The cost model was budgeted around it. There was code in the repository written against it. By every measure a team uses to tell itself a decision is settled, this decision was settled.

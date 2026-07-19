@@ -12,22 +12,21 @@ function usePreferredTheme() {
   const [mode, setMode] = useState("light"); // default to light
 
   useEffect(() => {
-    // Abstracting the theme detection and avoiding direct window reference
+    // A saved manual choice wins; otherwise follow the OS preference.
     const getPreferredTheme = () => {
-      if (typeof window !== "undefined") {
-        return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-      }
-      // Return default theme or from other sources if window is not available
-      return "light"; // or return saved theme from localStorage or other storage
+      if (typeof window === "undefined") return "light";
+      const saved = localStorage.getItem("theme");
+      if (saved === "light" || saved === "dark") return saved;
+      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     };
 
     const preferredTheme = getPreferredTheme();
     setMode(preferredTheme);
 
     const handleChange = (e) => {
-      const newMode = e.matches ? "dark" : "light";
-      setMode(newMode);
-      localStorage.setItem("theme", newMode);
+      // Only track OS changes while the user hasn't made a manual choice.
+      if (localStorage.getItem("theme")) return;
+      setMode(e.matches ? "dark" : "light");
     };
 
     if (typeof window !== "undefined") {

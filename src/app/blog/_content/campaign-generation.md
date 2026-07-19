@@ -3,7 +3,6 @@ title: "Building ease"
 description: "A blog post about creating an application that allowed user to reduce the time it took to complete their job."
 date: "2024-06-01"
 category: "Medical Diagnostics Company"
-layout: "prose"
 imgs: [{img: "/campaign-form.png", alt: "A screenshot of an online form with 3 input elements for the different copy data."}]
 ---
 
