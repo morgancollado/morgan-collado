@@ -3,7 +3,6 @@ title: "Building flexibility"
 description: "A blog post about creating an application that enabled the business to engage with its customers at anytime."
 date: "2024-09-01"
 category: "Medical Diagnostics Company"
-layout: "prose"
 imgs: [{img: "/communication-models.png", alt: "An entity relationship diagram showing communication_request has a one to many relationship to communication_type."}]
 ---
 

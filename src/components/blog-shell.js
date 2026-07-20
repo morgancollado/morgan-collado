@@ -1,11 +1,13 @@
 "use client";
 
 import { useRef } from "react";
+import Link from "next/link";
 import { Box, Typography } from "@mui/material";
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useReducedMotion } from "@/lib/motion";
+import { sectionLabel } from "@/lib/sections";
 import { formatDate } from "@/lib/format-date";
 import Grain from "@/components/grain";
 import Spine from "@/components/spine";
@@ -353,6 +355,9 @@ export default function BlogShell({
   date,
   category,
   description,
+  readingTime,
+  related = [],
+  folio,
 }) {
   const reduced = useReducedMotion();
 
@@ -389,8 +394,8 @@ export default function BlogShell({
       ref={pageRef}
       sx={{
         position: "relative",
-        bgcolor: (t) => (t.palette.mode === "light" ? "#faf6ec" : "#0d0a14"),
-        color: (t) => (t.palette.mode === "light" ? "#1c1614" : "#ede6d8"),
+        bgcolor: "var(--paper-bg)",
+        color: "var(--paper-ink)",
         minHeight: "100vh",
         pb: 12,
         overflow: "hidden",
@@ -418,9 +423,10 @@ export default function BlogShell({
           fontFamily: "var(--font-playfair)",
         }}
       >
-        <span>Vol. I, No. III</span>
-        <span>{category}</span>
+        <span>{folio}</span>
+        <span>{sectionLabel(category)}</span>
         <span>{formatDate(date)}</span>
+        {readingTime && <span>{readingTime} min</span>}
         <span>Morgan Collado</span>
       </Box>
 
@@ -557,6 +563,68 @@ export default function BlogShell({
       </Box>
 
       <BackToTop />
+
+      {/* Continue reading — other essays from the same section */}
+      {related.length > 0 && (
+        <Box
+          component="nav"
+          aria-label="Continue reading"
+          sx={{
+            position: "relative",
+            zIndex: 2,
+            maxWidth: "68ch",
+            mx: "auto",
+            px: { xs: 3, md: 5 },
+            mt: 10,
+            pt: 4,
+            borderTop: "1px solid",
+            borderColor: "currentColor",
+            textAlign: "center",
+          }}
+        >
+          <Typography
+            component="h2"
+            sx={{
+              fontVariantCaps: "small-caps",
+              fontFamily: "var(--font-playfair)",
+              letterSpacing: 3,
+              fontSize: "0.78rem",
+              mb: 2.5,
+              color: "primary.main",
+            }}
+          >
+            Continue reading — {sectionLabel(category)}
+          </Typography>
+          <Box component="ul" sx={{ listStyle: "none", p: 0, m: 0 }}>
+            {related.map((post) => (
+              <Box component="li" key={post.slug} sx={{ mb: 1.5 }}>
+                <Box
+                  component={Link}
+                  href={`/blog/${post.slug}`}
+                  sx={{
+                    fontFamily: "var(--font-playfair)",
+                    fontStyle: "italic",
+                    fontSize: "1.1rem",
+                    color: "inherit",
+                    textDecoration: "none",
+                    borderBottom: "1px solid",
+                    borderColor: "currentColor",
+                    pb: "1px",
+                    "&:hover": { borderBottomStyle: "dashed" },
+                    "&:focus-visible": {
+                      outline: "2px solid",
+                      outlineColor: "primary.main",
+                      outlineOffset: "3px",
+                    },
+                  }}
+                >
+                  {post.title}
+                </Box>
+              </Box>
+            ))}
+          </Box>
+        </Box>
+      )}
 
       {/* Colophon */}
       <Box

@@ -7,6 +7,7 @@ import GitHubIcon from "@mui/icons-material/GitHub";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 
 import { useReducedMotion } from "@/lib/motion";
+import { useFolio } from "@/context/folio-context";
 import Grain from "@/components/grain";
 
 const SERIF_BODY =
@@ -36,6 +37,7 @@ const dropCapSx = {
 };
 
 export default function AboutPage() {
+  const folio = useFolio();
   const reduced = useReducedMotion();
 
   const dateStr = new Date().toLocaleDateString("en-US", {
@@ -55,8 +57,8 @@ export default function AboutPage() {
     <Box
       sx={{
         position: "relative",
-        bgcolor: (t) => (t.palette.mode === "light" ? "#faf6ec" : "#0d0a14"),
-        color: (t) => (t.palette.mode === "light" ? "#1c1614" : "#ede6d8"),
+        bgcolor: "var(--paper-bg)",
+        color: "var(--paper-ink)",
         minHeight: "100vh",
         pb: 12,
         overflow: "hidden",
@@ -84,7 +86,7 @@ export default function AboutPage() {
           fontFamily: "var(--font-playfair)",
         }}
       >
-        <span>Vol. I, No. IV</span>
+        <span>{folio}</span>
         <span>About</span>
         <span>{dateStr}</span>
         <span>Morgan Collado</span>

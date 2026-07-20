@@ -41,8 +41,8 @@ const NavBar = () => {
       position="relative"
       elevation={0}
       sx={{
-        bgcolor: (t) => (t.palette.mode === "light" ? "#faf6ec" : "#0d0a14"),
-        color: (t) => (t.palette.mode === "light" ? "#1c1614" : "#ede6d8"),
+        bgcolor: "var(--paper-bg)",
+        color: "var(--paper-ink)",
         borderBottom: "1px solid",
         borderColor: "currentColor",
         backgroundImage: "none",
@@ -84,6 +84,9 @@ const NavBar = () => {
           </Box>
           <Box component={Link} href="/about" sx={navLinkSx}>
             About
+          </Box>
+          <Box component={Link} href="/contact" sx={navLinkSx}>
+            Contact
           </Box>
           <IconButton
             onClick={toggleTheme}

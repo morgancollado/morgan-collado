@@ -3,7 +3,6 @@ title: "A Core-Model Refactor Is a Graph Problem"
 description: "Pulling two registration types out of a god-model, and finding every reader the hard way."
 date: "2026-04-15"
 category: "Healthcare Compliance Platform"
-layout: "prose"
 ---
 
 There is a particular kind of model in every aging codebase that started life with a clear, honest name and slowly became a junk drawer. Ours was called `certifications`. It began as the thing it said it was — a record of credits a clinician earned. Then, somewhere along the way, two things that were not certifications at all got crammed into it because the table was *right there* and the deadline was *right then.*

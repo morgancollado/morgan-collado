@@ -3,7 +3,6 @@ title: "Fifty States, Fifty Rulebooks"
 description: "Modeling license-renewal rules for every US state without one clever abstraction collapsing under the variety."
 date: "2026-05-01"
 category: "Healthcare Compliance Platform"
-layout: "prose"
 ---
 
 Every US state has its own rules for how a clinician renews a license and how much continuing education that takes. Different cycle lengths. Different grace periods. Mandatory topics that exist in one state and are unheard of in the next. Specialty carve-outs. Licenses that only ever expire in even-numbered years, or on the last day of the licensee's birth month, because a legislature somewhere decided that was reasonable and now it is true forever.

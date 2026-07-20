@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Box, Container, Typography } from "@mui/material";
 import { AnimatePresence, motion } from "framer-motion";
 import { useReducedMotion } from "@/lib/motion";
 import { formatDate } from "@/lib/format-date";
+import { sectionLabel } from "@/lib/sections";
+import { useFolio } from "@/context/folio-context";
 
 function yearOf(date) {
   if (!date) return "";
@@ -76,7 +78,33 @@ function HoverThumb({ active, reduced }) {
 
 export default function BlogIndex({ posts }) {
   const [active, setActive] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const reduced = useReducedMotion();
+  const folio = useFolio();
+
+  const categories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
+  const shown = selectedCategory
+    ? posts.filter((p) => p.category === selectedCategory)
+    : posts;
+
+  // Deep links: /blog?section=Practice applies the matching filter.
+  useEffect(() => {
+    const param = new URLSearchParams(window.location.search).get("section");
+    if (!param) return;
+    const match = categories.find(
+      (c) => c === param || sectionLabel(c) === param
+    );
+    if (match) setSelectedCategory(match);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once; posts are static
+  }, []);
+
+  const selectCategory = (category) => {
+    setSelectedCategory(category);
+    const url = new URL(window.location.href);
+    if (category) url.searchParams.set("section", sectionLabel(category));
+    else url.searchParams.delete("section");
+    window.history.replaceState(null, "", url);
+  };
 
   const handleEnter = (post) => () => {
     const img = post.imgs?.[0];
@@ -92,8 +120,8 @@ export default function BlogIndex({ posts }) {
   return (
     <Box
       sx={{
-        bgcolor: (t) => (t.palette.mode === "light" ? "#faf6ec" : "#0d0a14"),
-        color: (t) => (t.palette.mode === "light" ? "#1c1614" : "#ede6d8"),
+        bgcolor: "var(--paper-bg)",
+        color: "var(--paper-ink)",
         minHeight: "100vh",
         pb: 14,
       }}
@@ -118,9 +146,29 @@ export default function BlogIndex({ posts }) {
           fontFamily: "var(--font-playfair)",
         }}
       >
-        <span>Vol. I, No. II</span>
+        <span>{folio}</span>
         <span>Writing</span>
         <span>{dateStr}</span>
+        <Box
+          component="a"
+          href="/feed.xml"
+          sx={{
+            color: "inherit",
+            textDecoration: "none",
+            borderBottom: "1px solid currentColor",
+            "&:hover": { borderBottomStyle: "dashed" },
+            "&:focus-visible": {
+              outline: "2px solid",
+              outlineColor: "primary.main",
+              outlineOffset: "2px",
+            },
+          }}
+        >
+          RSS{" "}
+          <Box component="span" aria-hidden="true">
+            ❧
+          </Box>
+        </Box>
         <span>Morgan Collado</span>
       </Box>
 
@@ -162,7 +210,7 @@ export default function BlogIndex({ posts }) {
             color: (t) =>
               t.palette.mode === "light" ? "#5a4d3f" : "#a89c8d",
             maxWidth: "52ch",
-            mb: 8,
+            mb: 4,
             lineHeight: 1.6,
             fontStyle: "italic",
           }}
@@ -170,6 +218,51 @@ export default function BlogIndex({ posts }) {
           — Every essay, by the year it was made. Hover a title to glimpse
           its subject. —
         </Typography>
+
+        {/* Sections of the paper */}
+        <Box
+          role="group"
+          aria-label="Filter essays by section"
+          sx={{ display: "flex", flexWrap: "wrap", gap: 1.5, mb: 6 }}
+        >
+          {[null, ...categories].map((category) => {
+            const isActive = selectedCategory === category;
+            return (
+              <Box
+                key={category ?? "all"}
+                component="button"
+                type="button"
+                aria-pressed={isActive}
+                onClick={() => selectCategory(category)}
+                sx={{
+                  cursor: "pointer",
+                  fontFamily: "var(--font-playfair)",
+                  fontVariantCaps: "small-caps",
+                  letterSpacing: 3,
+                  fontSize: "0.72rem",
+                  px: 1.5,
+                  py: 0.75,
+                  border: "1px solid currentColor",
+                  borderRadius: 0,
+                  bgcolor: isActive ? "primary.main" : "transparent",
+                  color: isActive ? "var(--paper-bg)" : "inherit",
+                  transition: "background-color .2s, color .2s",
+                  "&:hover": {
+                    borderStyle: isActive ? "solid" : "dashed",
+                    color: isActive ? undefined : "primary.main",
+                  },
+                  "&:focus-visible": {
+                    outline: "2px solid",
+                    outlineColor: "primary.main",
+                    outlineOffset: "2px",
+                  },
+                }}
+              >
+                {category ? sectionLabel(category) : "All sections"}
+              </Box>
+            );
+          })}
+        </Box>
 
         <Box
           component="ol"
@@ -182,7 +275,7 @@ export default function BlogIndex({ posts }) {
           }}
           onMouseLeave={handleLeave}
         >
-          {posts.map((post, i) => (
+          {shown.map((post, i) => (
             <Box
               key={post.slug}
               component="li"
@@ -266,7 +359,7 @@ export default function BlogIndex({ posts }) {
                         t.palette.mode === "light" ? "#7a6c5e" : "#9e958a",
                     }}
                   >
-                    {[post.category, yearOf(post.date)]
+                    {[sectionLabel(post.category), yearOf(post.date)]
                       .filter(Boolean)
                       .join("  ·  ")}
                   </Typography>

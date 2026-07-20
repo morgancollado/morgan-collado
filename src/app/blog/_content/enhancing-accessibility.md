@@ -3,7 +3,6 @@ title: "Enhancing Accessibility: Auditing a popular fitness app’s Next.js Fron
 description: "A blog post about making accessible digital experiences"
 date: "2023-05-01"
 category: "Popular Fitness App"
-layout: "prose"
 imgs: [{img: "/accessibility-audit.png", alt: "A screen shot of showing an example of semantic HTML with describing different sections of the page"}]
 ---
 

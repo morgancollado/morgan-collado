@@ -9,6 +9,7 @@ import GitHubIcon from "@mui/icons-material/GitHub";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 
 import { useReducedMotion } from "@/lib/motion";
+import { useFolio } from "@/context/folio-context";
 import ProjectDetailsModal from "@/components/project-details-modal";
 import BackToTop from "@/components/back-to-top";
 import Grain from "@/components/grain";
@@ -154,6 +155,7 @@ function ProjectPlate({ project, onOpen, reduced }) {
 }
 
 export default function Portfolio() {
+  const folio = useFolio();
   const reduced = useReducedMotion();
   const [open, setOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -195,8 +197,8 @@ export default function Portfolio() {
       ref={ref}
       sx={{
         position: "relative",
-        bgcolor: (t) => (t.palette.mode === "light" ? "#faf6ec" : "#0d0a14"),
-        color: (t) => (t.palette.mode === "light" ? "#1c1614" : "#ede6d8"),
+        bgcolor: "var(--paper-bg)",
+        color: "var(--paper-ink)",
         minHeight: "100vh",
         overflow: "hidden",
         pb: 8,
@@ -224,7 +226,7 @@ export default function Portfolio() {
           fontFamily: "var(--font-playfair)",
         }}
       >
-        <span>Vol. I, No. I</span>
+        <span>{folio}</span>
         <span>Portfolio</span>
         <span>{dateStr}</span>
         <span>Morgan Collado</span>
