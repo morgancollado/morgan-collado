@@ -2,6 +2,7 @@ import { readFile } from "fs/promises";
 import { join } from "path";
 import { ImageResponse } from "next/og";
 import { getAllPosts, getPostBySlug } from "../../_lib/helpers";
+import { sectionLabel } from "@/lib/sections";
 
 export const dynamic = "force-static";
 
@@ -58,7 +59,7 @@ export async function GET(request, { params }) {
               color: "#6b5b7a",
             }}
           >
-            {category}
+            {sectionLabel(category)}
           </div>
           <div
             style={{

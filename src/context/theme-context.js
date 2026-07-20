@@ -22,11 +22,14 @@ function usePreferredTheme() {
 
     const preferredTheme = getPreferredTheme();
     setMode(preferredTheme);
+    document.documentElement.dataset.theme = preferredTheme;
 
     const handleChange = (e) => {
       // Only track OS changes while the user hasn't made a manual choice.
       if (localStorage.getItem("theme")) return;
-      setMode(e.matches ? "dark" : "light");
+      const newMode = e.matches ? "dark" : "light";
+      setMode(newMode);
+      document.documentElement.dataset.theme = newMode;
     };
 
     if (typeof window !== "undefined") {
@@ -48,6 +51,7 @@ export const ThemeProvider = ({ children }) => {
     const newMode = mode === "light" ? "dark" : "light";
     localStorage.setItem("theme", newMode);
     setMode(newMode);
+    document.documentElement.dataset.theme = newMode;
   };
 
   const theme = React.useMemo(
@@ -62,6 +66,18 @@ export const ThemeProvider = ({ children }) => {
         },
         typography: {
           fontFamily: '"Playfair Display", serif',
+        },
+        components: {
+          // Key the body colors off the pre-paint CSS variables so the
+          // first frame matches the resolved theme (see app/theme.css).
+          MuiCssBaseline: {
+            styleOverrides: {
+              body: {
+                backgroundColor: "var(--paper-bg)",
+                color: "var(--paper-ink)",
+              },
+            },
+          },
         },
         // ... other options
       }),

@@ -8,7 +8,14 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import { playfair } from "@/lib/playfair";
 import { DuotoneFilters } from "@/lib/duotone";
 import { SITE_URL } from "@/lib/site";
+import { FolioProvider } from "@/context/folio-context";
+import { currentFolio } from "./blog/_lib/helpers";
 import styles from "./layout.module.css";
+import "./theme.css";
+
+// Runs before anything paints so the saved (or OS) theme applies to the
+// server-rendered HTML via the data-theme CSS variables — no light flash.
+const themeInitScript = `(function(){try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark")t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t}catch(e){}})()`;
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -40,10 +47,11 @@ const personJsonLd = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={playfair.variable}>
+    <html lang="en" className={playfair.variable} suppressHydrationWarning>
       <ThemeProvider>
         <CssBaseline />
         <body className={inter.className}>
+          <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
           <a href="#main-content" className={styles.skipLink}>
             Skip to content
           </a>
@@ -53,7 +61,9 @@ export default function RootLayout({ children }) {
           />
           <DuotoneFilters />
           <NavBar />
-          <main id="main-content">{children}</main>
+          <FolioProvider value={currentFolio()}>
+            <main id="main-content">{children}</main>
+          </FolioProvider>
           <Footer />
           <Analytics />
           <SpeedInsights />

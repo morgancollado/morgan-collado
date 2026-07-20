@@ -1,4 +1,5 @@
 import {
+  folioForDate,
   getAllPosts,
   getAllPostsSorted,
   getPostBySlug,
@@ -97,6 +98,7 @@ const BlogPost = ({ params }) => {
         category={category}
         readingTime={readingTime}
         related={related}
+        folio={folioForDate(date)}
       />
     </>
   );

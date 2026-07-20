@@ -1,0 +1,20 @@
+/* Paper stock and ink, resolved before first paint.
+   A blocking script in the layout sets data-theme on <html> from
+   localStorage / prefers-color-scheme, so server HTML that references
+   these variables renders in the right theme with no light flash. */
+
+:root {
+  --paper-bg: #faf6ec;
+  --paper-ink: #1c1614;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --paper-bg: #0d0a14;
+  --paper-ink: #ede6d8;
+  color-scheme: dark;
+}
+
+html {
+  background-color: var(--paper-bg);
+}

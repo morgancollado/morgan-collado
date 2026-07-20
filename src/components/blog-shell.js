@@ -7,6 +7,7 @@ import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useReducedMotion } from "@/lib/motion";
+import { sectionLabel } from "@/lib/sections";
 import { formatDate } from "@/lib/format-date";
 import Grain from "@/components/grain";
 import Spine from "@/components/spine";
@@ -356,6 +357,7 @@ export default function BlogShell({
   description,
   readingTime,
   related = [],
+  folio,
 }) {
   const reduced = useReducedMotion();
 
@@ -392,8 +394,8 @@ export default function BlogShell({
       ref={pageRef}
       sx={{
         position: "relative",
-        bgcolor: (t) => (t.palette.mode === "light" ? "#faf6ec" : "#0d0a14"),
-        color: (t) => (t.palette.mode === "light" ? "#1c1614" : "#ede6d8"),
+        bgcolor: "var(--paper-bg)",
+        color: "var(--paper-ink)",
         minHeight: "100vh",
         pb: 12,
         overflow: "hidden",
@@ -421,8 +423,8 @@ export default function BlogShell({
           fontFamily: "var(--font-playfair)",
         }}
       >
-        <span>Vol. I, No. III</span>
-        <span>{category}</span>
+        <span>{folio}</span>
+        <span>{sectionLabel(category)}</span>
         <span>{formatDate(date)}</span>
         {readingTime && <span>{readingTime} min</span>}
         <span>Morgan Collado</span>
@@ -591,7 +593,7 @@ export default function BlogShell({
               color: "primary.main",
             }}
           >
-            Continue reading — {category}
+            Continue reading — {sectionLabel(category)}
           </Typography>
           <Box component="ul" sx={{ listStyle: "none", p: 0, m: 0 }}>
             {related.map((post) => (

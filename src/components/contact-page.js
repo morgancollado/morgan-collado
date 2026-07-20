@@ -8,6 +8,7 @@ import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import RssFeedIcon from "@mui/icons-material/RssFeed";
 
 import { useReducedMotion } from "@/lib/motion";
+import { useFolio } from "@/context/folio-context";
 import Grain from "@/components/grain";
 
 const socialButtonSx = {
@@ -21,6 +22,7 @@ const socialButtonSx = {
 
 export default function ContactPage() {
   const reduced = useReducedMotion();
+  const folio = useFolio();
 
   const dateStr = new Date().toLocaleDateString("en-US", {
     year: "numeric",
@@ -39,8 +41,8 @@ export default function ContactPage() {
     <Box
       sx={{
         position: "relative",
-        bgcolor: (t) => (t.palette.mode === "light" ? "#faf6ec" : "#0d0a14"),
-        color: (t) => (t.palette.mode === "light" ? "#1c1614" : "#ede6d8"),
+        bgcolor: "var(--paper-bg)",
+        color: "var(--paper-ink)",
         minHeight: "100vh",
         pb: 12,
         overflow: "hidden",
@@ -68,7 +70,7 @@ export default function ContactPage() {
           fontFamily: "var(--font-playfair)",
         }}
       >
-        <span>Vol. I, No. V</span>
+        <span>{folio}</span>
         <span>Correspondence</span>
         <span>{dateStr}</span>
         <span>Morgan Collado</span>

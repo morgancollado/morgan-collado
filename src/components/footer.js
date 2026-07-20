@@ -12,8 +12,8 @@ const Footer = () => {
     <Box
       component="footer"
       sx={{
-        bgcolor: (t) => (t.palette.mode === "light" ? "#faf6ec" : "#0d0a14"),
-        color: (t) => (t.palette.mode === "light" ? "#1c1614" : "#ede6d8"),
+        bgcolor: "var(--paper-bg)",
+        color: "var(--paper-ink)",
         borderTop: "1px solid",
         borderColor: "currentColor",
         py: { xs: 3, md: 4 },
