@@ -1,3 +1,8 @@
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkGfm from "remark-gfm";
+import remarkRehype from "remark-rehype";
+import rehypeStringify from "rehype-stringify";
 import { getAllPostsSorted } from "../blog/_lib/helpers";
 import { SITE_URL } from "@/lib/site";
 
@@ -13,8 +18,32 @@ function escapeXml(value = "") {
   })[c]);
 }
 
+// Full article HTML for feed readers: same remark pipeline the site's
+// article pages use, with root-relative links and images made absolute.
+const markdown = unified()
+  .use(remarkParse)
+  .use(remarkGfm)
+  .use(remarkRehype)
+  .use(rehypeStringify);
+
+function renderContent(content = "") {
+  const html = String(markdown.processSync(content));
+  return html.replace(/(src|href)="\//g, `$1="${SITE_URL}/`);
+}
+
+function cdata(value = "") {
+  return `<![CDATA[${String(value).replace(/\]\]>/g, "]]]]><![CDATA[>")}]]>`;
+}
+
 export async function GET() {
-  const posts = getAllPostsSorted(["slug", "title", "description", "date", "category"]);
+  const posts = getAllPostsSorted([
+    "slug",
+    "title",
+    "description",
+    "date",
+    "category",
+    "content",
+  ]);
 
   const items = posts
     .map((post) => {
@@ -24,6 +53,7 @@ export async function GET() {
       <link>${url}</link>
       <guid isPermaLink="true">${url}</guid>
       <description>${escapeXml(post.description)}</description>
+      <content:encoded>${cdata(renderContent(post.content))}</content:encoded>
       ${post.category ? `<category>${escapeXml(post.category)}</category>` : ""}
       <pubDate>${new Date(post.date).toUTCString()}</pubDate>
     </item>`;
@@ -31,7 +61,7 @@ export async function GET() {
     .join("\n");
 
   const feed = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Morgan Collado — Writing</title>
     <link>${SITE_URL}/blog</link>
