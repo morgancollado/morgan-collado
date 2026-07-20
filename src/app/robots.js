@@ -4,9 +4,11 @@ export default function robots() {
   return {
     rules: [
       {
+        // The queen page is kept out of the index by its own robots meta tag
+        // (noindex, nofollow) — listing it here would publish the URL.
         userAgent: "*",
         allow: "/",
-        disallow: ["/queen-9k3m7q", "/api/"],
+        disallow: ["/api/"],
       },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,
