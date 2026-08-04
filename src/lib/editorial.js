@@ -1,12 +1,17 @@
 /**
  * Shared editorial surface tokens.
  *
- * The site's colors are currently written as inline `t.palette.mode === ...`
- * ternaries at each use site. This file is the seam for consolidating them —
- * new code imports from here so it doesn't add more copies. Existing pages are
- * deliberately left alone; migrating them is its own change.
+ * These are the site's paper-and-ink palette, and every page now reads them
+ * from here — there are no inline `t.palette.mode === "light" ? ... : ...`
+ * colour ternaries left anywhere else. Keep it that way: a second copy of a
+ * hex pair is how the light and dark themes drift apart.
  *
- * Each helper has the shape `sx` already expects for a theme callback.
+ * Each helper has the shape `sx` already expects for a theme callback, so it
+ * drops straight in as `bgcolor: paper` or `color: muted`.
+ *
+ * Not everything belongs here. Two one-off surfaces (the blog index's hover
+ * thumbnail, and one heading tint) stay inline precisely because they are used
+ * once — a token with a single caller is indirection, not a system.
  */
 
 export const SERIF_BODY =

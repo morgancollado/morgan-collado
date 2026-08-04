@@ -6,6 +6,7 @@ import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { paper, ink } from "@/lib/editorial";
 
 const navLinkSx = {
   fontFamily: "var(--font-playfair)",
@@ -43,8 +44,8 @@ const NavBar = () => {
       position="relative"
       elevation={0}
       sx={{
-        bgcolor: (t) => (t.palette.mode === "light" ? "#faf6ec" : "#0d0a14"),
-        color: (t) => (t.palette.mode === "light" ? "#1c1614" : "#ede6d8"),
+        bgcolor: paper,
+        color: ink,
         borderBottom: "1px solid",
         borderColor: "currentColor",
         backgroundImage: "none",

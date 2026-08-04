@@ -6,6 +6,7 @@ import { Box, Container, Typography } from "@mui/material";
 import { AnimatePresence, motion } from "framer-motion";
 import { useReducedMotion } from "@/lib/motion";
 import { formatDate, yearOf, folioDate } from "@/lib/format-date";
+import { paper, ink, muted, dim } from "@/lib/editorial";
 
 function HoverThumb({ active, reduced }) {
   if (!active) return null;
@@ -83,8 +84,8 @@ export default function BlogIndex({ posts }) {
   return (
     <Box
       sx={{
-        bgcolor: (t) => (t.palette.mode === "light" ? "#faf6ec" : "#0d0a14"),
-        color: (t) => (t.palette.mode === "light" ? "#1c1614" : "#ede6d8"),
+        bgcolor: paper,
+        color: ink,
         minHeight: "100vh",
         pb: 14,
       }}
@@ -150,8 +151,7 @@ export default function BlogIndex({ posts }) {
           sx={{
             fontFamily: "var(--font-playfair)",
             fontSize: "1.05rem",
-            color: (t) =>
-              t.palette.mode === "light" ? "#5a4d3f" : "#a89c8d",
+            color: muted,
             maxWidth: "52ch",
             mb: 8,
             lineHeight: 1.6,
@@ -231,8 +231,7 @@ export default function BlogIndex({ posts }) {
                     fontFamily: "var(--font-playfair)",
                     fontStyle: "italic",
                     fontSize: { xs: "1.1rem", md: "1.5rem" },
-                    color: (t) =>
-                      t.palette.mode === "light" ? "#7a6c5e" : "#9e958a",
+                    color: dim,
                     transition: "color .3s",
                   }}
                 >
@@ -257,8 +256,7 @@ export default function BlogIndex({ posts }) {
                       letterSpacing: 3,
                       textTransform: "uppercase",
                       fontFamily: "var(--font-playfair)",
-                      color: (t) =>
-                        t.palette.mode === "light" ? "#7a6c5e" : "#9e958a",
+                      color: dim,
                     }}
                   >
                     {[post.category, yearOf(post.date)]
@@ -272,8 +270,7 @@ export default function BlogIndex({ posts }) {
                     fontFamily: "var(--font-playfair)",
                     fontStyle: "italic",
                     fontSize: "1.1rem",
-                    color: (t) =>
-                      t.palette.mode === "light" ? "#7a6c5e" : "#9e958a",
+                    color: dim,
                     whiteSpace: "nowrap",
                   }}
                 >

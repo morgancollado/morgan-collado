@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Box, Typography } from "@mui/material";
 import Grain from "@/components/grain";
 import { folioDate } from "@/lib/format-date";
+import { paper, ink, muted } from "@/lib/editorial";
 
 const editorialLinkSx = {
   fontFamily: "var(--font-playfair)",
@@ -28,8 +29,8 @@ export default function NotFound() {
     <Box
       sx={{
         position: "relative",
-        bgcolor: (t) => (t.palette.mode === "light" ? "#faf6ec" : "#0d0a14"),
-        color: (t) => (t.palette.mode === "light" ? "#1c1614" : "#ede6d8"),
+        bgcolor: paper,
+        color: ink,
         minHeight: "100vh",
         pb: 12,
         overflow: "hidden",
@@ -106,7 +107,7 @@ export default function NotFound() {
             maxWidth: "44ch",
             mx: "auto",
             mb: 6,
-            color: (t) => (t.palette.mode === "light" ? "#5a4d3f" : "#a89c8d"),
+            color: muted,
             lineHeight: 1.5,
           }}
         >

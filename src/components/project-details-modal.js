@@ -5,9 +5,8 @@ import Typography from "@mui/material/Typography";
 import { Box, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Link from "next/link";
+import { SERIF_BODY, paper, ink, plate } from "@/lib/editorial";
 
-const SERIF_BODY =
-  "'Iowan Old Style', 'Apple Garamond', Baskerville, 'Times New Roman', Times, Georgia, serif";
 
 function ProjectDetailsModal({ open, handleClose, project }) {
   return (
@@ -26,8 +25,8 @@ function ProjectDetailsModal({ open, handleClose, project }) {
           width: { xs: "calc(100% - 32px)", sm: 460 },
           maxHeight: "90vh",
           overflow: "auto",
-          bgcolor: (t) => (t.palette.mode === "light" ? "#faf6ec" : "#0d0a14"),
-          color: (t) => (t.palette.mode === "light" ? "#1c1614" : "#ede6d8"),
+          bgcolor: paper,
+          color: ink,
           border: "1px solid",
           borderColor: "currentColor",
           boxShadow: (t) =>
@@ -95,8 +94,7 @@ function ProjectDetailsModal({ open, handleClose, project }) {
                 borderColor: "currentColor",
                 p: 1,
                 mb: 3,
-                bgcolor: (t) =>
-                  t.palette.mode === "light" ? "#f0ebe2" : "#1a1620",
+                bgcolor: plate,
                 aspectRatio: "16 / 10",
                 position: "relative",
                 overflow: "hidden",
