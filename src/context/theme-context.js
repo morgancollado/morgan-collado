@@ -59,6 +59,17 @@ export const ThemeProvider = ({ children }) => {
           primary: {
             main: mode === 'light' ? '#422b65' : '#b4ecdd',
           },
+          // Poetry's own accent: the same hue as the aubergine above (263 vs
+          // 264 degrees), just lighter and more saturated, so the section reads
+          // as a sibling of the rest of the site rather than a new palette.
+          // Both values clear WCAG AA on their backgrounds (7.11:1 on the cream
+          // #faf6ec, 10.45:1 on the near-black #0d0a14).
+          // Note: createTheme only augments the built-in palette keys, so this
+          // has `.main` and nothing else — no `.light`/`.dark`/`.contrastText`,
+          // and `<Button color="poetry">` won't work.
+          poetry: {
+            main: mode === 'light' ? '#63409b' : '#c9b3f0',
+          },
           // other theme customizations
         },
         typography: {
