@@ -23,9 +23,9 @@ Our vision clouded
 By the heartache
 De nuestra Madre
 Gritando
-“¿Por que?
-¿Por que?
-¿Por que?”
+“**¿Por que?**
+**¿Por que?**
+**¿Por que?”**
 Why did they
 Take
 my Daughters?

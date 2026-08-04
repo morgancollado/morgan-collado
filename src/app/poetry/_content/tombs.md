@@ -53,7 +53,7 @@ Of fucked up racial dynamics
 You too can be that edgy white dude
 Or that free spirited hipster girl
 You can be the face of post-racial Amerikkka!
-And for a limited time we will throw in a Black FriendTM
+And for a limited time we will throw in a Black Friend™
 To prove you aren’t
 A racist!
 (And if the Natives bother you just call the cops!)

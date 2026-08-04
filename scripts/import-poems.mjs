@@ -133,6 +133,38 @@ function slugify(title) {
 
 const DIVIDER_RE = /^[–—-]$/;
 
+// Inline emphasis is carried as `**bold**` and `_italic_`.
+//
+// These two delimiters were chosen against the actual corpus, not by habit:
+// across all 2,290 lines there are zero occurrences of `**`, `_` or `__`, and
+// the single `*` in the whole body of work is the unpaired one in
+// "Trans*/Brown/Queer/Woman". Because both patterns require a matched pair,
+// nothing already in the poems can be mistaken for markup. Check this again
+// before adding a third delimiter.
+function convertEmphasis(html) {
+  return html
+    .replace(/<sup\b[^>]*>\s*TM\s*<\/sup>/gi, "™")
+    .replace(/<(strong|b)\b[^>]*>([\s\S]*?)<\/\1>/gi, "**$2**")
+    .replace(/<(em|i)\b[^>]*>([\s\S]*?)<\/\1>/gi, "_$2_");
+}
+
+/**
+ * Close any emphasis left hanging at the end of a line.
+ *
+ * WordPress wraps some emphasis around a line break — "For Cherríe" has
+ * `<strong>¿Por que?<br /></strong>` — so once the line is split the opening
+ * delimiter has no partner. Balance each line on its own and drop whatever is
+ * left holding nothing.
+ */
+function balanceEmphasis(line) {
+  let out = line;
+  if ((out.match(/\*\*/g) || []).length % 2) out += "**";
+  if ((out.match(/_/g) || []).length % 2) out += "_";
+  // A line that is nothing but delimiters carried no text to begin with.
+  if (!out.replace(/\*\*|_/g, "").trim()) return "";
+  return out;
+}
+
 /**
  * Turn a poem's WordPress HTML into an array of lines.
  *
@@ -149,6 +181,10 @@ function splitLines(html) {
   // track, not a reading, so there's nothing to preserve).
   let h = html.replace(/<iframe[\s\S]*?<\/iframe>/gi, "");
 
+  // Emphasis becomes delimiters before anything is split or stripped, since a
+  // <strong> can wrap a <br> and would otherwise be torn in half.
+  h = convertEmphasis(h);
+
   const blocks = [];
   // Split on the *opening* tag of each block so we keep its attributes.
   const parts = h.split(/(?=<(?:p|div)[\s>])/i);
@@ -162,7 +198,7 @@ function splitLines(html) {
     const body = part.replace(/^<(?:p|div)[^>]*>/i, "");
 
     for (const raw of body.split(/<br\s*\/?>/i)) {
-      const text = trimLine(decodeBody(stripTags(raw)));
+      const text = balanceEmphasis(trimLine(decodeBody(stripTags(raw))));
       if (text) blocks.push({ text, centered });
     }
   }
@@ -332,14 +368,17 @@ async function main() {
 
     // Flag anything a human should eyeball.
     if (/<iframe/i.test(html)) flags.push([slug, "iframe embed removed"]);
-    if (/<(strong|b)[\s>]/i.test(html)) flags.push([slug, "bold dropped"]);
-    if (/<(em|i)[\s>]/i.test(html)) flags.push([slug, "italics dropped"]);
-    if (/<sup[\s>]/i.test(html)) flags.push([slug, "superscript dropped"]);
+    if (/<(strong|b)[\s>]/i.test(html)) flags.push([slug, "bold -> **"]);
+    if (/<(em|i)[\s>]/i.test(html)) flags.push([slug, "italics -> _"]);
+    if (/<sup\b(?![^>]*>\s*TM\s*<)/i.test(html))
+      flags.push([slug, "superscript other than TM — dropped"]);
     if (/text-decoration:\s*underline/i.test(html))
-      flags.push([slug, "underline dropped"]);
+      flags.push([slug, "underline dropped (no delimiter for it)"]);
     if (lines.some((l) => COMPOSED_RE.test(l)))
       flags.push([slug, "composed whitespace — check it visually"]);
-    if (lines.some((l) => l.includes("*")))
+    // A lone asterisk that isn't part of a `**` pair — i.e. real content, like
+    // the one in "Trans*/Brown/Queer/Woman".
+    if (lines.some((l) => /(?<!\*)\*(?!\*)/.test(l.replace(/\*\*/g, ""))))
       flags.push([slug, "literal asterisk — must survive verbatim"]);
 
     poems.push({

@@ -2,6 +2,50 @@ import { Box } from "@mui/material";
 import { SERIF_BODY } from "@/lib/editorial";
 
 /**
+ * `**bold**` and `_italic_` — the only inline markup poems carry.
+ *
+ * Both require a matched pair, which is what makes them safe over this corpus:
+ * it contains no `**` and no `_` of its own, and its single bare asterisk — the
+ * one in the "Trans" line of "Forced Silence/Forced Speech" — is unpaired, so
+ * it can never match. Anything unbalanced renders as literal text.
+ *
+ * This is emphatically not a markdown parser, and it must not grow into one —
+ * markdown's other rules (indent-as-code-block, whitespace collapsing) would
+ * destroy poems in this collection.
+ */
+const EMPHASIS_RE = /\*\*([\s\S]+?)\*\*|_([\s\S]+?)_/g;
+
+function renderLine(line) {
+  const parts = [];
+  let last = 0;
+  let key = 0;
+  let match;
+
+  EMPHASIS_RE.lastIndex = 0;
+  while ((match = EMPHASIS_RE.exec(line)) !== null) {
+    if (match.index > last) parts.push(line.slice(last, match.index));
+    // <strong>/<em> rather than styled spans, so the emphasis is announced by
+    // screen readers and not merely visual.
+    parts.push(
+      match[1] !== undefined ? (
+        <Box component="strong" key={key++} sx={{ fontWeight: 700 }}>
+          {match[1]}
+        </Box>
+      ) : (
+        <Box component="em" key={key++} sx={{ fontStyle: "italic" }}>
+          {match[2]}
+        </Box>
+      )
+    );
+    last = match.index + match[0].length;
+  }
+
+  if (!parts.length) return line;
+  if (last < line.length) parts.push(line.slice(last));
+  return parts;
+}
+
+/**
  * Renders verse.
  *
  * Structure: one <p> per stanza, one block <span> per line. Stanzas are real
@@ -61,7 +105,7 @@ export default function PoemBody({ stanzas, align = "left", size = "full" }) {
         <Box component="p" key={i} className="poem-stanza" sx={stanzaSx}>
           {lines.map((line, j) => (
             <Box component="span" key={j} className="poem-line" sx={lineSx}>
-              {line}
+              {renderLine(line)}
             </Box>
           ))}
         </Box>

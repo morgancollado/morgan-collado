@@ -18,7 +18,7 @@ I remember his memories
 And experiences
 His hurts
 And dreams
-I remember being Him
+I remember _being_ Him
 But does that constitute sameness?
 Perhaps I am like stones on a shore
 The constant beat of the surf

@@ -37,7 +37,7 @@ And my sisters
 Go unburied unmourned unclaimed
 Except by those who walk the path
 That they walked
-Their cries for JUSTICE
+Their cries for **JUSTICE**
 Unheard by all
 Save for those who have the experiences to hear
 I searched those lights for news of my fate

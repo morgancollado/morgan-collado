@@ -64,7 +64,7 @@ Circus trick
 That I was required to perform at his request
 As if my vocal chords were his to command
 How’s this
-Come mierda y muérete
+_Come mierda y muérete_
 Colonization is the stuff
 Forced Silence/Forced Speech
 Is made of.

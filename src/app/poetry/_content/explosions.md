@@ -32,7 +32,7 @@ Catapults me into such soaring heights.
 There are moments, many many moments,
 Donde mi corazón
 se siente como que va a
-explotar
+**explotar**
 Into a thousand tiny doves.
 Or perhaps a million little dandelions
 Their seeds scattering to the four winds
