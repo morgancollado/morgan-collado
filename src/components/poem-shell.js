@@ -245,7 +245,7 @@ export default function PoemShell({ poem, neighbors }) {
                 </Box>
               </>
             ) : null}
-            . Set here line for line.
+            .
           </Typography>
 
           <Box

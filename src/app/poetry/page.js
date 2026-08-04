@@ -5,7 +5,7 @@ import { hashSeed, pickN, utcDayKey } from "@/lib/seeded-random";
 export const metadata = {
   title: "Poetry | Morgan Collado",
   description:
-    "Poems by Morgan Collado — on bodies, rage, grief, and familia. Written between 2011 and 2013, gathered here and set line for line.",
+    "Poems by Morgan Collado — on bodies, rage, grief, and familia. Written between 2011 and 2013, gathered here for the first time.",
 };
 
 const DRAW_COUNT = 3;
