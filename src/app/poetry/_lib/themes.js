@@ -1,10 +1,11 @@
 /**
  * Theme vocabulary helpers.
  *
- * The themes themselves are a small controlled list written into each poem's
- * frontmatter by scripts/import-poems.mjs, which maps 273 raw WordPress tags
- * down to ten. Ten is few enough to show all of them at once, so the archive
- * filter needs no "more" affordance.
+ * The themes themselves are a small controlled list held in each poem's
+ * frontmatter — ten terms, distilled from the 273 raw tags the poems carried
+ * on WordPress. Ten is few enough to show all of them at once, so the archive
+ * filter needs no "more" affordance. Adding an eleventh means editing the
+ * frontmatter of the poems it applies to; nothing here needs to change.
  *
  * Deliberately free of any `fs` import so client components can use it — the
  * loader in poems.js cannot cross that line.

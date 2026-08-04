@@ -52,9 +52,9 @@ function shape(raw) {
     date: raw.date || "",
     align: raw.align === "center" ? "center" : "left",
     themes: raw.themes || [],
-    // Where the poem first appeared, written by the importer. Only the URL is
-    // surfaced — the WordPress post id and its "Post the Eighty-Seventh"
-    // original title are kept in the file for re-importing, not for reading.
+    // Where the poem first appeared. Only the URL is surfaced — the WordPress
+    // post id and the original "Post the Eighty-Seventh" title sit alongside it
+    // in the frontmatter as provenance, and are deliberately not displayed.
     sourceUrl: raw.source?.url || "",
     stanzas,
     lineCount: stanzas.reduce((n, s) => n + s.length, 0),
