@@ -1,48 +1,29 @@
 import { Box } from "@mui/material";
 import { SERIF_BODY } from "@/lib/editorial";
-
-/**
- * `**bold**` and `_italic_` — the only inline markup poems carry.
- *
- * Both require a matched pair, which is what makes them safe over this corpus:
- * it contains no `**` and no `_` of its own, and its single bare asterisk — the
- * one in the "Trans" line of "Forced Silence/Forced Speech" — is unpaired, so
- * it can never match. Anything unbalanced renders as literal text.
- *
- * This is emphatically not a markdown parser, and it must not grow into one —
- * markdown's other rules (indent-as-code-block, whitespace collapsing) would
- * destroy poems in this collection.
- */
-const EMPHASIS_RE = /\*\*([\s\S]+?)\*\*|_([\s\S]+?)_/g;
+import { tokenizeEmphasis } from "@/app/poetry/_lib/emphasis";
 
 function renderLine(line) {
-  const parts = [];
-  let last = 0;
-  let key = 0;
-  let match;
+  const tokens = tokenizeEmphasis(line);
 
-  EMPHASIS_RE.lastIndex = 0;
-  while ((match = EMPHASIS_RE.exec(line)) !== null) {
-    if (match.index > last) parts.push(line.slice(last, match.index));
-    // <strong>/<em> rather than styled spans, so the emphasis is announced by
-    // screen readers and not merely visual.
-    parts.push(
-      match[1] !== undefined ? (
-        <Box component="strong" key={key++} sx={{ fontWeight: 700 }}>
-          {match[1]}
-        </Box>
-      ) : (
-        <Box component="em" key={key++} sx={{ fontStyle: "italic" }}>
-          {match[2]}
-        </Box>
-      )
-    );
-    last = match.index + match[0].length;
-  }
+  // An unmarked line is the overwhelming majority. Returning the string keeps
+  // it a single text node instead of a one-element array of spans.
+  if (tokens.length === 1 && !tokens[0].strong && !tokens[0].em) return line;
 
-  if (!parts.length) return line;
-  if (last < line.length) parts.push(line.slice(last));
-  return parts;
+  // <strong>/<em> rather than styled spans, so the emphasis is announced by
+  // screen readers and not merely visual.
+  return tokens.map((token, i) =>
+    token.strong ? (
+      <Box component="strong" key={i} sx={{ fontWeight: 700 }}>
+        {token.text}
+      </Box>
+    ) : token.em ? (
+      <Box component="em" key={i} sx={{ fontStyle: "italic" }}>
+        {token.text}
+      </Box>
+    ) : (
+      token.text
+    )
+  );
 }
 
 /**
@@ -61,10 +42,11 @@ function renderLine(line) {
  *  - Spanish is never marked up. Several poems code-switch mid-line; that is
  *    the voice, not a quotation, so there is no `lang` attribute and no italic.
  *
- * Poem bodies are stored as plain text, not markdown. Markdown would eat the
- * asterisk in the line beginning "Trans" in "Forced Silence/Forced Speech",
- * and would turn indented lines into code blocks. Do not run this content
- * through a markdown renderer.
+ * Poem bodies are stored as plain text carrying exactly two delimiters, which
+ * `_lib/emphasis.js` defines and both this renderer and the social card read.
+ * They are not markdown: a markdown renderer would eat the asterisk in the line
+ * beginning "Trans" in "Forced Silence/Forced Speech", and would turn indented
+ * lines into code blocks. Do not run this content through one.
  *
  * There is deliberately no entrance animation here. A framer-motion
  * `initial={{ opacity: 0 }}` is serialized into the static HTML as

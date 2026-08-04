@@ -1,11 +1,22 @@
 import { createContentLoader } from "@/lib/content";
+import { EXCERPT_LINES } from "./constants";
 
 const poetry = createContentLoader("src/app/poetry/_content");
 
-const FIELDS = ["slug", "title", "date", "align", "themes", "note", "dedication", "measure", "content"];
+const FIELDS = ["slug", "title", "date", "align", "themes", "source", "content"];
 
 /** A line that stands alone as a dash is the author's own stanza break. */
-const DIVIDER_RE = /^\s*[–—-]\s*$/;
+const DIVIDER_RE = /^[ \t]*[–—-][ \t]*$/;
+
+/**
+ * A line carrying nothing but ordinary spaces.
+ *
+ * Deliberately `[ \t]` rather than `\s`: JavaScript counts U+00A0 as
+ * whitespace, and a non-breaking space is *content* in this corpus — it is what
+ * "Whole Pieces" builds its staircase from. Using `\s` here (or `.trim()`)
+ * would silently delete an all-NBSP line and split the stanza around the hole.
+ */
+const BLANK_RE = /^[ \t]*$/;
 
 /**
  * Split a poem body into stanzas of lines.
@@ -19,7 +30,7 @@ export function parseStanzas(body) {
   let current = [];
 
   for (const line of body.split("\n")) {
-    if (DIVIDER_RE.test(line) || line.trim() === "") {
+    if (DIVIDER_RE.test(line) || BLANK_RE.test(line)) {
       if (current.length) {
         stanzas.push(current);
         current = [];
@@ -41,9 +52,10 @@ function shape(raw) {
     date: raw.date || "",
     align: raw.align === "center" ? "center" : "left",
     themes: raw.themes || [],
-    note: raw.note || "",
-    dedication: raw.dedication || "",
-    measure: raw.measure || "",
+    // Where the poem first appeared, written by the importer. Only the URL is
+    // surfaced — the WordPress post id and its "Post the Eighty-Seventh"
+    // original title are kept in the file for re-importing, not for reading.
+    sourceUrl: raw.source?.url || "",
     stanzas,
     lineCount: stanzas.reduce((n, s) => n + s.length, 0),
   };
@@ -57,9 +69,19 @@ export function getPoemBySlug(slug) {
   return shape(poetry.getBySlug(slug, FIELDS));
 }
 
-/** Newest first. */
+/**
+ * Newest first.
+ *
+ * Memoized because every poem page asks for the whole corpus just to find its
+ * two neighbours — without this, building 48 pages re-reads and re-parses 48
+ * files apiece. The cache lives only for the build; nothing mutates the poems
+ * at runtime.
+ */
+let allPoemsCache = null;
+
 export function getAllPoems() {
-  return poetry.getAllSorted(FIELDS).map(shape);
+  if (!allPoemsCache) allPoemsCache = poetry.getAllSorted(FIELDS).map(shape);
+  return allPoemsCache;
 }
 
 /**
@@ -68,7 +90,7 @@ export function getAllPoems() {
  * The whole corpus ships to the client so the shuffle control can redraw
  * without a round trip; capping the excerpt is what keeps that payload small.
  */
-export function getPoemPreviews(excerptLines = 6) {
+export function getPoemPreviews(excerptLines = EXCERPT_LINES) {
   return getAllPoems().map((poem) => {
     const opening = poem.stanzas[0] || [];
     return {
@@ -76,6 +98,7 @@ export function getPoemPreviews(excerptLines = 6) {
       title: poem.title,
       date: poem.date,
       align: poem.align,
+      themes: poem.themes,
       lineCount: poem.lineCount,
       excerpt: opening.slice(0, excerptLines),
       truncated: poem.lineCount > Math.min(opening.length, excerptLines),

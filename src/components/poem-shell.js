@@ -5,16 +5,19 @@ import { Box, Container, Typography } from "@mui/material";
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { useReducedMotion } from "@/lib/motion";
-import { formatDate } from "@/lib/format-date";
+import { formatDate, yearOf } from "@/lib/format-date";
 import PoemBody, { StanzaRule } from "@/components/poem-body";
 import BackToTop from "@/components/back-to-top";
 import Spine from "@/components/spine";
-import { SERIF_BODY, muted, dim, surfaceSx, focusRingSx } from "@/lib/editorial";
-
-// Verse wants a narrower column than prose. Measured across the corpus, the
-// 99th-percentile line is 58 characters, so 54ch wraps roughly one line in a
-// hundred — the blog's 68ch would let those rare long lines sprawl.
-const VERSE_MEASURE = "54ch";
+import {
+  SERIF_BODY,
+  dim,
+  surfaceSx,
+  focusRing,
+  visuallyHiddenSx,
+} from "@/lib/editorial";
+import { VERSE_MEASURE } from "@/app/poetry/_lib/constants";
+import { themeSlug } from "@/app/poetry/_lib/themes";
 
 // Below this the scroll-drawn spine never gets enough travel to render, so it
 // just reads as a stray mark next to a short poem.
@@ -143,24 +146,14 @@ export default function PoemShell({ poem, neighbors }) {
             </Typography>
           </Box>
 
-          {poem.dedication && (
-            <Typography
-              sx={{
-                mt: 2,
-                fontFamily: "var(--font-playfair)",
-                fontStyle: "italic",
-                fontSize: "1rem",
-                color: muted,
-              }}
-            >
-              {poem.dedication}
-            </Typography>
-          )}
-
           {poem.themes?.length > 0 && (
             <Box
               component="ul"
               aria-label="Themes"
+              // Safari drops list semantics from a list styled `list-style:
+              // none`, and VoiceOver stops announcing "list, N items" with it.
+              // Restating the role puts them back.
+              role="list"
               sx={{
                 listStyle: "none",
                 display: "flex",
@@ -176,9 +169,18 @@ export default function PoemShell({ poem, neighbors }) {
                 fontFamily: "var(--font-playfair)",
               }}
             >
+              {/* Each theme opens the archive already filtered to it. The
+                  fragment is read on the index after mount, so this stays a
+                  plain link and both pages stay static. */}
               {poem.themes.map((theme) => (
                 <Box component="li" key={theme}>
-                  {theme}
+                  <Box
+                    component={Link}
+                    href={`/poetry#theme-${themeSlug(theme)}`}
+                    sx={themeLinkSx}
+                  >
+                    {theme}
+                  </Box>
                 </Box>
               ))}
             </Box>
@@ -196,27 +198,10 @@ export default function PoemShell({ poem, neighbors }) {
           sx={{
             position: "relative",
             zIndex: 2,
-            maxWidth: poem.measure || VERSE_MEASURE,
+            maxWidth: VERSE_MEASURE,
             mx: "auto",
           }}
         >
-          {poem.note && (
-            <Typography
-              sx={{
-                mb: 5,
-                fontFamily: "var(--font-playfair)",
-                fontStyle: "italic",
-                fontSize: "0.95rem",
-                color: muted,
-                borderLeft: "2px solid",
-                borderColor: "poetry.main",
-                pl: 2,
-              }}
-            >
-              {poem.note}
-            </Typography>
-          )}
-
           <PoemBody stanzas={poem.stanzas} align={poem.align} />
         </Box>
       </Container>
@@ -225,6 +210,13 @@ export default function PoemShell({ poem, neighbors }) {
       <Container maxWidth={false} sx={{ px: { xs: 3, md: 6 }, mt: { xs: 10, md: 14 } }}>
         <Box sx={{ maxWidth: VERSE_MEASURE, mx: "auto" }}>
           <StanzaRule sx={{ mb: 5 }} />
+
+          {/* Below the poem the page has no visible headings, which leaves a
+              screen reader browsing by heading with nowhere to go after the
+              title. These name the two sections without altering the page. */}
+          <Typography component="h2" sx={visuallyHiddenSx}>
+            About this poem
+          </Typography>
 
           <Typography
             sx={{
@@ -236,16 +228,27 @@ export default function PoemShell({ poem, neighbors }) {
               mb: 6,
             }}
           >
-            First published on <i>A Trip to the Morg</i>
+            First published on{" "}
+            {poem.sourceUrl ? (
+              <Box component="a" href={poem.sourceUrl} sx={colophonLinkSx}>
+                <i>A Trip to the Morg</i>
+              </Box>
+            ) : (
+              <i>A Trip to the Morg</i>
+            )}
             {poem.date ? (
               <>
                 {" in "}
                 <Box component="time" dateTime={poem.date}>
-                  {new Date(poem.date).getUTCFullYear()}
+                  {yearOf(poem.date)}
                 </Box>
               </>
             ) : null}
             .
+          </Typography>
+
+          <Typography component="h2" sx={visuallyHiddenSx}>
+            More poems
           </Typography>
 
           <Box
@@ -293,7 +296,7 @@ export default function PoemShell({ poem, neighbors }) {
           </Box>
 
           <Box sx={{ textAlign: "center", mt: 6 }}>
-            <Box component={Link} href="/poetry" sx={{ ...poemLinkSx, ...focusRingSx }}>
+            <Box component={Link} href="/poetry" sx={poemLinkSx}>
               <Box component="span" sx={navLabelSx}>
                 All poems
               </Box>
@@ -330,9 +333,28 @@ const poemLinkSx = {
     color: "poetry.main",
     borderBottomColor: "currentColor",
   },
-  "&:focus-visible": {
-    outline: "2px solid",
-    outlineColor: "poetry.main",
-    outlineOffset: "3px",
+  ...focusRing(),
+};
+
+// Themes read as quiet metadata until pointed at, so the link is undecorated
+// until hover or focus.
+const themeLinkSx = {
+  color: "inherit",
+  textDecoration: "none",
+  borderBottom: "1px solid transparent",
+  transition: "color .2s, border-color .2s",
+  "&:hover, &:focus-visible": {
+    color: "poetry.main",
+    borderBottomColor: "currentColor",
   },
+  ...focusRing("2px"),
+};
+
+// The colophon's one outbound link, back to where the poem first appeared.
+const colophonLinkSx = {
+  color: "inherit",
+  textDecorationColor: "currentColor",
+  textUnderlineOffset: "3px",
+  "&:hover": { color: "poetry.main" },
+  ...focusRing("2px"),
 };

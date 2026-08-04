@@ -7,6 +7,7 @@ import GitHubIcon from "@mui/icons-material/GitHub";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 
 import { useReducedMotion } from "@/lib/motion";
+import { folioDate } from "@/lib/format-date";
 import Grain from "@/components/grain";
 
 const SERIF_BODY =
@@ -38,10 +39,7 @@ const dropCapSx = {
 export default function AboutPage() {
   const reduced = useReducedMotion();
 
-  const dateStr = new Date().toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-  });
+  const dateStr = folioDate();
 
   const fadeIn = reduced
     ? {}

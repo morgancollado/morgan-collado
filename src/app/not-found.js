@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { Box, Typography } from "@mui/material";
 import Grain from "@/components/grain";
+import { folioDate } from "@/lib/format-date";
 
 const editorialLinkSx = {
   fontFamily: "var(--font-playfair)",
@@ -21,10 +22,7 @@ const editorialLinkSx = {
 };
 
 export default function NotFound() {
-  const dateStr = new Date().toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-  });
+  const dateStr = folioDate();
 
   return (
     <Box

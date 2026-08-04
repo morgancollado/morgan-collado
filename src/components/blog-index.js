@@ -5,13 +5,7 @@ import Link from "next/link";
 import { Box, Container, Typography } from "@mui/material";
 import { AnimatePresence, motion } from "framer-motion";
 import { useReducedMotion } from "@/lib/motion";
-import { formatDate } from "@/lib/format-date";
-
-function yearOf(date) {
-  if (!date) return "";
-  const d = new Date(date);
-  return isNaN(d.getTime()) ? "" : d.getUTCFullYear();
-}
+import { formatDate, yearOf, folioDate } from "@/lib/format-date";
 
 function HoverThumb({ active, reduced }) {
   if (!active) return null;
@@ -84,10 +78,7 @@ export default function BlogIndex({ posts }) {
   };
   const handleLeave = () => setActive(null);
 
-  const dateStr = new Date().toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-  });
+  const dateStr = folioDate();
 
   return (
     <Box
@@ -173,6 +164,10 @@ export default function BlogIndex({ posts }) {
 
         <Box
           component="ol"
+          // Safari drops list semantics from a list styled `list-style: none`,
+          // and VoiceOver stops announcing "list, N items" with it. Restating
+          // the role puts them back.
+          role="list"
           sx={{
             listStyle: "none",
             p: 0,

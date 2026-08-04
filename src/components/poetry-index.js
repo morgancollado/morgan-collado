@@ -7,36 +7,18 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useReducedMotion } from "@/lib/motion";
 import PoemBody, { StanzaRule } from "@/components/poem-body";
 import { hashSeed, pickN, utcDayKey } from "@/lib/seeded-random";
-import { SERIF_BODY, muted, dim, surfaceSx } from "@/lib/editorial";
-
-const DRAW_COUNT = 3;
-const LATEST_COUNT = 4;
-const VERSE_MEASURE = "54ch";
-
-function yearOf(date) {
-  if (!date) return "";
-  const d = new Date(date);
-  return isNaN(d.getTime()) ? "" : d.getUTCFullYear();
-}
-
-/**
- * Screen-reader-only.
- *
- * Units are explicit on purpose: MUI's `sx` reads bare numbers as spacing
- * multipliers, so `width: 1` would mean 100% and `margin: -1` would mean -8px,
- * which pushes the element off-canvas and gives the page a horizontal scrollbar.
- */
-const visuallyHiddenSx = {
-  position: "absolute",
-  width: "1px",
-  height: "1px",
-  padding: 0,
-  margin: "-1px",
-  overflow: "hidden",
-  clip: "rect(0 0 0 0)",
-  whiteSpace: "nowrap",
-  border: 0,
-};
+import { yearOf, folioDate } from "@/lib/format-date";
+import { DRAW_COUNT, LATEST_COUNT } from "@/app/poetry/_lib/constants";
+import { collectThemes } from "@/app/poetry/_lib/themes";
+import {
+  SERIF_BODY,
+  muted,
+  dim,
+  surfaceSx,
+  visuallyHiddenSx,
+  focusRing,
+  paper,
+} from "@/lib/editorial";
 
 const cardLinkSx = {
   fontFamily: "var(--font-playfair)",
@@ -47,14 +29,23 @@ const cardLinkSx = {
   // Stretched-link pattern: one link, named by the poem's title, whose hit area
   // covers the whole card. Keeps the card clickable without nesting
   // interactive elements or duplicating the link for assistive tech.
+  //
+  // The overlay sits *under* the verse rather than over it (see `verseSx`).
+  // Covering the poem would make it unselectable, and on a page whose whole
+  // purpose is text people copy lines out of it.
   "&::after": {
     content: '""',
     position: "absolute",
     inset: 0,
+    zIndex: 0,
   },
   "&:hover, &:focus-visible": { color: "poetry.main" },
   "&:focus-visible": { outline: "none" },
 };
+
+// Lifted above the stretched link so the verse stays selectable. Clicking the
+// title, the date, or any of the card's whitespace still follows the link.
+const verseSx = { position: "relative", zIndex: 1 };
 
 const cardSx = {
   position: "relative",
@@ -104,11 +95,12 @@ function PoemCard({ poem }) {
         )}
       </Box>
 
-      <PoemBody stanzas={[poem.excerpt]} align={poem.align} size="excerpt" />
+      <Box sx={verseSx}>
+        <PoemBody stanzas={[poem.excerpt]} align={poem.align} size="excerpt" />
+      </Box>
 
       {poem.truncated && (
         <Box
-          aria-hidden
           sx={{
             mt: 1.5,
             color: dim,
@@ -118,9 +110,62 @@ function PoemCard({ poem }) {
             textAlign: poem.align === "center" ? "center" : "left",
           }}
         >
-          …
+          {/* The ellipsis is a visual mark; a screen reader would read it as
+              "dot dot dot" or skip it, so the fact it stands for is spelled
+              out alongside it. */}
+          <Box component="span" aria-hidden>
+            …
+          </Box>
+          <Box component="span" sx={visuallyHiddenSx}>
+            This poem continues.
+          </Box>
         </Box>
       )}
+    </Box>
+  );
+}
+
+/**
+ * One theme in the archive filter.
+ *
+ * A button rather than a link: the filtering is client-side and the page never
+ * navigates. `aria-pressed` is what carries the on/off state — the colour
+ * change alone would leave a screen reader unable to tell which is active.
+ */
+function ThemeChip({ label, count, active, onClick }) {
+  return (
+    <Box
+      component="button"
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      sx={{
+        fontFamily: "var(--font-playfair)",
+        fontStyle: "italic",
+        fontSize: "0.95rem",
+        letterSpacing: 1,
+        px: 2,
+        py: 0.75,
+        cursor: "pointer",
+        borderRadius: 0,
+        border: "1px solid",
+        borderColor: "poetry.main",
+        transition: "background-color .2s, color .2s",
+        color: active ? paper : "poetry.main",
+        bgcolor: active ? "poetry.main" : "transparent",
+        "&:hover": {
+          bgcolor: active ? "poetry.main" : "rgba(99,64,155,0.08)",
+        },
+        ...focusRing(),
+      }}
+    >
+      {label}{" "}
+      <Box component="span" aria-hidden sx={{ opacity: 0.65 }}>
+        {count}
+      </Box>
+      <Box component="span" sx={visuallyHiddenSx}>
+        {`, ${count} ${count === 1 ? "poem" : "poems"}`}
+      </Box>
     </Box>
   );
 }
@@ -207,20 +252,56 @@ export default function PoetryIndex({ poems, initialDraw, buildDayKey }) {
 
   const latest = poems.slice(0, LATEST_COUNT);
 
+  const themes = useMemo(() => collectThemes(poems), [poems]);
+
+  const [activeTheme, setActiveTheme] = useState(null);
+  const [filterAnnouncement, setFilterAnnouncement] = useState("");
+
+  // A poem page links its themes here as `/poetry#theme-<slug>`. Read after
+  // mount, never during render: the server has no location, and reading one
+  // during the first client render is exactly the hydration mismatch the day
+  // draw above goes to such lengths to avoid.
+  useEffect(() => {
+    const fragment = /^#theme-(.+)$/.exec(window.location.hash);
+    if (!fragment) return;
+    const match = themes.find((t) => t.slug === fragment[1]);
+    if (match) setActiveTheme(match.name);
+  }, [themes]);
+
+  const selectTheme = useCallback(
+    (name) => {
+      setActiveTheme(name);
+      const count = name
+        ? poems.filter((p) => p.themes?.includes(name)).length
+        : poems.length;
+      setFilterAnnouncement(
+        name
+          ? `Showing ${count} ${count === 1 ? "poem" : "poems"} about ${name}.`
+          : `Showing all ${count} poems.`
+      );
+    },
+    [poems]
+  );
+
+  const filtered = useMemo(
+    () =>
+      activeTheme
+        ? poems.filter((p) => p.themes?.includes(activeTheme))
+        : poems,
+    [poems, activeTheme]
+  );
+
   const byYear = useMemo(() => {
     const groups = new Map();
-    for (const poem of poems) {
+    for (const poem of filtered) {
       const year = yearOf(poem.date) || "Undated";
       if (!groups.has(year)) groups.set(year, []);
       groups.get(year).push(poem);
     }
     return [...groups.entries()];
-  }, [poems]);
+  }, [filtered]);
 
-  const dateStr = new Date().toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-  });
+  const dateStr = folioDate();
 
   return (
     <Box sx={{ ...surfaceSx, minHeight: "100vh", pb: 14 }}>
@@ -344,6 +425,9 @@ export default function PoetryIndex({ poems, initialDraw, buildDayKey }) {
               component="button"
               type="button"
               onClick={drawAgain}
+              // The dashes are a printer's flourish. Left in the accessible
+              // name they'd be read out as punctuation before the verb.
+              aria-label={`Draw ${DRAW_COUNT} more poems`}
               sx={{
                 fontFamily: "var(--font-playfair)",
                 fontStyle: "italic",
@@ -359,13 +443,9 @@ export default function PoetryIndex({ poems, initialDraw, buildDayKey }) {
                 transition: "background-color .2s, color .2s",
                 "&:hover": {
                   bgcolor: "poetry.main",
-                  color: (t) => (t.palette.mode === "light" ? "#faf6ec" : "#0d0a14"),
+                  color: paper,
                 },
-                "&:focus-visible": {
-                  outline: "2px solid",
-                  outlineColor: "poetry.main",
-                  outlineOffset: "3px",
-                },
+                ...focusRing(),
               }}
             >
               – draw again –
@@ -416,8 +496,55 @@ export default function PoetryIndex({ poems, initialDraw, buildDayKey }) {
             eyebrow="Everything"
             title="The complete works"
           >
-            All {poems.length} poems, by the year they were written.
+            {activeTheme
+              ? `${filtered.length} ${
+                  filtered.length === 1 ? "poem" : "poems"
+                } about ${activeTheme}, by the year they were written.`
+              : `All ${poems.length} poems, by the year they were written.`}
+            {themes.length > 0 && " Filter them by what they are about."}
           </SectionHeading>
+
+          {themes.length > 0 && (
+            <Box
+              component="ul"
+              role="list"
+              aria-label="Filter by theme"
+              sx={{
+                listStyle: "none",
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 1.5,
+                p: 0,
+                mb: { xs: 4, md: 6 },
+              }}
+            >
+              <Box component="li">
+                <ThemeChip
+                  label="All"
+                  count={poems.length}
+                  active={activeTheme === null}
+                  onClick={() => selectTheme(null)}
+                />
+              </Box>
+              {themes.map((theme) => (
+                <Box component="li" key={theme.slug}>
+                  <ThemeChip
+                    label={theme.name}
+                    count={theme.count}
+                    active={activeTheme === theme.name}
+                    onClick={() => selectTheme(theme.name)}
+                  />
+                </Box>
+              ))}
+            </Box>
+          )}
+
+          {/* The filtered result is announced rather than left to be
+              discovered — the list it changes is below the fold on most
+              screens. */}
+          <Box role="status" aria-live="polite" sx={visuallyHiddenSx}>
+            {filterAnnouncement}
+          </Box>
 
           {byYear.map(([year, group]) => (
             <Box key={year} sx={{ mb: { xs: 6, md: 8 } }}>
@@ -438,6 +565,11 @@ export default function PoetryIndex({ poems, initialDraw, buildDayKey }) {
 
               <Box
                 component="ol"
+                // Safari drops list semantics from a list styled `list-style:
+                // none`, and VoiceOver stops announcing "list, N items" with
+                // it. Restating the role puts them back.
+                role="list"
+                aria-label={`Poems from ${year}`}
                 sx={{
                   listStyle: "none",
                   p: 0,
@@ -476,11 +608,9 @@ export default function PoetryIndex({ poems, initialDraw, buildDayKey }) {
                         textDecoration: "none",
                         transition: "color .2s",
                         "&:hover": { color: "poetry.main" },
-                        "&:focus-visible": {
-                          outline: "2px solid",
-                          outlineColor: "poetry.main",
-                          outlineOffset: "-2px",
-                        },
+                        // Inset, because a full-width row's ring would
+                        // otherwise be clipped by the list's own border.
+                        ...focusRing("-2px"),
                       }}
                     >
                       <Box

@@ -192,6 +192,10 @@ function makeComponents(reduced) {
     ul: ({ node, ...p }) => (
       <Box
         component="ul"
+        // Safari drops list semantics from a list styled `list-style: none`,
+        // and VoiceOver stops announcing "list, N items" with it. Restating
+        // the role puts them back.
+        role="list"
         sx={{
           fontFamily: SERIF_BODY,
           pl: 0,

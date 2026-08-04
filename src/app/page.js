@@ -9,6 +9,7 @@ import GitHubIcon from "@mui/icons-material/GitHub";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 
 import { useReducedMotion } from "@/lib/motion";
+import { folioDate } from "@/lib/format-date";
 import ProjectDetailsModal from "@/components/project-details-modal";
 import BackToTop from "@/components/back-to-top";
 import Grain from "@/components/grain";
@@ -185,10 +186,7 @@ export default function Portfolio() {
   };
   const handleClose = () => setOpen(false);
 
-  const dateStr = new Date().toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-  });
+  const dateStr = folioDate();
 
   return (
     <Box

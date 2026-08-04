@@ -24,11 +24,35 @@ export const surfaceSx = { bgcolor: paper, color: ink };
 /**
  * Focus ring used across the poetry section. Matches the treatment already in
  * navbar.js so keyboard focus looks the same everywhere on the site.
+ *
+ * `offset` is a parameter because the ring sits at a different distance
+ * depending on what it is drawn around: proud of a link, further out from a
+ * card, and inside the bounds of a full-width archive row that would otherwise
+ * clip it.
  */
-export const focusRingSx = {
+export const focusRing = (offset = "3px") => ({
   "&:focus-visible": {
     outline: "2px solid",
     outlineColor: "poetry.main",
-    outlineOffset: "3px",
+    outlineOffset: offset,
   },
+});
+
+/**
+ * Screen-reader-only.
+ *
+ * Units are explicit on purpose: MUI's `sx` reads bare numbers as spacing
+ * multipliers, so `width: 1` would mean 100% and `margin: -1` would mean -8px,
+ * which pushes the element off-canvas and gives the page a horizontal scrollbar.
+ */
+export const visuallyHiddenSx = {
+  position: "absolute",
+  width: "1px",
+  height: "1px",
+  padding: 0,
+  margin: "-1px",
+  overflow: "hidden",
+  clip: "rect(0 0 0 0)",
+  whiteSpace: "nowrap",
+  border: 0,
 };
