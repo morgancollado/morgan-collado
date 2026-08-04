@@ -23,6 +23,10 @@ export async function generateMetadata({ params }) {
   return {
     title: `${poem.title} | Poetry | Morgan Collado`,
     description: description || `${poem.title}, a poem by Morgan Collado.`,
+    // The image itself comes from opengraph-image.js in this segment — Next
+    // fills in its URL, dimensions and alt text. This only asks the platforms
+    // for the full-width treatment rather than a thumbnail.
+    twitter: { card: "summary_large_image" },
   };
 }
 

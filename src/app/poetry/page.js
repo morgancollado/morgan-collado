@@ -1,4 +1,5 @@
 import { getPoemPreviews } from "./_lib/poems";
+import { DRAW_COUNT } from "./_lib/constants";
 import PoetryIndex from "@/components/poetry-index";
 import { hashSeed, pickN, utcDayKey } from "@/lib/seeded-random";
 
@@ -6,9 +7,8 @@ export const metadata = {
   title: "Poetry | Morgan Collado",
   description:
     "Poems by Morgan Collado — on bodies, rage, grief, and familia. Written between 2011 and 2013, gathered here for the first time.",
+  twitter: { card: "summary_large_image" },
 };
-
-const DRAW_COUNT = 3;
 
 export default function PoetryPage() {
   const poems = getPoemPreviews();
