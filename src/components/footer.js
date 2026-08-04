@@ -2,6 +2,7 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 import { usePathname } from "next/navigation";
+import { paper, ink, muted } from "@/lib/editorial";
 
 const Footer = () => {
   const pathname = usePathname();
@@ -12,8 +13,8 @@ const Footer = () => {
     <Box
       component="footer"
       sx={{
-        bgcolor: (t) => (t.palette.mode === "light" ? "#faf6ec" : "#0d0a14"),
-        color: (t) => (t.palette.mode === "light" ? "#1c1614" : "#ede6d8"),
+        bgcolor: paper,
+        color: ink,
         borderTop: "1px solid",
         borderColor: "currentColor",
         py: { xs: 3, md: 4 },
@@ -42,7 +43,7 @@ const Footer = () => {
           fontSize: "0.78rem",
           fontVariantCaps: "small-caps",
           letterSpacing: 3,
-          color: (t) => (t.palette.mode === "light" ? "#5a4d3f" : "#a89c8d"),
+          color: muted,
         }}
       >
         © {year} Morgan Collado  ·  Set by code

@@ -9,14 +9,14 @@ import GitHubIcon from "@mui/icons-material/GitHub";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 
 import { useReducedMotion } from "@/lib/motion";
+import { folioDate } from "@/lib/format-date";
 import ProjectDetailsModal from "@/components/project-details-modal";
 import BackToTop from "@/components/back-to-top";
 import Grain from "@/components/grain";
 import Spine from "@/components/spine";
 import { SECTIONS } from "@/lib/projects";
+import { SERIF_BODY, paper, ink, muted, plate } from "@/lib/editorial";
 
-const SERIF_BODY =
-  "'Iowan Old Style', 'Apple Garamond', Baskerville, 'Times New Roman', Times, Georgia, serif";
 
 function altHash(s = "") {
   let h = 0;
@@ -92,8 +92,7 @@ function ProjectPlate({ project, onOpen, reduced }) {
             border: "1px solid",
             borderColor: "currentColor",
             p: 1.5,
-            bgcolor: (t) =>
-              t.palette.mode === "light" ? "#f0ebe2" : "#1a1620",
+            bgcolor: plate,
             boxShadow: (t) =>
               t.palette.mode === "light"
                 ? "0 18px 50px -18px rgba(66,43,101,0.3), 0 4px 12px -4px rgba(0,0,0,0.12)"
@@ -185,18 +184,15 @@ export default function Portfolio() {
   };
   const handleClose = () => setOpen(false);
 
-  const dateStr = new Date().toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-  });
+  const dateStr = folioDate();
 
   return (
     <Box
       ref={ref}
       sx={{
         position: "relative",
-        bgcolor: (t) => (t.palette.mode === "light" ? "#faf6ec" : "#0d0a14"),
-        color: (t) => (t.palette.mode === "light" ? "#1c1614" : "#ede6d8"),
+        bgcolor: paper,
+        color: ink,
         minHeight: "100vh",
         overflow: "hidden",
         pb: 8,
@@ -296,8 +292,7 @@ export default function Portfolio() {
               fontFamily: "var(--font-playfair)",
               fontSize: "1.15rem",
               fontStyle: "italic",
-              color: (t) =>
-                t.palette.mode === "light" ? "#5a4d3f" : "#a89c8d",
+              color: muted,
               maxWidth: "44ch",
               mx: "auto",
               lineHeight: 1.5,
@@ -328,6 +323,9 @@ export default function Portfolio() {
             </Box>
             <Box component={Link} href="/blog" sx={editorialLinkSx}>
               Writing →
+            </Box>
+            <Box component={Link} href="/poetry" sx={editorialLinkSx}>
+              Poetry →
             </Box>
           </Box>
 
@@ -499,8 +497,7 @@ export default function Portfolio() {
                   fontFamily: "var(--font-playfair)",
                   fontStyle: "italic",
                   fontSize: "1rem",
-                  color: (t) =>
-                    t.palette.mode === "light" ? "#5a4d3f" : "#a89c8d",
+                  color: muted,
                   maxWidth: "44ch",
                   mx: "auto",
                   position: "relative",
@@ -548,7 +545,7 @@ export default function Portfolio() {
           fontFamily: "var(--font-playfair)",
           fontStyle: "italic",
           fontSize: "0.85rem",
-          color: (t) => (t.palette.mode === "light" ? "#5a4d3f" : "#a89c8d"),
+          color: muted,
         }}
       >
         Composed in Playfair Display upon a digital press. <br />

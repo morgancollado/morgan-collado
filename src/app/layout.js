@@ -8,11 +8,12 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import { playfair } from "@/lib/playfair";
 import { DuotoneFilters } from "@/lib/duotone";
 import styles from "./layout.module.css";
+import { siteOrigin } from "@/lib/site";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  metadataBase: new URL(`https://${process.env.VERCEL_URL}`),
+  metadataBase: new URL(siteOrigin),
   title: "Morgan Collado",
   description:
     "A skilled software engineer who wants to make the world a better place.",

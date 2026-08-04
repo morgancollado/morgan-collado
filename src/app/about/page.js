@@ -7,10 +7,10 @@ import GitHubIcon from "@mui/icons-material/GitHub";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 
 import { useReducedMotion } from "@/lib/motion";
+import { folioDate } from "@/lib/format-date";
 import Grain from "@/components/grain";
+import { SERIF_BODY, paper, ink, muted, plate } from "@/lib/editorial";
 
-const SERIF_BODY =
-  "'Iowan Old Style', 'Apple Garamond', Baskerville, 'Times New Roman', Times, Georgia, serif";
 
 const paragraphSx = {
   fontFamily: SERIF_BODY,
@@ -38,10 +38,7 @@ const dropCapSx = {
 export default function AboutPage() {
   const reduced = useReducedMotion();
 
-  const dateStr = new Date().toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-  });
+  const dateStr = folioDate();
 
   const fadeIn = reduced
     ? {}
@@ -55,8 +52,8 @@ export default function AboutPage() {
     <Box
       sx={{
         position: "relative",
-        bgcolor: (t) => (t.palette.mode === "light" ? "#faf6ec" : "#0d0a14"),
-        color: (t) => (t.palette.mode === "light" ? "#1c1614" : "#ede6d8"),
+        bgcolor: paper,
+        color: ink,
         minHeight: "100vh",
         pb: 12,
         overflow: "hidden",
@@ -150,7 +147,7 @@ export default function AboutPage() {
             fontFamily: "var(--font-playfair)",
             fontSize: "1.1rem",
             fontStyle: "italic",
-            color: (t) => (t.palette.mode === "light" ? "#5a4d3f" : "#a89c8d"),
+            color: muted,
             maxWidth: "52ch",
             mx: "auto",
             lineHeight: 1.5,
@@ -201,8 +198,7 @@ export default function AboutPage() {
                 p: 1.5,
                 maxWidth: 360,
                 mx: "auto",
-                bgcolor: (t) =>
-                  t.palette.mode === "light" ? "#f0ebe2" : "#1a1620",
+                bgcolor: plate,
                 boxShadow: (t) =>
                   t.palette.mode === "light"
                     ? "0 24px 60px -20px rgba(66,43,101,0.35), 0 4px 12px -4px rgba(0,0,0,0.15)"
@@ -391,7 +387,7 @@ export default function AboutPage() {
           fontFamily: "var(--font-playfair)",
           fontStyle: "italic",
           fontSize: "0.85rem",
-          color: (t) => (t.palette.mode === "light" ? "#5a4d3f" : "#a89c8d"),
+          color: muted,
         }}
       >
         Composed in Playfair Display upon a digital press. <br />
