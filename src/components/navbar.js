@@ -10,11 +10,13 @@ import { usePathname } from "next/navigation";
 const navLinkSx = {
   fontFamily: "var(--font-playfair)",
   fontStyle: "italic",
-  fontSize: { xs: "0.95rem", md: "1.05rem" },
+  // Tightened on small screens: with three links plus the wordmark and the
+  // theme toggle, the old 1.25 padding overflowed the bar at 320px.
+  fontSize: { xs: "0.88rem", md: "1.05rem" },
   color: "inherit",
   textDecoration: "none",
   letterSpacing: 0.5,
-  px: 1.25,
+  px: { xs: 0.75, md: 1.25 },
   py: 0.5,
   borderBottom: "1px solid transparent",
   transition: "color .2s, border-color .2s",
@@ -82,6 +84,9 @@ const NavBar = () => {
           <Box component={Link} href="/blog" sx={navLinkSx}>
             Writing
           </Box>
+          <Box component={Link} href="/poetry" sx={navLinkSx}>
+            Poetry
+          </Box>
           <Box component={Link} href="/about" sx={navLinkSx}>
             About
           </Box>
@@ -92,7 +97,16 @@ const NavBar = () => {
             aria-label={
               mode === "light" ? "Switch to dark mode" : "Switch to light mode"
             }
-            sx={{ ml: 1 }}
+            sx={{
+              ml: 1,
+              // MUI's IconButton ships no visible focus ring; match the one
+              // every other interactive element on the site uses.
+              "&:focus-visible": {
+                outline: "2px solid",
+                outlineColor: "primary.main",
+                outlineOffset: "2px",
+              },
+            }}
           >
             {mode === "light" ? (
               <Brightness7Icon fontSize="small" />

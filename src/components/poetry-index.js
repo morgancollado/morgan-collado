@@ -1,0 +1,528 @@
+"use client";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { Box, Container, Typography } from "@mui/material";
+import { AnimatePresence, motion } from "framer-motion";
+import { useReducedMotion } from "@/lib/motion";
+import PoemBody, { StanzaRule } from "@/components/poem-body";
+import { hashSeed, pickN, utcDayKey } from "@/lib/seeded-random";
+import { SERIF_BODY, muted, dim, surfaceSx } from "@/lib/editorial";
+
+const DRAW_COUNT = 3;
+const LATEST_COUNT = 4;
+const VERSE_MEASURE = "54ch";
+
+function yearOf(date) {
+  if (!date) return "";
+  const d = new Date(date);
+  return isNaN(d.getTime()) ? "" : d.getUTCFullYear();
+}
+
+/**
+ * Screen-reader-only.
+ *
+ * Units are explicit on purpose: MUI's `sx` reads bare numbers as spacing
+ * multipliers, so `width: 1` would mean 100% and `margin: -1` would mean -8px,
+ * which pushes the element off-canvas and gives the page a horizontal scrollbar.
+ */
+const visuallyHiddenSx = {
+  position: "absolute",
+  width: "1px",
+  height: "1px",
+  padding: 0,
+  margin: "-1px",
+  overflow: "hidden",
+  clip: "rect(0 0 0 0)",
+  whiteSpace: "nowrap",
+  border: 0,
+};
+
+const cardLinkSx = {
+  fontFamily: "var(--font-playfair)",
+  fontStyle: "italic",
+  fontSize: "1.35rem",
+  color: "inherit",
+  textDecoration: "none",
+  // Stretched-link pattern: one link, named by the poem's title, whose hit area
+  // covers the whole card. Keeps the card clickable without nesting
+  // interactive elements or duplicating the link for assistive tech.
+  "&::after": {
+    content: '""',
+    position: "absolute",
+    inset: 0,
+  },
+  "&:hover, &:focus-visible": { color: "poetry.main" },
+  "&:focus-visible": { outline: "none" },
+};
+
+const cardSx = {
+  position: "relative",
+  borderTop: "1px solid",
+  borderColor: "currentColor",
+  pt: 3,
+  // The focus ring goes on the card, since the link's hit area is the card.
+  "&:has(a:focus-visible)": {
+    outline: "2px solid",
+    outlineColor: "poetry.main",
+    outlineOffset: "6px",
+  },
+};
+
+function PoemCard({ poem }) {
+  return (
+    <Box component="article" sx={cardSx}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "baseline",
+          justifyContent: "space-between",
+          gap: 2,
+          mb: 2.5,
+        }}
+      >
+        <Typography component="h3" sx={{ m: 0 }}>
+          <Box component={Link} href={`/poetry/${poem.slug}`} sx={cardLinkSx}>
+            {poem.title}
+          </Box>
+        </Typography>
+        {poem.date && (
+          <Box
+            component="time"
+            dateTime={poem.date}
+            sx={{
+              fontVariantCaps: "small-caps",
+              letterSpacing: 2,
+              fontSize: "0.72rem",
+              color: dim,
+              fontFamily: "var(--font-playfair)",
+              flexShrink: 0,
+            }}
+          >
+            {yearOf(poem.date)}
+          </Box>
+        )}
+      </Box>
+
+      <PoemBody stanzas={[poem.excerpt]} align={poem.align} size="excerpt" />
+
+      {poem.truncated && (
+        <Box
+          aria-hidden
+          sx={{
+            mt: 1.5,
+            color: dim,
+            fontFamily: "var(--font-playfair)",
+            fontSize: "1rem",
+            letterSpacing: 4,
+            textAlign: poem.align === "center" ? "center" : "left",
+          }}
+        >
+          …
+        </Box>
+      )}
+    </Box>
+  );
+}
+
+function SectionHeading({ eyebrow, title, children, id }) {
+  return (
+    <Box sx={{ mb: { xs: 5, md: 7 } }}>
+      <Typography
+        component="p"
+        sx={{
+          letterSpacing: 6,
+          fontSize: "0.72rem",
+          fontVariantCaps: "small-caps",
+          color: "poetry.main",
+          fontFamily: "var(--font-playfair)",
+          fontStyle: "italic",
+          mb: 1.5,
+        }}
+      >
+        {eyebrow}
+      </Typography>
+      <Typography
+        component="h2"
+        id={id}
+        sx={{
+          fontFamily: "var(--font-playfair)",
+          fontStyle: "italic",
+          fontSize: "clamp(1.8rem, 4vw, 2.6rem)",
+          lineHeight: 1.1,
+          m: 0,
+        }}
+      >
+        {title}
+      </Typography>
+      {children && (
+        <Typography
+          sx={{
+            mt: 2,
+            fontFamily: "var(--font-playfair)",
+            fontStyle: "italic",
+            fontSize: "1rem",
+            color: muted,
+            maxWidth: "46ch",
+            lineHeight: 1.6,
+          }}
+        >
+          {children}
+        </Typography>
+      )}
+    </Box>
+  );
+}
+
+export default function PoetryIndex({ poems, initialDraw, buildDayKey }) {
+  const reduced = useReducedMotion();
+  const [draw, setDraw] = useState(initialDraw);
+  const [announcement, setAnnouncement] = useState("");
+
+  const bySlug = useMemo(
+    () => Object.fromEntries(poems.map((p) => [p.slug, p])),
+    [poems]
+  );
+
+  const drawn = draw.map((slug) => bySlug[slug]).filter(Boolean);
+
+  // The server rendered the draw for the day it was built. If a reader arrives
+  // later, catch up — after paint, so the first client render still matches the
+  // server HTML exactly and hydration stays clean.
+  useEffect(() => {
+    const today = utcDayKey();
+    if (today === buildDayKey) return;
+    setDraw(pickN(poems.map((p) => p.slug), DRAW_COUNT, hashSeed(today)));
+  }, [buildDayKey, poems]);
+
+  const drawAgain = useCallback(() => {
+    // Randomness lives in the event handler, never in render.
+    const seed = (Math.random() * 0xffffffff) >>> 0;
+    const next = pickN(poems.map((p) => p.slug), DRAW_COUNT, seed);
+    setDraw(next);
+    setAnnouncement(
+      `Now showing: ${next.map((s) => bySlug[s]?.title).filter(Boolean).join(", ")}.`
+    );
+  }, [poems, bySlug]);
+
+  const latest = poems.slice(0, LATEST_COUNT);
+
+  const byYear = useMemo(() => {
+    const groups = new Map();
+    for (const poem of poems) {
+      const year = yearOf(poem.date) || "Undated";
+      if (!groups.has(year)) groups.set(year, []);
+      groups.get(year).push(poem);
+    }
+    return [...groups.entries()];
+  }, [poems]);
+
+  const dateStr = new Date().toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+  });
+
+  return (
+    <Box sx={{ ...surfaceSx, minHeight: "100vh", pb: 14 }}>
+      {/* Folio dateline */}
+      <Box
+        sx={{
+          px: { xs: 3, md: 6 },
+          py: 1.5,
+          borderTop: "3px double",
+          borderBottom: "1px solid",
+          borderColor: "currentColor",
+          display: "flex",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: 1,
+          fontVariantCaps: "small-caps",
+          letterSpacing: 3,
+          fontSize: "0.72rem",
+          fontFamily: "var(--font-playfair)",
+        }}
+      >
+        <span>Vol. I, No. V</span>
+        <span>Poetry</span>
+        <span>{dateStr}</span>
+        <span>Morgan Collado</span>
+      </Box>
+
+      <Container maxWidth="lg" sx={{ pt: { xs: 6, md: 10 } }}>
+        {/* Masthead */}
+        <Typography
+          component="p"
+          sx={{
+            letterSpacing: 6,
+            fontSize: "0.75rem",
+            fontVariantCaps: "small-caps",
+            color: "poetry.main",
+            fontFamily: "var(--font-playfair)",
+            fontStyle: "italic",
+            mb: 2,
+          }}
+        >
+          The Chapbook
+        </Typography>
+        <Typography
+          component="h1"
+          sx={{
+            fontFamily: "var(--font-playfair)",
+            fontStyle: "italic",
+            fontSize: "clamp(2.5rem, 8vw, 6rem)",
+            lineHeight: 0.95,
+            letterSpacing: "-0.015em",
+            mb: 3,
+            maxWidth: "12ch",
+          }}
+        >
+          Poems,
+          <Box component="span" sx={{ fontStyle: "normal" }}>
+            {" "}unbound
+          </Box>
+        </Typography>
+
+        <Typography
+          sx={{
+            fontFamily: SERIF_BODY,
+            fontSize: "1.0625rem",
+            color: muted,
+            maxWidth: "58ch",
+            mb: 3,
+            lineHeight: 1.75,
+          }}
+        >
+          {poems.length} poems, written between {yearOf(poems[poems.length - 1]?.date)}{" "}
+          and {yearOf(poems[0]?.date)} on a blog called{" "}
+          <i>A Trip to the Morg</i>. They are gathered here for the first time,
+          set line for line as they were written — about bodies and rage and
+          grief and familia, and about being a brown trans woman in the years
+          these were made.
+        </Typography>
+
+        <StanzaRule sx={{ my: { xs: 7, md: 10 } }} />
+
+        {/* Drawn today */}
+        <Box component="section" aria-labelledby="drawn-heading">
+          <SectionHeading
+            id="drawn-heading"
+            eyebrow="Drawn today"
+            title="A reading"
+          >
+            Three poems, drawn today. Come back tomorrow for three more — or
+            draw again now.
+          </SectionHeading>
+
+          <AnimatePresence mode="wait" initial={false}>
+            <Box
+              component={reduced ? "div" : motion.div}
+              key={draw.join("|")}
+              {...(reduced
+                ? {}
+                : {
+                    initial: { opacity: 0 },
+                    animate: { opacity: 1 },
+                    exit: { opacity: 0 },
+                    transition: { duration: 0.35 },
+                  })}
+              sx={{
+                display: "grid",
+                gap: { xs: 6, md: 5 },
+                gridTemplateColumns: {
+                  xs: "1fr",
+                  md: "repeat(3, minmax(0, 1fr))",
+                },
+              }}
+            >
+              {drawn.map((poem) => (
+                <PoemCard key={poem.slug} poem={poem} />
+              ))}
+            </Box>
+          </AnimatePresence>
+
+          <Box sx={{ display: "flex", justifyContent: "center", mt: { xs: 6, md: 8 } }}>
+            <Box
+              component="button"
+              type="button"
+              onClick={drawAgain}
+              sx={{
+                fontFamily: "var(--font-playfair)",
+                fontStyle: "italic",
+                fontSize: "1rem",
+                letterSpacing: 2,
+                color: "poetry.main",
+                background: "none",
+                border: "1px solid currentColor",
+                borderRadius: 0,
+                px: 3,
+                py: 1.25,
+                cursor: "pointer",
+                transition: "background-color .2s, color .2s",
+                "&:hover": {
+                  bgcolor: "poetry.main",
+                  color: (t) => (t.palette.mode === "light" ? "#faf6ec" : "#0d0a14"),
+                },
+                "&:focus-visible": {
+                  outline: "2px solid",
+                  outlineColor: "poetry.main",
+                  outlineOffset: "3px",
+                },
+              }}
+            >
+              – draw again –
+            </Box>
+          </Box>
+
+          {/* Announces the new selection to screen readers; the cards
+              themselves are far too much text to put in a live region. */}
+          <Box role="status" aria-live="polite" sx={visuallyHiddenSx}>
+            {announcement}
+          </Box>
+        </Box>
+
+        <StanzaRule sx={{ my: { xs: 8, md: 12 } }} />
+
+        {/* Latest */}
+        <Box component="section" aria-labelledby="latest-heading">
+          <SectionHeading
+            id="latest-heading"
+            eyebrow="Latest"
+            title="Most recent work"
+          >
+            The newest poems in the collection, most recent first.
+          </SectionHeading>
+
+          <Box
+            sx={{
+              display: "grid",
+              gap: { xs: 6, md: 5 },
+              gridTemplateColumns: {
+                xs: "1fr",
+                md: "repeat(2, minmax(0, 1fr))",
+              },
+            }}
+          >
+            {latest.map((poem) => (
+              <PoemCard key={poem.slug} poem={poem} />
+            ))}
+          </Box>
+        </Box>
+
+        <StanzaRule sx={{ my: { xs: 8, md: 12 } }} />
+
+        {/* Full archive */}
+        <Box component="section" aria-labelledby="archive-heading">
+          <SectionHeading
+            id="archive-heading"
+            eyebrow="Everything"
+            title="The complete works"
+          >
+            All {poems.length} poems, by the year they were written.
+          </SectionHeading>
+
+          {byYear.map(([year, group]) => (
+            <Box key={year} sx={{ mb: { xs: 6, md: 8 } }}>
+              <Typography
+                component="h3"
+                sx={{
+                  fontFamily: "var(--font-playfair)",
+                  fontVariantCaps: "small-caps",
+                  letterSpacing: 4,
+                  fontSize: "0.85rem",
+                  color: dim,
+                  m: 0,
+                  mb: 1.5,
+                }}
+              >
+                {year}
+              </Typography>
+
+              <Box
+                component="ol"
+                sx={{
+                  listStyle: "none",
+                  p: 0,
+                  m: 0,
+                  borderTop: "1px solid",
+                  borderColor: "currentColor",
+                }}
+              >
+                {group.map((poem) => (
+                  <Box
+                    key={poem.slug}
+                    component="li"
+                    sx={{
+                      borderBottom: "1px solid",
+                      borderColor: "currentColor",
+                      "&:hover .reveal, &:focus-within .reveal": { opacity: 1 },
+                      "&:hover, &:focus-within": {
+                        bgcolor: (t) =>
+                          t.palette.mode === "light"
+                            ? "rgba(99,64,155,0.05)"
+                            : "rgba(201,179,240,0.06)",
+                      },
+                    }}
+                  >
+                    <Box
+                      component={Link}
+                      href={`/poetry/${poem.slug}`}
+                      sx={{
+                        display: "grid",
+                        gridTemplateColumns: { xs: "1fr", md: "1fr 1.1fr" },
+                        alignItems: "baseline",
+                        gap: { xs: 0.5, md: 3 },
+                        px: { xs: 1, md: 2 },
+                        py: 1.75,
+                        color: "inherit",
+                        textDecoration: "none",
+                        transition: "color .2s",
+                        "&:hover": { color: "poetry.main" },
+                        "&:focus-visible": {
+                          outline: "2px solid",
+                          outlineColor: "poetry.main",
+                          outlineOffset: "-2px",
+                        },
+                      }}
+                    >
+                      <Box
+                        component="span"
+                        sx={{
+                          fontFamily: "var(--font-playfair)",
+                          fontStyle: "italic",
+                          fontSize: "1.15rem",
+                        }}
+                      >
+                        {poem.title}
+                      </Box>
+
+                      {/* The corpus has no images, so the blog index's hover
+                          thumbnail becomes the poem's opening line instead.
+                          Revealed on focus as well as hover, so it's reachable
+                          from the keyboard. */}
+                      <Box
+                        aria-hidden
+                        className="reveal"
+                        sx={{
+                          opacity: 0,
+                          transition: "opacity .25s",
+                          fontFamily: SERIF_BODY,
+                          fontSize: "0.92rem",
+                          color: muted,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {poem.excerpt[0]}
+                      </Box>
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+          ))}
+        </Box>
+      </Container>
+    </Box>
+  );
+}

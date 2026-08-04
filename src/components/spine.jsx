@@ -3,7 +3,12 @@
 import { Box } from "@mui/material";
 import { motion, useTransform } from "framer-motion";
 
-export default function Spine({ progress, reduced, withDingbat = false }) {
+export default function Spine({
+  progress,
+  reduced,
+  withDingbat = false,
+  color = "primary.main",
+}) {
   const leaf1Opacity = useTransform(progress, [0, 0.1, 0.4], [0, 0, 1]);
   const leaf2Opacity = useTransform(progress, [0, 0.4, 0.7], [0, 0, 1]);
   const leaf3Opacity = useTransform(progress, [0, 0.7, 0.95], [0, 0, 1]);
@@ -20,7 +25,7 @@ export default function Spine({ progress, reduced, withDingbat = false }) {
         alignItems: "stretch",
         justifyContent: "center",
         pointerEvents: "none",
-        color: "primary.main",
+        color,
       }}
     >
       <svg

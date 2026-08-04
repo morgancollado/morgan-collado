@@ -329,6 +329,9 @@ export default function Portfolio() {
             <Box component={Link} href="/blog" sx={editorialLinkSx}>
               Writing →
             </Box>
+            <Box component={Link} href="/poetry" sx={editorialLinkSx}>
+              Poetry →
+            </Box>
           </Box>
 
           <Box
