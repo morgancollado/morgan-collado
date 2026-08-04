@@ -54,6 +54,16 @@ export function loadFonts() {
       weight: 400,
       style: "normal",
     },
+    // Satori does not synthesize a bold — without a real 700 cut, a
+    // `fontWeight: 700` run silently falls back to a different face and prints
+    // *smaller* than the text around it. No poem's opening four lines carry
+    // `**bold**` today, so this is here for the one that eventually does.
+    {
+      name: "Playfair Display",
+      data: read("playfair-bold.woff"),
+      weight: 700,
+      style: "normal",
+    },
     {
       name: "Libre Baskerville",
       data: read("baskerville-regular.woff"),
@@ -123,9 +133,10 @@ function VerseLine({ line, size }) {
           style={{
             fontWeight: token.strong ? 700 : 400,
             fontStyle: token.em ? "italic" : "normal",
-            // Only Playfair ships an italic here, so an emphasized run borrows
-            // it. Bold has no cut at all and satori will not synthesize one,
-            // so bold is carried by the display face instead.
+            // The body face is loaded in one cut only, so an emphasized run
+            // switches to the display face, which ships all three. Satori
+            // matches on family + weight + style and synthesizes nothing, so
+            // every combination used here has to exist in `loadFonts`.
             ...(token.strong || token.em
               ? { fontFamily: "Playfair Display" }
               : null),
