@@ -211,41 +211,47 @@ export default function PoemShell({ poem, neighbors }) {
         <Box sx={{ maxWidth: VERSE_MEASURE, mx: "auto" }}>
           <StanzaRule sx={{ mb: 5 }} />
 
-          {/* Below the poem the page has no visible headings, which leaves a
-              screen reader browsing by heading with nowhere to go after the
-              title. These name the two sections without altering the page. */}
-          <Typography component="h2" sx={visuallyHiddenSx}>
-            About this poem
-          </Typography>
+          {/* The colophon is a provenance note, so it appears only for poems
+              that have a provenance — the ones carried over from the old blog,
+              which is what `source` in the frontmatter records. A poem written
+              for this site has none, and printing "First published on A Trip to
+              the Morg" over it would assert something untrue. The condition is
+              on the whole claim, not just on whether the title can be linked.
 
-          <Typography
-            sx={{
-              fontFamily: SERIF_BODY,
-              fontSize: "0.85rem",
-              lineHeight: 1.7,
-              color: dim,
-              textAlign: "center",
-              mb: 6,
-            }}
-          >
-            First published on{" "}
-            {poem.sourceUrl ? (
-              <Box component="a" href={poem.sourceUrl} sx={colophonLinkSx}>
-                <i>A Trip to the Morg</i>
-              </Box>
-            ) : (
-              <i>A Trip to the Morg</i>
-            )}
-            {poem.date ? (
-              <>
-                {" in "}
-                <Box component="time" dateTime={poem.date}>
-                  {yearOf(poem.date)}
+              The heading is inside the condition too: with no note beneath it,
+              it would announce a section that isn't there. */}
+          {poem.sourceUrl && (
+            <>
+              <Typography component="h2" sx={visuallyHiddenSx}>
+                About this poem
+              </Typography>
+
+              <Typography
+                sx={{
+                  fontFamily: SERIF_BODY,
+                  fontSize: "0.85rem",
+                  lineHeight: 1.7,
+                  color: dim,
+                  textAlign: "center",
+                  mb: 6,
+                }}
+              >
+                First published on{" "}
+                <Box component="a" href={poem.sourceUrl} sx={colophonLinkSx}>
+                  <i>A Trip to the Morg</i>
                 </Box>
-              </>
-            ) : null}
-            .
-          </Typography>
+                {poem.date ? (
+                  <>
+                    {" in "}
+                    <Box component="time" dateTime={poem.date}>
+                      {yearOf(poem.date)}
+                    </Box>
+                  </>
+                ) : null}
+                .
+              </Typography>
+            </>
+          )}
 
           <Typography component="h2" sx={visuallyHiddenSx}>
             More poems

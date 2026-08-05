@@ -155,9 +155,11 @@ function VerseLine({ line, size }) {
  * @param {string[]} props.lines    the verse to set, already truncated
  * @param {string} props.align      "center" | "left"
  * @param {string} props.footer     right-hand footer text (a date, or a count)
+ * @param {string} props.imprint    left-hand footer text; omitted for a poem
+ *   with no prior publication, since the card must not claim one
  * @param {boolean} props.truncated whether more of the poem follows
  */
-export function OgCard({ title, lines, align, footer, truncated }) {
+export function OgCard({ title, lines, align, footer, imprint, truncated }) {
   const centered = align === "center";
   const size = verseSize(lines);
 
@@ -286,7 +288,9 @@ export function OgCard({ title, lines, align, footer, truncated }) {
           ...bandTextStyle,
         }}
       >
-        <span>A Trip to the Morg</span>
+        {/* An empty span rather than nothing: `space-between` needs two
+            children to keep the date against the right edge. */}
+        <span>{imprint || ""}</span>
         <span style={{ color: ACCENT }}>{footer}</span>
       </div>
     </div>
