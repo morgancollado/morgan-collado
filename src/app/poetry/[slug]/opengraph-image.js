@@ -50,6 +50,8 @@ export default async function Image({ params }) {
         lines={lines}
         align={poem.align}
         footer={formatDate(poem.date)}
+        // Only the poems carried over from the old blog carry its imprint.
+        imprint={poem.sourceUrl ? "A Trip to the Morg" : ""}
         truncated={poem.lineCount > lines.length}
       />
     ),

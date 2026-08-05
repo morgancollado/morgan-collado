@@ -373,11 +373,9 @@ export default function PoetryIndex({ poems, initialDraw, buildDayKey }) {
             lineHeight: 1.75,
           }}
         >
-          {poems.length} poems, written between {yearOf(poems[poems.length - 1]?.date)}{" "}
-          and {yearOf(poems[0]?.date)} on a blog called{" "}
-          <i>A Trip to the Morg</i>. They are gathered here for the first time —
-          about bodies and rage and grief and familia, and about being a brown
-          trans woman in the years these were made.
+          my collected works early and new gathered here. about me, my life and
+          my rage, my grief and love, about being a trans Latina in the years
+          these were made.
         </Typography>
 
         <StanzaRule sx={{ my: { xs: 7, md: 10 } }} />
