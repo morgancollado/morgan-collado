@@ -373,7 +373,7 @@ export default function PoetryIndex({ poems, initialDraw, buildDayKey }) {
             lineHeight: 1.75,
           }}
         >
-          my collected works early and new gathered here. About me, my life and
+          my collected works early and new gathered here. about me, my life and
           my rage, my grief and love, about being a trans Latina in the years
           these were made.
         </Typography>
