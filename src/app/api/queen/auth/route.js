@@ -1,10 +1,4 @@
-import {
-  sha256Hex,
-  passwordRequired,
-  expectedToken,
-  isAuthorized,
-  buildCookie,
-} from "@/lib/queen-auth";
+import { passwordRequired, verify, isAuthorized, buildCookie } from "@/lib/queen-auth";
 
 export const runtime = "edge";
 
@@ -37,11 +31,9 @@ export async function POST(req) {
     return json({ error: "Wrong password." }, { status: 401 });
   }
 
-  const submitted = await sha256Hex("queen-access:" + password);
-  const expected = await expectedToken();
-  if (submitted !== expected) {
+  if (!(await verify(password))) {
     return json({ error: "Wrong password." }, { status: 401 });
   }
 
-  return json({ ok: true }, { headers: { "Set-Cookie": buildCookie(expected) } });
+  return json({ ok: true }, { headers: { "Set-Cookie": await buildCookie() } });
 }
