@@ -3,6 +3,7 @@ import React from "react";
 import { Box, Typography } from "@mui/material";
 import { usePathname } from "next/navigation";
 import { paper, ink, muted } from "@/lib/editorial";
+import NewsletterSignup from "@/components/newsletter-signup";
 
 const Footer = () => {
   const pathname = usePathname();
@@ -25,6 +26,10 @@ const Footer = () => {
         gap: 1,
       }}
     >
+      {/* The signup inherits the /queen- exclusion from the early return above. */}
+      <Box sx={{ width: "100%", maxWidth: "34rem", mb: 2 }}>
+        <NewsletterSignup variant="compact" />
+      </Box>
       <Box
         sx={{
           color: "primary.main",

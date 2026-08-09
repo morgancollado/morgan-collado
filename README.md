@@ -35,6 +35,71 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 
+## Newsletter
+
+Readers can subscribe at `/newsletter` (and from the footer, and from the foot
+of `/blog` and `/poetry`) to be emailed when new work goes up. They choose
+technical writing, poetry, or both, and can change or cancel that at any time.
+
+Signup is **double opt-in** — nothing is ever sent to an address that hasn't
+clicked its confirmation link.
+
+### Setup
+
+Add these to `.env.local` (see `.env.local.example`) and to the Vercel
+project's environment variables:
+
+| Variable | What it's for |
+| --- | --- |
+| `DATABASE_URL` | Neon / Vercel Postgres connection string |
+| `RESEND_API_KEY` | Resend API key |
+| `NEWSLETTER_FROM` | Sender, e.g. `Morgan Collado <notes@morgancollado.com>` |
+| `NEWSLETTER_ADMIN_PASSWORD` | Gates `/newsletter/admin` |
+
+Then verify the sending domain in Resend (Domains → Add, then publish the DKIM
+and SPF records it gives you). Until that resolves, Resend only delivers to
+your own account address — which is still enough to exercise the whole flow
+locally.
+
+Create the tables once with:
+
+```bash
+npm run newsletter:migrate
+```
+
+It's idempotent, so re-running it is safe.
+
+### Sending
+
+Go to `/newsletter/admin`, unlock it, and each post and poem is listed with
+either a *sent* marker or a **Send…** button. Sending asks for a confirmation
+click, then goes out immediately.
+
+Two things worth knowing:
+
+- **A post must be deployed before it can be emailed.** The console reads the
+  content at build time, which is what guarantees you can never email a link
+  that 404s.
+- **A post can only be sent once.** A `unique (kind, slug)` constraint in the
+  database enforces it, so a double-click or a second open tab cannot produce a
+  duplicate blast. To deliberately re-send, delete that row from the `sends`
+  table.
+
+Unlike `QUEEN_PASSWORD`, leaving `NEWSLETTER_ADMIN_PASSWORD` blank **locks**
+the console rather than opening it — a misconfiguration should fail towards
+"nobody can send".
+
+### Unsubscribing
+
+Every notification carries `List-Unsubscribe` headers, so a mail client's own
+unsubscribe button works, and a footer link offers the same thing plus
+`/newsletter/manage`, where a reader can keep one category and drop the other.
+
+### Limits
+
+Resend's free plan allows 3,000 emails a month and **100 a day**. A list larger
+than that needs either a paid plan or a send spread over more than one day.
+
 ## Private chatbot route
 
 There's a private chatbot at `/queen-9k3m7q` (a personal gift page; not linked
