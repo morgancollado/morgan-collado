@@ -54,7 +54,13 @@ project's environment variables:
 | `DATABASE_URL` | Neon / Vercel Postgres connection string |
 | `RESEND_API_KEY` | Resend API key |
 | `NEWSLETTER_FROM` | Sender, e.g. `Morgan Collado <notes@morgancollado.com>` |
+| `NEWSLETTER_POSTAL_ADDRESS` | Physical address printed on every notification |
 | `NEWSLETTER_ADMIN_PASSWORD` | Gates `/newsletter/admin` |
+
+`NEWSLETTER_POSTAL_ADDRESS` is not optional. CAN-SPAM requires a physical
+postal address on commercial bulk mail, and a send refuses to run without one
+rather than quietly putting non-compliant mail in people's inboxes. The
+confirmation mail is transactional and doesn't carry it.
 
 Then verify the sending domain in Resend (Domains → Add, then publish the DKIM
 and SPF records it gives you). Until that resolves, Resend only delivers to
@@ -84,6 +90,11 @@ Two things worth knowing:
   database enforces it, so a double-click or a second open tab cannot produce a
   duplicate blast. To deliberately re-send, delete that row from the `sends`
   table.
+- **A send that stops partway can be resumed.** Every batch the provider
+  accepts is recorded per recipient before the next one is attempted, so a send
+  that hits the daily cap or a function timeout shows as *stopped after N* with
+  a **Resume…** button. Resuming skips everyone already reached — it is not a
+  second send, and nobody is mailed twice.
 
 Unlike `QUEEN_PASSWORD`, leaving `NEWSLETTER_ADMIN_PASSWORD` blank **locks**
 the console rather than opening it — a misconfiguration should fail towards
@@ -98,7 +109,36 @@ unsubscribe button works, and a footer link offers the same thing plus
 ### Limits
 
 Resend's free plan allows 3,000 emails a month and **100 a day**. A list larger
-than that needs either a paid plan or a send spread over more than one day.
+than that needs either a paid plan, or the send spread over more than one day —
+press **Send…**, let it stop when the cap is hit, and press **Resume…** the next
+day. The delivery record is what makes that safe.
+
+Two other ceilings worth knowing before the list gets big. The send runs inside
+one request with `maxDuration = 60`, at roughly one provider round trip per
+hundred recipients; and it holds every address in memory at once. Both are
+comfortable in the low thousands and neither is the shape for a list past that,
+which wants a queue rather than a button.
+
+### Tests
+
+```bash
+npm test
+```
+
+Unit tests over the parts that decide who gets mail and who gets in — consent
+and confirmation throttling, token and slug shapes, the password gate. No
+component tests: the bugs this suite exists to prevent have all been in plain
+functions.
+
+There is also an integration suite that runs the real queries in `db.js`
+against a real Postgres — the consent staging lives inside an `on conflict do
+update`, which is not something you can verify by reading it. It skips unless
+you point it at a throwaway database:
+
+```bash
+createdb newsletter_test
+TEST_DATABASE_URL=postgres:///newsletter_test npm test
+```
 
 ## Private chatbot route
 
