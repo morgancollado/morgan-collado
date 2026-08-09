@@ -1,5 +1,14 @@
-import { findByToken, updateTopicsByToken } from "@/lib/newsletter/db";
+import {
+  findByToken,
+  updateTopicsByToken,
+  markConfirmationSent,
+} from "@/lib/newsletter/db";
 import { isTokenShaped } from "@/lib/newsletter/tokens";
+import {
+  confirmationThrottled,
+  grantedTopics,
+} from "@/lib/newsletter/consent";
+import { sendConfirmation } from "@/lib/newsletter/email";
 import { json, readJson } from "@/lib/newsletter/http";
 
 export const runtime = "edge";
@@ -45,6 +54,22 @@ export async function POST(req) {
       poetry: Boolean(body.poetry),
     });
     if (!subscriber) return json({ error: "That link isn't valid." }, { status: 404 });
+
+    // Someone who had unsubscribed and is picking topics again comes back as
+    // `pending`, and re-joining costs a confirmation click like any other
+    // signup. Sending that mail is this route's job: without it the reader is
+    // parked in a state that receives nothing, having been told they're back.
+    if (subscriber.status === "pending") {
+      if (!confirmationThrottled(subscriber.confirmation_sent_at)) {
+        await sendConfirmation({
+          email: subscriber.email,
+          token: subscriber.token,
+          topics: grantedTopics(subscriber),
+        });
+        await markConfirmationSent(subscriber.token);
+      }
+    }
+
     return json({ ok: true, ...present(subscriber) });
   } catch (error) {
     console.error("newsletter/manage POST failed:", error);

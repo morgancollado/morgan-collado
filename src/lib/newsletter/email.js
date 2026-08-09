@@ -25,12 +25,31 @@ export const TOPIC_LABELS = { blog: "Technical writing", poetry: "Poetry" };
 
 const PATHS = { blog: "blog", poetry: "poetry" };
 
-function escapeHtml(value) {
+export function escapeHtml(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+
+/**
+ * The physical postal address that has to appear on commercial bulk mail.
+ *
+ * Required rather than optional, and required only for the notification — the
+ * confirmation mail is transactional and outside the rule. A newsletter
+ * promoting one's own writing is inside it, and mail without an address is a
+ * violation whether or not anyone complains, so this fails the send loudly
+ * instead of quietly shipping non-compliant mail.
+ */
+export function postalAddress() {
+  const address = process.env.NEWSLETTER_POSTAL_ADDRESS;
+  if (!address) {
+    throw new Error(
+      "NEWSLETTER_POSTAL_ADDRESS is not set. Bulk email has to carry a physical postal address."
+    );
+  }
+  return address;
 }
 
 export function manageUrl(token) {
@@ -150,12 +169,15 @@ If this wasn't you, ignore it. Nothing happens without that click.`;
  * List-Unsubscribe is not garnish. Gmail and Yahoo's bulk-sender rules require
  * it, and mail without it lands in spam regardless of how good the content is.
  */
-export async function sendNewPost({ recipients, kind, post }) {
+export async function sendNewPost({ recipients, kind, post, onChunk }) {
   const label = TOPIC_LABELS[kind];
   const url = postUrl(kind, post.slug);
   const subject =
     kind === "poetry" ? `New poem: ${post.title}` : `New writing: ${post.title}`;
   const dateline = formatDate(post.date);
+  // Read before the first message is built: a missing address should stop the
+  // send, not surface halfway through one.
+  const address = postalAddress();
 
   const messages = recipients.map(({ email, token }) => {
     const manage = manageUrl(token);
@@ -171,7 +193,8 @@ ${blurbHtml(post)}
 <p style="margin:0;"><a href="${url}" style="color:${INK};font-weight:600;">Read it on the site →</a></p>`,
       footer: `<p style="margin:0 0 6px;">You're subscribed to ${escapeHtml(label.toLowerCase())}.
 <a href="${manage}" style="color:${MUTED};">Change what you get</a> or
-<a href="${unsubscribe}" style="color:${MUTED};">unsubscribe</a>.</p>`,
+<a href="${unsubscribe}" style="color:${MUTED};">unsubscribe</a>.</p>
+<p style="margin:0;">${escapeHtml(address)}</p>`,
     });
 
     const text = `${label.toUpperCase()}
@@ -184,7 +207,9 @@ ${url}
 
 —
 Change what you get: ${manage}
-Unsubscribe: ${unsubscribe}`;
+Unsubscribe: ${unsubscribe}
+
+${address}`;
 
     return {
       to: [email],
@@ -198,5 +223,5 @@ Unsubscribe: ${unsubscribe}`;
     };
   });
 
-  return sendBatch(messages);
+  return sendBatch(messages, { onChunk });
 }

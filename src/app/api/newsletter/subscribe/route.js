@@ -1,6 +1,14 @@
-import { normalizeEmail, upsertSubscriber } from "@/lib/newsletter/db";
+import {
+  normalizeEmail,
+  upsertSubscriber,
+  markConfirmationSent,
+} from "@/lib/newsletter/db";
 import { newToken } from "@/lib/newsletter/tokens";
 import { sendConfirmation } from "@/lib/newsletter/email";
+import {
+  confirmationThrottled,
+  topicsAwaitingConfirmation,
+} from "@/lib/newsletter/consent";
 import {
   json,
   readJson,
@@ -12,12 +20,20 @@ export const runtime = "edge";
 
 const allow = createRateLimiter({ limit: 5, windowMs: 60 * 60 * 1000 });
 
-// One response for every outcome that isn't a validation error. Saying
-// "you're already subscribed" would turn this endpoint into an oracle for
-// whether a given address is on the list.
+/**
+ * One response for every outcome that isn't a validation error. Saying
+ * "you're already subscribed" would turn this endpoint into an oracle for
+ * whether a given address is on the list.
+ *
+ * The wording has to be true in all of those outcomes, which is why it isn't
+ * the plain "check your inbox" it used to be: an address that is already
+ * confirmed for everything it asked for is owed no mail, and telling that
+ * reader to watch for a link that will never arrive reads as a broken site.
+ */
 const ACCEPTED = {
   ok: true,
-  message: "Check your inbox for a confirmation link.",
+  message:
+    "You're on the list. If this address is new — or you've just added something — there's a confirmation link in your inbox.",
 };
 
 export async function POST(req) {
@@ -54,19 +70,23 @@ export async function POST(req) {
       token: newToken(),
     });
 
-    // Already-confirmed addresses had their topics widened by the upsert and
-    // need no second confirmation. Everyone else — new, unconfirmed, or
-    // returning after unsubscribing — gets the link.
-    if (subscriber.status === "pending") {
-      const topics = [
-        subscriber.blog && "blog",
-        subscriber.poetry && "poetry",
-      ].filter(Boolean);
+    // What the reader still has to agree to: the whole subscription for a new
+    // or returning address, only the newly-requested topics for a confirmed
+    // one, and nothing at all when they already get everything they asked for.
+    const topics = topicsAwaitingConfirmation(subscriber);
+
+    // The per-IP limiter above resets on cold start and is trivially sidestepped
+    // by changing address. This cooldown lives in the database and is keyed on
+    // the *recipient*, so it holds regardless of where the request came from —
+    // which is what actually stops this form being pointed at someone else's
+    // inbox.
+    if (topics.length && !confirmationThrottled(subscriber.confirmation_sent_at)) {
       await sendConfirmation({
         email: subscriber.email,
         token: subscriber.token,
         topics,
       });
+      await markConfirmationSent(subscriber.token);
     }
 
     return json(ACCEPTED);

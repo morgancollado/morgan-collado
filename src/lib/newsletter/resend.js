@@ -61,8 +61,13 @@ export function sendOne(message) {
  * Chunks are sent in sequence rather than in parallel: a partial failure
  * halfway through a large send is recoverable, but tripping the provider's
  * rate limit and having it reject everything is not.
+ *
+ * `onChunk` is awaited after each accepted chunk and is how a caller records
+ * what has actually landed. Without it a send that stops on the provider's
+ * daily cap — the documented, expected failure for a list over a hundred —
+ * leaves no record of who was reached, and resuming means guessing.
  */
-export async function sendBatch(messages) {
+export async function sendBatch(messages, { onChunk } = {}) {
   let sent = 0;
   for (let i = 0; i < messages.length; i += BATCH_LIMIT) {
     const chunk = messages
@@ -70,6 +75,7 @@ export async function sendBatch(messages) {
       .map((message) => ({ from: sender(), ...message }));
     await post("/emails/batch", chunk);
     sent += chunk.length;
+    if (onChunk) await onChunk(chunk.map((message) => message.to[0]), sent);
   }
   return sent;
 }
