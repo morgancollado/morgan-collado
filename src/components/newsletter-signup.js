@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import {
   Box,
   Button,
@@ -32,6 +32,11 @@ export default function NewsletterSignup({
   const [hp, setHp] = useState("");
   const [state, setState] = useState("idle"); // idle | sending | done | error
   const [message, setMessage] = useState("");
+  const done = useRef(null);
+
+  useEffect(() => {
+    if (state === "done") done.current?.focus();
+  }, [state]);
 
   const toggle = (key) => (event) =>
     setTopics((prev) => ({ ...prev, [key]: event.target.checked }));
@@ -70,12 +75,22 @@ export default function NewsletterSignup({
     }
   }
 
+  // The form unmounts on success, taking the focused submit button with it.
+  // Without this, focus falls to <body> and a keyboard or screen-reader user
+  // gets no indication that anything happened at all.
   if (state === "done") {
     return (
       <Box sx={{ maxWidth: "34rem", width: "100%", textAlign: card ? "left" : "center" }}>
         <Typography
+          ref={done}
+          tabIndex={-1}
           role="status"
-          sx={{ fontFamily: SERIF_BODY, fontSize: "0.95rem", color: ink }}
+          sx={{
+            fontFamily: SERIF_BODY,
+            fontSize: "0.95rem",
+            color: ink,
+            ...focusRing(),
+          }}
         >
           {message}
         </Typography>
@@ -228,15 +243,25 @@ export default function NewsletterSignup({
 
       {/*
         Honeypot. Hidden from sight and from screen readers, skipped by tab
-        order, and never autofilled — anything that arrives with it filled in
-        is a bot, and the route accepts the submission without writing a row.
+        order — anything that arrives with it filled in is a bot, and the route
+        accepts the submission without writing a row.
+
+        The field is named for nothing in particular on purpose. It used to be
+        `company`, which is a field browsers and password managers autofill
+        eagerly and `autocomplete="off"` does not reliably stop; a real signup
+        caught that way is discarded in silence behind a success message, which
+        is the worst failure this form has. The opt-out attributes below are the
+        belt to that braces.
       */}
       <Box
         component="input"
         type="text"
-        name="company"
+        name="nb-hp"
         tabIndex={-1}
         autoComplete="off"
+        data-lpignore="true"
+        data-1p-ignore=""
+        data-form-type="other"
         aria-hidden="true"
         value={hp}
         onChange={(e) => setHp(e.target.value)}

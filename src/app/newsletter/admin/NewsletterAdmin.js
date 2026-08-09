@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import NewsletterPageShell from "@/components/newsletter-page-shell";
 import { formatDate } from "@/lib/format-date";
@@ -8,9 +8,29 @@ import { ink, muted, dim, SERIF_BODY, focusRing } from "@/lib/editorial";
 
 const LABELS = { blog: "Technical writing", poetry: "Poetry" };
 
-function PostRow({ post, kind, send, sending, sentAt }) {
+function PostRow({ post, kind, send, sending, record }) {
   const [confirming, setConfirming] = useState(false);
   const busy = sending === `${kind}:${post.slug}`;
+  const confirmButton = useRef(null);
+  const sendButton = useRef(null);
+
+  // Both branches replace the button that was just activated, so focus would
+  // otherwise land on <body> and a keyboard user would lose their place in a
+  // long list.
+  useEffect(() => {
+    if (confirming) confirmButton.current?.focus();
+  }, [confirming]);
+
+  const cancel = () => {
+    setConfirming(false);
+    sendButton.current?.focus();
+  };
+
+  // A row with a send that stopped partway is not "sent" and not untouched —
+  // it is resumable, and saying so is the difference between the operator
+  // pressing Send again and going to look for the database.
+  const partial = record && !record.completed_at;
+  const done = record && record.completed_at;
 
   return (
     <Box
@@ -32,11 +52,12 @@ function PostRow({ post, kind, send, sending, sentAt }) {
         </Typography>
         <Typography sx={{ fontFamily: SERIF_BODY, fontSize: "0.8rem", color: dim }}>
           {formatDate(post.date)}
-          {sentAt && ` · sent ${formatDate(sentAt)}`}
+          {done && ` · sent ${formatDate(record.sent_at)} to ${record.recipients}`}
+          {partial && ` · stopped after ${record.recipients}`}
         </Typography>
       </Box>
 
-      {sentAt ? (
+      {done ? (
         <Typography
           sx={{
             fontFamily: "var(--font-playfair)",
@@ -51,6 +72,7 @@ function PostRow({ post, kind, send, sending, sentAt }) {
       ) : confirming ? (
         <Box sx={{ display: "flex", gap: 1, flexShrink: 0 }}>
           <Button
+            ref={confirmButton}
             onClick={() => send(kind, post.slug)}
             disabled={busy}
             sx={{
@@ -63,10 +85,10 @@ function PostRow({ post, kind, send, sending, sentAt }) {
               ...focusRing(),
             }}
           >
-            {busy ? "Sending…" : "Confirm send"}
+            {busy ? "Sending…" : partial ? "Confirm resume" : "Confirm send"}
           </Button>
           <Button
-            onClick={() => setConfirming(false)}
+            onClick={cancel}
             disabled={busy}
             sx={{ fontFamily: SERIF_BODY, fontSize: "0.8rem", color: muted, ...focusRing() }}
           >
@@ -75,6 +97,7 @@ function PostRow({ post, kind, send, sending, sentAt }) {
         </Box>
       ) : (
         <Button
+          ref={sendButton}
           onClick={() => setConfirming(true)}
           sx={{
             fontFamily: SERIF_BODY,
@@ -84,15 +107,17 @@ function PostRow({ post, kind, send, sending, sentAt }) {
             ...focusRing(),
           }}
         >
-          Send…
+          {partial ? "Resume…" : "Send…"}
         </Button>
       )}
     </Box>
   );
 }
 
-function Column({ kind, posts, sentMap, count, send, sending }) {
-  const unsent = posts.filter((p) => !sentMap[`${kind}:${p.slug}`]).length;
+function Column({ kind, posts, records, count, send, sending }) {
+  const unsent = posts.filter(
+    (p) => !records[`${kind}:${p.slug}`]?.completed_at
+  ).length;
 
   return (
     <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -120,7 +145,7 @@ function Column({ kind, posts, sentMap, count, send, sending }) {
             kind={kind}
             send={send}
             sending={sending}
-            sentAt={sentMap[`${kind}:${post.slug}`]}
+            record={records[`${kind}:${post.slug}`]}
           />
         ))}
       </Box>
@@ -185,11 +210,17 @@ export default function NewsletterAdmin({ blog, poetry }) {
         body: JSON.stringify({ kind, slug }),
       });
       const payload = await response.json();
-      setNotice(
-        response.ok
-          ? `Sent “${payload.subject}” to ${payload.recipients} subscriber${payload.recipients === 1 ? "" : "s"}.`
-          : payload.error
-      );
+      if (!response.ok) {
+        setNotice(payload.error);
+      } else {
+        const fresh = payload.recipients - (payload.skipped || 0);
+        setNotice(
+          `Sent “${payload.subject}” to ${fresh} subscriber${fresh === 1 ? "" : "s"}` +
+            (payload.skipped
+              ? `, on top of the ${payload.skipped} reached before. ${payload.recipients} in total.`
+              : ".")
+        );
+      }
     } catch {
       setNotice("Couldn't reach the server.");
     }
@@ -199,7 +230,11 @@ export default function NewsletterAdmin({ blog, poetry }) {
     loadState();
   }
 
-  if (gate === "checking") return <NewsletterPageShell title="…" />;
+  // A literal ellipsis as the page heading is read aloud as "horizontal
+  // ellipsis". Say what is happening instead.
+  if (gate === "checking") {
+    return <NewsletterPageShell title="Newsletter" intro="Checking access…" />;
+  }
 
   if (gate === "locked") {
     return (
@@ -252,8 +287,8 @@ export default function NewsletterAdmin({ blog, poetry }) {
     );
   }
 
-  const sentMap = Object.fromEntries(
-    sends.map((s) => [`${s.kind}:${s.slug}`, s.sent_at])
+  const records = Object.fromEntries(
+    sends.map((s) => [`${s.kind}:${s.slug}`, s])
   );
 
   return (
@@ -261,28 +296,35 @@ export default function NewsletterAdmin({ blog, poetry }) {
       title="Newsletter"
       intro={`${counts.pending} address${counts.pending === 1 ? "" : "es"} awaiting confirmation. Sending is one-way — there is no recall.`}
     >
-      {notice && (
-        <Typography
-          role="status"
-          sx={{
-            fontFamily: SERIF_BODY,
-            fontSize: "0.95rem",
-            color: ink,
-            border: "1px solid",
-            borderColor: "currentColor",
-            p: 2,
-            mb: 4,
-          }}
-        >
-          {notice}
-        </Typography>
-      )}
+      {/*
+        Mounted whether or not there is anything to say. A live region that
+        appears at the same moment as its first message is announced
+        inconsistently across screen readers; one that is already on the page
+        when the text arrives is not.
+      */}
+      <Box role="status" aria-live="polite">
+        {notice && (
+          <Typography
+            sx={{
+              fontFamily: SERIF_BODY,
+              fontSize: "0.95rem",
+              color: ink,
+              border: "1px solid",
+              borderColor: "currentColor",
+              p: 2,
+              mb: 4,
+            }}
+          >
+            {notice}
+          </Typography>
+        )}
+      </Box>
 
       <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 6 }}>
         <Column
           kind="blog"
           posts={blog}
-          sentMap={sentMap}
+          records={records}
           count={counts.blog}
           send={send}
           sending={sending}
@@ -290,7 +332,7 @@ export default function NewsletterAdmin({ blog, poetry }) {
         <Column
           kind="poetry"
           posts={poetry}
-          sentMap={sentMap}
+          records={records}
           count={counts.poetry}
           send={send}
           sending={sending}

@@ -46,7 +46,12 @@ export default function ConfirmView() {
   }, [token]);
 
   if (state === "working") {
-    return <NewsletterPageShell title="Confirming…" />;
+    return (
+      <NewsletterPageShell
+        title="Confirming your subscription"
+        intro="One moment."
+      />
+    );
   }
 
   if (state === "error") {

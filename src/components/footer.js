@@ -9,6 +9,17 @@ const Footer = () => {
   const pathname = usePathname();
   if (pathname?.startsWith("/queen-")) return null;
 
+  // One signup form per page. The footer offer is the fallback, and it stands
+  // down wherever the page already carries a better one: the /newsletter pages
+  // are about the subscription already — the landing page *is* this form, and
+  // repeating it under "You're unsubscribed" is at best noise — and both
+  // indexes close with the full card, which the footer would otherwise repeat
+  // verbatim a few pixels further down.
+  const hasOwnSignup =
+    pathname?.startsWith("/newsletter") ||
+    pathname === "/blog" ||
+    pathname === "/poetry";
+
   const year = new Date().getFullYear();
   return (
     <Box
@@ -26,10 +37,11 @@ const Footer = () => {
         gap: 1,
       }}
     >
-      {/* The signup inherits the /queen- exclusion from the early return above. */}
-      <Box sx={{ width: "100%", maxWidth: "34rem", mb: 2 }}>
-        <NewsletterSignup variant="compact" />
-      </Box>
+      {!hasOwnSignup && (
+        <Box sx={{ width: "100%", maxWidth: "34rem", mb: 2 }}>
+          <NewsletterSignup variant="compact" />
+        </Box>
+      )}
       <Box
         sx={{
           color: "primary.main",

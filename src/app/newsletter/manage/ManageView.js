@@ -10,9 +10,10 @@ import { ink, muted, dim, SERIF_BODY, focusRing } from "@/lib/editorial";
 export default function ManageView() {
   const token = useSearchParams().get("token");
 
-  const [state, setState] = useState("loading"); // loading | ready | error | gone
+  const [state, setState] = useState("loading"); // loading | ready | error | gone | confirm
   const [email, setEmail] = useState("");
   const [topics, setTopics] = useState({ blog: false, poetry: false });
+  const [status, setStatus] = useState("");
   const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -36,6 +37,7 @@ export default function ManageView() {
         }
         setEmail(payload.email);
         setTopics({ blog: payload.blog, poetry: payload.poetry });
+        setStatus(payload.status);
         setState("ready");
       } catch {
         setState("error");
@@ -68,6 +70,15 @@ export default function ManageView() {
         setState("gone");
         return;
       }
+      // Picking topics again after unsubscribing is a re-join, and re-joining
+      // costs a confirmation click. Saying "Saved." here would be a lie: the
+      // row is `pending` and receives nothing until the link in that mail is
+      // clicked.
+      if (payload.status === "pending") {
+        setState("confirm");
+        return;
+      }
+      setStatus(payload.status);
       setTopics({ blog: payload.blog, poetry: payload.poetry });
       setMessage("Saved.");
     } catch {
@@ -88,6 +99,15 @@ export default function ManageView() {
           if you&rsquo;d like to start over.
         </Typography>
       </NewsletterPageShell>
+    );
+  }
+
+  if (state === "confirm") {
+    return (
+      <NewsletterPageShell
+        title="One last click"
+        intro={`Because you'd unsubscribed, ${email} has to be confirmed again. There's a link in your inbox — the subscription starts when you click it.`}
+      />
     );
   }
 
@@ -117,7 +137,16 @@ export default function ManageView() {
   };
 
   return (
-    <NewsletterPageShell title="Your subscription" intro={email}>
+    <NewsletterPageShell
+      title="Your subscription"
+      intro={
+        status === "unsubscribed"
+          ? `${email} — currently unsubscribed. Pick what you'd like and confirm to start again.`
+          : status === "pending"
+            ? `${email} — not confirmed yet. Check your inbox for the confirmation link.`
+            : email
+      }
+    >
       <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, mb: 3 }}>
         <FormControlLabel
           sx={labelSx}
