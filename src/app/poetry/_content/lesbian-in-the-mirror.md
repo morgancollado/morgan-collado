@@ -9,7 +9,8 @@ ravenously
 Like you wanted her? 
 Crave this pussy
 Like you craved hers
-Wet and open for youI serve this pussy up on platter
+Wet and open for you 
+I serve this pussy up on platter
 Eager
 To be taken from the wall to the floor
 Then
