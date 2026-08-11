@@ -69,7 +69,6 @@ export default function PoemShell({ poem, neighbors }) {
           fontFamily: "var(--font-playfair)",
         }}
       >
-        <span>Vol. I, No. VI</span>
         <span>Poetry</span>
         {poem.date ? (
           <Box component="time" dateTime={poem.date}>
