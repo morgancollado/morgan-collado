@@ -1,5 +1,5 @@
 ---
-title: "2 of Hearts"
+title: "2 of hearts"
 date: "2026-08-13"
 align: "left"
 themes: ["love"]
