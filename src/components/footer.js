@@ -3,10 +3,22 @@ import React from "react";
 import { Box, Typography } from "@mui/material";
 import { usePathname } from "next/navigation";
 import { paper, ink, muted } from "@/lib/editorial";
+import NewsletterSignup from "@/components/newsletter-signup";
 
 const Footer = () => {
   const pathname = usePathname();
   if (pathname?.startsWith("/queen-")) return null;
+
+  // One signup form per page. The footer offer is the fallback, and it stands
+  // down wherever the page already carries a better one: the /newsletter pages
+  // are about the subscription already — the landing page *is* this form, and
+  // repeating it under "You're unsubscribed" is at best noise — and both
+  // indexes close with the full card, which the footer would otherwise repeat
+  // verbatim a few pixels further down.
+  const hasOwnSignup =
+    pathname?.startsWith("/newsletter") ||
+    pathname === "/blog" ||
+    pathname === "/poetry";
 
   const year = new Date().getFullYear();
   return (
@@ -25,6 +37,11 @@ const Footer = () => {
         gap: 1,
       }}
     >
+      {!hasOwnSignup && (
+        <Box sx={{ width: "100%", maxWidth: "34rem", mb: 2 }}>
+          <NewsletterSignup variant="compact" />
+        </Box>
+      )}
       <Box
         sx={{
           color: "primary.main",

@@ -9,18 +9,21 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "newsletter:migrate": "node scripts/newsletter-migrate.mjs"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.19",
     "@mui/material": "^5.14.18",
+    "@neondatabase/serverless": "^0.10.4",
     "@vercel/analytics": "^1.1.1",
     "@vercel/speed-insights": "^1.0.2",
     "dotenv": "^16.3.1",
     "framer-motion": "^10.16.16",
-    "googleapis": "^129.0.0",
     "gray-matter": "^4.0.3",
     "next": "14.0.3",
     "react": "^18",
@@ -31,6 +34,8 @@
   },
   "devDependencies": {
     "eslint": "^8",
-    "eslint-config-next": "14.0.3"
+    "eslint-config-next": "14.0.3",
+    "pg": "^8.23.0",
+    "vitest": "^2.1.9"
   }
 }
