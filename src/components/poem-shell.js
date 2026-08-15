@@ -187,8 +187,6 @@ export default function PoemShell({ poem, neighbors }) {
         </Container>
       </Box>
 
-      <StanzaRule sx={{ mb: { xs: 5, md: 7 } }} />
-
       {/* The poem */}
       <Container maxWidth={false} sx={{ px: { xs: 3, md: 6 } }}>
         <Box
