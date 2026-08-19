@@ -1,6 +1,6 @@
 ---
 title: "lines between"
-date: "2026-08-08"
+date: "2026-08-19"
 align: "left"
 themes: ["love", "community"]
 ---
