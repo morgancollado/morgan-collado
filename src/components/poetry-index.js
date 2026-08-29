@@ -10,6 +10,7 @@ import { hashSeed, pickN, utcDayKey } from "@/lib/seeded-random";
 import { yearOf, folioDate } from "@/lib/format-date";
 import { DRAW_COUNT, LATEST_COUNT } from "@/app/poetry/_lib/constants";
 import { collectThemes } from "@/app/poetry/_lib/themes";
+import NewsletterSignup from "@/components/newsletter-signup";
 import {
   SERIF_BODY,
   muted,
@@ -648,6 +649,13 @@ export default function PoetryIndex({ poems, initialDraw, buildDayKey }) {
               </Box>
             </Box>
           ))}
+        </Box>
+
+        <Box sx={{ mt: { xs: 8, md: 12 } }}>
+          <NewsletterSignup
+            variant="card"
+            defaultTopics={{ blog: false, poetry: true }}
+          />
         </Box>
       </Container>
     </Box>
