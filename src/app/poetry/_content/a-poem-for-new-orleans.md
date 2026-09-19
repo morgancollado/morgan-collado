@@ -2,7 +2,7 @@
 title: "A poem for New Orleans"
 date: "2013-02-24"
 align: "left"
-themes: ["grief", "survival"]
+themes: ["grief", "survival", "place"]
 source:
   url: "https://atriptothemorg.wordpress.com/2013/02/24/post-the-second-2/"
   id: 707
