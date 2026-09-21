@@ -1,6 +1,6 @@
 ---
 title: "Mother"
-date: "2026-09-21"
+date: "2026-21-09"
 align: "left"
 themes: ["love"]
 ---
