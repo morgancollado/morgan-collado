@@ -1,6 +1,6 @@
 ---
 title: "New York"
-date: "2026-9-19"
+date: "2026-09-19"
 align: "left"
 themes: ["place"]
 ---
