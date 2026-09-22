@@ -146,13 +146,13 @@ const healthcarePlatformProjects = [
   },
   {
     id: 15,
-    projectName: "A Mind That Only Reads",
+    projectName: "A Mind That Only Perceives",
     projectDescription:
       "LLMs as the senses of a deterministic system — perception at scale, judgment kept elsewhere.",
     projectDetail:
       "Three minds build a system that carries consequences, and only one of them replays. How we gave the model the perceptual boundary and nothing else: a schema with no field for a verdict, a corpus a human verified, and every decision downstream in code.",
     imageLink: "/essay-perception.svg",
-    blogLink: "/blog/a-mind-that-only-reads",
+    blogLink: "/blog/a-mind-that-only-perceives",
   },
 ];
 
