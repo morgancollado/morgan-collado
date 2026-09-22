@@ -1,5 +1,5 @@
 ---
-title: "A Mind That Only Reads"
+title: "A Mind That Only Perceives"
 description: "LLMs as the senses of a deterministic system: perception at scale, and judgment kept nowhere near the model."
 date: "2026-09-22"
 category: "Healthcare Compliance Platform"
