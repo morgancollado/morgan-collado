@@ -19,7 +19,7 @@ As the brain
 Has fewer 
 Novel
 Experiences
-Less sleep 
+Less
 Is required to
 Re
 Integrate
