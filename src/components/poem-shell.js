@@ -199,7 +199,7 @@ export default function PoemShell({ poem, neighbors }) {
             mx: "auto",
           }}
         >
-          <PoemBody stanzas={poem.stanzas} align={poem.align} />
+          <PoemBody stanzas={poem.stanzas} />
         </Box>
       </Container>
 

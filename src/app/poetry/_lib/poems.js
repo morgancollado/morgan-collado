@@ -1,56 +1,24 @@
 import { createContentLoader } from "@/lib/content";
 import { EXCERPT_LINES } from "./constants";
+import { parseStanzas, poemAlign } from "./stanzas";
 
 const poetry = createContentLoader("src/app/poetry/_content");
 
 const FIELDS = ["slug", "title", "date", "align", "themes", "source", "content"];
 
-/** A line that stands alone as a dash is the author's own stanza break. */
-const DIVIDER_RE = /^[ \t]*[–—-][ \t]*$/;
-
-/**
- * A line carrying nothing but ordinary spaces.
- *
- * Deliberately `[ \t]` rather than `\s`: JavaScript counts U+00A0 as
- * whitespace, and a non-breaking space is *content* in this corpus — it is what
- * "Whole Pieces" builds its staircase from. Using `\s` here (or `.trim()`)
- * would silently delete an all-NBSP line and split the stanza around the hole.
- */
-const BLANK_RE = /^[ \t]*$/;
-
-/**
- * Split a poem body into stanzas of lines.
- *
- * Blank lines count as breaks too, so a hand-written poem can use either
- * convention. Note this deliberately does not trim the lines: "Whole Pieces"
- * composes with interior whitespace and the renderer preserves it.
- */
-export function parseStanzas(body) {
-  const stanzas = [];
-  let current = [];
-
-  for (const line of body.split("\n")) {
-    if (DIVIDER_RE.test(line) || BLANK_RE.test(line)) {
-      if (current.length) {
-        stanzas.push(current);
-        current = [];
-      }
-    } else {
-      current.push(line);
-    }
-  }
-  if (current.length) stanzas.push(current);
-
-  return stanzas;
-}
-
 function shape(raw) {
-  const stanzas = parseStanzas(raw.content || "");
+  let align, stanzas;
+  try {
+    align = poemAlign(raw.align);
+    stanzas = parseStanzas(raw.content || "", align);
+  } catch (error) {
+    throw new Error(`poetry/_content/${raw.slug}.md: ${error.message}`);
+  }
   return {
     slug: raw.slug,
     title: raw.title || raw.slug,
     date: raw.date || "",
-    align: raw.align === "center" ? "center" : "left",
+    align,
     themes: raw.themes || [],
     // Where the poem first appeared. Only the URL is surfaced — the WordPress
     // post id and the original "Post the Eighty-Seventh" title sit alongside it
