@@ -17,7 +17,10 @@ export async function generateMetadata({ params }) {
   // Describe the poem in its own words. Whitespace is normalized here — and
   // only here — because the composed spacing in some poems would otherwise
   // leak into a meta tag.
-  const opening = (poem.stanzas[0] || []).slice(0, 2).join(" / ");
+  const opening = (poem.stanzas[0] || [])
+    .slice(0, 2)
+    .map((line) => line.text)
+    .join(" / ");
   const description = opening.replace(/\s+/g, " ").trim();
 
   return {

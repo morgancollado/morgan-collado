@@ -19,38 +19,83 @@ const DIVIDER_RE = /^[ \t]*[–—-][ \t]*$/;
 const BLANK_RE = /^[ \t]*$/;
 
 /**
- * Split a poem body into stanzas of lines.
+ * An alignment tag at the start of a line: `{right}`, `{center}`, `{left}`.
+ *
+ * Any brace pair at the start of a line is taken as a tag, recognized or not,
+ * so a typo like `{rigth}` fails the build instead of publishing itself. That
+ * is safe only because no poem in the corpus opens a line with `{`. One
+ * ordinary space after the tag is separator; anything beyond it is kept as
+ * composed whitespace.
+ */
+const TAG_RE = /^\{([^}]*)\} ?/;
+const ALIGNMENTS = ["left", "center", "right"];
+
+/**
+ * Split a poem body into stanzas of `{ text, align }` lines.
  *
  * Blank lines count as breaks too, so a hand-written poem can use either
  * convention. Note this deliberately does not trim the lines: "Whole Pieces"
  * composes with interior whitespace and the renderer preserves it.
+ *
+ * Alignment resolves nearest-wins, and never crosses a stanza break:
+ *
+ *  - the poem's `align` is the default for every line;
+ *  - a tag alone on its line sets every line after it, to the end of the
+ *    stanza;
+ *  - a tag opening a line of verse sets that line only.
+ *
+ * Tags are removed here, so nothing downstream ever sees one.
  */
-export function parseStanzas(body) {
+export function parseStanzas(body, defaultAlign = "left") {
   const stanzas = [];
   let current = [];
+  let stanzaAlign = defaultAlign;
 
-  for (const line of body.split("\n")) {
+  body.split("\n").forEach((line, i) => {
     if (DIVIDER_RE.test(line) || BLANK_RE.test(line)) {
       if (current.length) {
         stanzas.push(current);
         current = [];
       }
-    } else {
-      current.push(line);
+      stanzaAlign = defaultAlign;
+      return;
     }
-  }
+
+    const tag = line.match(TAG_RE);
+    if (!tag) {
+      current.push({ text: line, align: stanzaAlign });
+      return;
+    }
+
+    if (!ALIGNMENTS.includes(tag[1])) {
+      throw new Error(
+        `Unknown alignment tag {${tag[1]}} on line ${i + 1} of the poem body: ` +
+          `"${line}". Use {${ALIGNMENTS.join("}, {")}}.`
+      );
+    }
+
+    const text = line.slice(tag[0].length);
+    if (BLANK_RE.test(text)) stanzaAlign = tag[1];
+    else current.push({ text, align: tag[1] });
+  });
   if (current.length) stanzas.push(current);
 
   return stanzas;
 }
 
 function shape(raw) {
-  const stanzas = parseStanzas(raw.content || "");
+  const align = raw.align === "center" ? "center" : "left";
+  let stanzas;
+  try {
+    stanzas = parseStanzas(raw.content || "", align);
+  } catch (error) {
+    throw new Error(`poetry/_content/${raw.slug}.md: ${error.message}`);
+  }
   return {
     slug: raw.slug,
     title: raw.title || raw.slug,
     date: raw.date || "",
-    align: raw.align === "center" ? "center" : "left",
+    align,
     themes: raw.themes || [],
     // Where the poem first appeared. Only the URL is surfaced — the WordPress
     // post id and the original "Post the Eighty-Seventh" title sit alongside it

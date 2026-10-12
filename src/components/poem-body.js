@@ -26,6 +26,15 @@ function renderLine(line) {
   );
 }
 
+// A long line that wraps should read as a continuation of the line above,
+// not as a new line of verse. The hanging indent assumes a left edge to hang
+// from, so centered and right-aligned lines go without.
+const alignSx = {
+  left: { textAlign: "left", textIndent: "-1.5em", paddingLeft: "1.5em" },
+  center: { textAlign: "center" },
+  right: { textAlign: "right" },
+};
+
 /**
  * Renders verse.
  *
@@ -33,6 +42,9 @@ function renderLine(line) {
  * paragraphs so assistive tech pauses between them, and lines are block-level
  * so the accessibility tree keeps the lineation instead of running the poem
  * together as prose.
+ *
+ * Alignment is set per line, already resolved by `parseStanzas` from the
+ * poem's default and any `{right}`-style tags, so a stanza can mix alignments.
  *
  * Two rules here are load-bearing and should not be "tidied":
  *
@@ -42,8 +54,10 @@ function renderLine(line) {
  *  - Spanish is never marked up. Several poems code-switch mid-line; that is
  *    the voice, not a quotation, so there is no `lang` attribute and no italic.
  *
- * Poem bodies are stored as plain text carrying exactly two delimiters, which
- * `_lib/emphasis.js` defines and both this renderer and the social card read.
+ * Poem bodies are stored as plain text carrying exactly three delimiters:
+ * stanza breaks and alignment tags, which `_lib/poems.js` resolves before
+ * anything renders, and emphasis, which `_lib/emphasis.js` defines and both
+ * this renderer and the social card read.
  * They are not markdown: a markdown renderer would eat the asterisk in the line
  * beginning "Trans" in "Forced Silence/Forced Speech", and would turn indented
  * lines into code blocks. Do not run this content through one.
@@ -54,8 +68,7 @@ function renderLine(line) {
  * JavaScript hasn't run or never runs. Motion elsewhere on these pages only
  * ever enhances content that is already visible.
  */
-export default function PoemBody({ stanzas, align = "left", size = "full" }) {
-  const centered = align === "center";
+export default function PoemBody({ stanzas, size = "full" }) {
   const isExcerpt = size === "excerpt";
 
   const lineSx = {
@@ -66,18 +79,11 @@ export default function PoemBody({ stanzas, align = "left", size = "full" }) {
       ? { xs: "1rem", md: "1.0625rem" }
       : { xs: "1.0625rem", md: "1.1875rem" },
     lineHeight: isExcerpt ? 1.75 : 1.9,
-    // A long line that wraps should read as a continuation of the line above,
-    // not as a new line of verse. Centering fights a hanging indent, so
-    // centered poems go without.
-    ...(centered
-      ? {}
-      : { textIndent: "-1.5em", paddingLeft: "1.5em" }),
   };
 
   const stanzaSx = {
     m: 0,
     mb: isExcerpt ? 0 : { xs: 3.5, md: 4.5 },
-    textAlign: centered ? "center" : "left",
     "&:last-of-type": { mb: 0 },
   };
 
@@ -86,8 +92,13 @@ export default function PoemBody({ stanzas, align = "left", size = "full" }) {
       {stanzas.map((lines, i) => (
         <Box component="p" key={i} className="poem-stanza" sx={stanzaSx}>
           {lines.map((line, j) => (
-            <Box component="span" key={j} className="poem-line" sx={lineSx}>
-              {renderLine(line)}
+            <Box
+              component="span"
+              key={j}
+              className="poem-line"
+              sx={{ ...lineSx, ...alignSx[line.align] }}
+            >
+              {renderLine(line.text)}
             </Box>
           ))}
         </Box>

@@ -96,7 +96,7 @@ function PoemCard({ poem }) {
       </Box>
 
       <Box sx={verseSx}>
-        <PoemBody stanzas={[poem.excerpt]} align={poem.align} size="excerpt" />
+        <PoemBody stanzas={[poem.excerpt]} size="excerpt" />
       </Box>
 
       {poem.truncated && (
@@ -107,7 +107,9 @@ function PoemCard({ poem }) {
             fontFamily: "var(--font-playfair)",
             fontSize: "1rem",
             letterSpacing: 4,
-            textAlign: poem.align === "center" ? "center" : "left",
+            // Trails the last line shown, so it sits under the verse even when
+            // that line is tagged away from the poem's alignment.
+            textAlign: poem.excerpt[poem.excerpt.length - 1]?.align ?? poem.align,
           }}
         >
           {/* The ellipsis is a visual mark; a screen reader would read it as
@@ -640,7 +642,7 @@ export default function PoetryIndex({ poems, initialDraw, buildDayKey }) {
                           textOverflow: "ellipsis",
                         }}
                       >
-                        {poem.excerpt[0]}
+                        {poem.excerpt[0]?.text}
                       </Box>
                     </Box>
                   </Box>
