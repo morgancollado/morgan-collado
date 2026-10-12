@@ -38,7 +38,7 @@ renders correctly.
 | --- | --- | --- |
 | `title` | yes | Falls back to the slug if missing, which you don't want. |
 | `date` | yes | **Must be `"YYYY-MM-DD"`.** See the trap below. |
-| `align` | no | `"center"` or `"left"`. Anything else, including absent, means left. The default for every line; [alignment tags](#alignment) override it. |
+| `align` | no | `"left"`, `"center"` or `"right"`. Absent means left; anything else fails the build. The default for every line; [alignment tags](#alignment) override it. |
 | `themes` | no | See the vocabulary below. Eight of the poems have none. |
 | `source` | no | Only `url` is displayed. `id` and `originalTitle` are provenance and are never rendered. |
 
@@ -114,10 +114,12 @@ So to know where a line sits, read up to the top of its stanza — no further.
   the rest of it.
 - One space after a tag is the separator. Any more is kept as composed
   whitespace.
-- **A typo fails the build.** Any `{…}` opening a line is read as a tag, so
-  `{rigth}` stops `npm run build` with the file and line, instead of
-  publishing itself. That is safe only because no poem opens a line with `{` —
-  keep it that way.
+- **A typo fails the build.** Any single word in braces opening a line is read
+  as a tag, so `{rigth}` stops `npm run build` with the file and line, instead
+  of publishing itself. Braces around anything else, such as `{a whisper}`, are
+  verse.
+- **So does a tag that sets nothing**, such as a `{right}` alone at the end of
+  a stanza, or one followed only by lines carrying their own tags.
 - Tags are removed before anything is shown, and the index preview and social
   card set the lines where the tags put them.
 
@@ -142,8 +144,10 @@ below which there isn't enough travel for it to draw.
 ## Verifying
 
 ```
-npm run build && npm start
+npm test && npm run build && npm start
 ```
+
+`npm test` covers the stanza and alignment rules in `_lib/stanzas.js`.
 
 Then check the poem page, its card at `/poetry/<slug>/opengraph-image`, and
 that it appears on `/poetry` in the archive and under any theme you gave it.

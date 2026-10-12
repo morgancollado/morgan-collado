@@ -55,7 +55,7 @@ const alignSx = {
  *    the voice, not a quotation, so there is no `lang` attribute and no italic.
  *
  * Poem bodies are stored as plain text carrying exactly three delimiters:
- * stanza breaks and alignment tags, which `_lib/poems.js` resolves before
+ * stanza breaks and alignment tags, which `_lib/stanzas.js` resolves before
  * anything renders, and emphasis, which `_lib/emphasis.js` defines and both
  * this renderer and the social card read.
  * They are not markdown: a markdown renderer would eat the asterisk in the line

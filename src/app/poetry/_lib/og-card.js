@@ -159,14 +159,13 @@ function VerseLine({ line, size }) {
  * @param {string} props.title      poem title, or the section title
  * @param {{ text: string, align: string }[]} props.lines
  *   the verse to set, already truncated, each line carrying its own alignment
- * @param {string} props.align      "center" | "left", for the title
+ * @param {string} props.align      "left" | "center" | "right", for the title
  * @param {string} props.footer     right-hand footer text (a date, or a count)
  * @param {string} props.imprint    left-hand footer text; omitted for a poem
  *   with no prior publication, since the card must not claim one
  * @param {boolean} props.truncated whether more of the poem follows
  */
 export function OgCard({ title, lines, align, footer, imprint, truncated }) {
-  const centered = align === "center";
   const size = verseSize(lines);
 
   return (
@@ -219,7 +218,7 @@ export function OgCard({ title, lines, align, footer, imprint, truncated }) {
           flexDirection: "column",
           flex: 1,
           justifyContent: "center",
-          alignItems: centered ? "center" : "flex-start",
+          alignItems: FLEX_ALIGN[align],
           padding: "28px 0",
         }}
       >
@@ -234,7 +233,7 @@ export function OgCard({ title, lines, align, footer, imprint, truncated }) {
             letterSpacing: -1,
             color: INK,
             maxWidth: 1000,
-            textAlign: centered ? "center" : "left",
+            textAlign: align,
           }}
         >
           {title}
