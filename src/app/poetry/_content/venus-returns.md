@@ -56,9 +56,11 @@ Cousin
 Hands me a
 Maroon record
 One of my dad’s
-The singer traveled far
-To show her suffering
-At being abandoned
+Paso a paso
+Poco a poco
+Yo a ti te voy a conseguir
+Para que sepas cuanto te quiero
+Para que sepas que es sufrir
 -
 Chasing the setting sun 
 Our stories 
