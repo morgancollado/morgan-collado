@@ -8,11 +8,11 @@
  *
  *   npm run newsletter:migrate
  */
-import { readFileSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import { neon } from "@neondatabase/serverless";
 import dotenv from "dotenv";
+import { schemaStatements } from "./newsletter-statements.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -26,21 +26,15 @@ if (!url) {
   process.exit(1);
 }
 
-const schema = readFileSync(join(here, "newsletter-schema.sql"), "utf8");
-
-// The HTTP driver sends one statement per request, so split the file rather
-// than handing it over whole. Comment-only fragments are dropped.
-const statements = schema
-  .split(";")
-  .map((s) => s.trim())
-  .filter((s) => s && !s.split("\n").every((line) => line.trim().startsWith("--")));
+const statements = schemaStatements();
 
 const sql = neon(url);
 
 for (const statement of statements) {
   const label = statement.replace(/\s+/g, " ").slice(0, 60);
   try {
-    await sql.query(statement);
+    // Called as a plain function: driver 0.10 has no sql.query().
+    await sql(statement);
     console.log(`ok   ${label}…`);
   } catch (error) {
     console.error(`fail ${label}…`);

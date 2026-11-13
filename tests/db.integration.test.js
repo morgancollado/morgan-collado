@@ -3,6 +3,7 @@ import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import pg from "pg";
+import { schemaStatements } from "../scripts/newsletter-statements.mjs";
 
 /**
  * The queries in db.js, run against a real Postgres.
@@ -397,6 +398,24 @@ describe.skipIf(!URL_)("db.js against Postgres", () => {
 
       const after = await signup({ poetry: true });
       expect(after.confirmation_sent_at).toEqual(stamped.confirmation_sent_at);
+    });
+  });
+
+  describe("the migration script's statements", () => {
+    it("apply one at a time, as the HTTP driver sends them, and re-apply cleanly", async () => {
+      const statements = schemaStatements();
+      expect(statements.length).toBeGreaterThan(5);
+      // Each entry has to be a whole statement on its own; a bad split shows
+      // up here as a syntax error rather than as a half-built production schema.
+      for (let pass = 0; pass < 2; pass++) {
+        for (const statement of statements) await pool.query(statement);
+      }
+      const tables = (
+        await pool.query(
+          "select table_name from information_schema.tables where table_schema = current_schema() order by 1"
+        )
+      ).rows.map((r) => r.table_name);
+      expect(tables).toEqual(["send_deliveries", "sends", "subscribers"]);
     });
   });
 

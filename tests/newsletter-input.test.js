@@ -37,7 +37,7 @@ describe("isTokenShaped", () => {
 
 describe("isSlugShaped", () => {
   it("accepts the slugs the content directory actually uses", () => {
-    for (const slug of ["barren", "a-poem-for-new-orleans", "baa-wall", "i"]) {
+    for (const slug of ["barren", "a-poem-for-new-orleans", "baa-wall", "i", "Lioness"]) {
       expect(isSlugShaped(slug)).toBe(true);
     }
   });
@@ -59,8 +59,8 @@ describe("isSlugShaped", () => {
     }
   });
 
-  it("rejects non-strings, uppercase, and a leading dash", () => {
-    for (const bad of [null, undefined, 7, "", "-leading", "Upper", "a".repeat(122)]) {
+  it("rejects non-strings, a leading dash, and overlong slugs", () => {
+    for (const bad of [null, undefined, 7, "", "-leading", "a".repeat(122)]) {
       expect(isSlugShaped(bad)).toBe(false);
     }
   });

@@ -15,9 +15,13 @@ const BLOG_FIELDS = ["slug", "title", "description", "date"];
 /** How many opening lines of a poem ride along in the notification. */
 const POEM_EXCERPT_LINES = 4;
 
-/** Filenames are slugs, so anything outside this shape cannot name a file. */
+/**
+ * Filenames are slugs, so anything outside this shape cannot name a file.
+ * Letters may be uppercase because some published filenames are (Lioness.md);
+ * no dot or slash is allowed, so nothing here can climb out of the directory.
+ */
 export function isSlugShaped(slug) {
-  return typeof slug === "string" && /^[a-z0-9][a-z0-9-]{0,120}$/.test(slug);
+  return typeof slug === "string" && /^[A-Za-z0-9][A-Za-z0-9-]{0,120}$/.test(slug);
 }
 
 /** Everything sendable, newest first — the admin console's inventory. */
