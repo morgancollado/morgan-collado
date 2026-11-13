@@ -29,7 +29,6 @@ function stubFetch(respond = () => ({ ok: true, body: { data: [] } })) {
 beforeEach(() => {
   vi.stubEnv("RESEND_API_KEY", "re_test");
   vi.stubEnv("NEWSLETTER_FROM", "Morgan <news@example.com>");
-  vi.stubEnv("NEWSLETTER_POSTAL_ADDRESS", "PO Box 1, Somewhere");
   stubFetch();
 });
 
@@ -119,7 +118,6 @@ describe("sendNewPost", () => {
       expect(message.html).toContain(`/newsletter/unsubscribe?token=${token}`);
       expect(message.text).toContain(`Unsubscribe: http://localhost:3000/newsletter/unsubscribe?token=${token}`);
       expect(message.html).toContain("http://localhost:3000/poetry/Lioness");
-      expect(message.html).toContain("PO Box 1, Somewhere");
     });
 
     // The excerpt comes from a file, but it still gets escaped.
@@ -137,14 +135,6 @@ describe("sendNewPost", () => {
     });
     expect(calls[0].body[0].subject).toBe("New writing: A Post");
     expect(calls[0].body[0].html).toContain("About it.");
-  });
-
-  it("sends nothing without a postal address", async () => {
-    vi.stubEnv("NEWSLETTER_POSTAL_ADDRESS", "");
-    await expect(
-      sendNewPost({ recipients: readers(3), kind: "poetry", post: poem })
-    ).rejects.toThrow("NEWSLETTER_POSTAL_ADDRESS is not set.");
-    expect(calls).toHaveLength(0);
   });
 });
 

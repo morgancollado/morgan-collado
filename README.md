@@ -54,13 +54,7 @@ project's environment variables:
 | `DATABASE_URL` | Neon / Vercel Postgres connection string |
 | `RESEND_API_KEY` | Resend API key |
 | `NEWSLETTER_FROM` | Sender, e.g. `Morgan Collado <notes@morgancollado.com>` |
-| `NEWSLETTER_POSTAL_ADDRESS` | Physical address printed on every notification |
 | `NEWSLETTER_ADMIN_PASSWORD` | Gates `/newsletter/admin` |
-
-`NEWSLETTER_POSTAL_ADDRESS` is not optional. CAN-SPAM requires a physical
-postal address on commercial bulk mail, and a send refuses to run without one
-rather than quietly putting non-compliant mail in people's inboxes. The
-confirmation mail is transactional and doesn't carry it.
 
 Then verify the sending domain in Resend (Domains → Add, then publish the DKIM
 and SPF records it gives you). Until that resolves, Resend only delivers to

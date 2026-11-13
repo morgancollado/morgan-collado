@@ -115,7 +115,6 @@ describe.skipIf(!URL_)("the reader journey, through the routes", () => {
     adminAuthorized = true;
     vi.stubEnv("RESEND_API_KEY", "re_test");
     vi.stubEnv("NEWSLETTER_FROM", "Morgan <news@example.com>");
-    vi.stubEnv("NEWSLETTER_POSTAL_ADDRESS", "PO Box 1, Somewhere");
     stubResend();
     vi.spyOn(console, "error").mockImplementation(() => {});
   });
