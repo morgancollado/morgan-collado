@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { sendBatch, BATCH_LIMIT } from "@/lib/newsletter/resend";
-import { sendNewPost } from "@/lib/newsletter/email";
+import { sendNewPost, sendConfirmation } from "@/lib/newsletter/email";
 import { listSendable, loadForSend } from "@/lib/newsletter/posts";
 
 /**
@@ -135,6 +135,24 @@ describe("sendNewPost", () => {
     });
     expect(calls[0].body[0].subject).toBe("New writing: A Post");
     expect(calls[0].body[0].html).toContain("About it.");
+  });
+});
+
+describe("sendConfirmation", () => {
+  it.each([
+    [["poetry"], "new poetry"],
+    [["blog"], "new technical writing"],
+    [["blog", "poetry"], "new technical writing and poetry"],
+  ])("names what %j signed up for, in the first person", async (topics, what) => {
+    await sendConfirmation({ email: "reader@example.com", token: "tok", topics });
+
+    const [message] = calls.map((c) => c.body);
+    const sentence = `Someone — hopefully you — asked to hear when I publish ${what}.`;
+    expect(message.subject).toBe("Confirm your subscription");
+    expect(message.text).toContain(sentence);
+    expect(message.html).toContain(sentence);
+    expect(message.text).not.toContain("Morgan Collado");
+    expect(message.html).not.toContain("Morgan Collado");
   });
 });
 

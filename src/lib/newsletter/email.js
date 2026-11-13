@@ -109,7 +109,7 @@ function blurbText(post) {
 function topicSentence(topics) {
   const names = topics.map((t) => TOPIC_LABELS[t].toLowerCase());
   if (names.length === 2) return `${names[0]} and ${names[1]}`;
-  return names[0] || "new writing";
+  return names[0] || "writing";
 }
 
 /**
