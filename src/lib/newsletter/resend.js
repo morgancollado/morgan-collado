@@ -23,13 +23,16 @@ export function sender() {
   return from;
 }
 
-async function post(path, body) {
+async function post(path, body, { idempotencyKey } = {}) {
+  const headers = {
+    Authorization: `Bearer ${apiKey()}`,
+    "Content-Type": "application/json",
+  };
+  if (idempotencyKey) headers["Idempotency-Key"] = idempotencyKey;
+
   const response = await fetch(`${API}${path}`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey()}`,
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify(body),
   });
 
@@ -67,15 +70,33 @@ export function sendOne(message) {
  * daily cap — the documented, expected failure for a list over a hundred —
  * leaves no record of who was reached, and resuming means guessing.
  */
-export async function sendBatch(messages, { onChunk } = {}) {
+export async function sendBatch(messages, { onChunk, idempotencyPrefix } = {}) {
   let sent = 0;
   for (let i = 0; i < messages.length; i += BATCH_LIMIT) {
     const chunk = messages
       .slice(i, i + BATCH_LIMIT)
       .map((message) => ({ from: sender(), ...message }));
-    await post("/emails/batch", chunk);
+    const idempotencyKey = idempotencyPrefix
+      ? await chunkKey(idempotencyPrefix, chunk)
+      : undefined;
+    await post("/emails/batch", chunk, { idempotencyKey });
     sent += chunk.length;
     if (onChunk) await onChunk(chunk.map((message) => message.to[0]), sent);
   }
   return sent;
+}
+
+/**
+ * The one gap the delivery table can't close: Resend accepts a batch and the
+ * run dies before `onChunk` records it. A resume would then mail that batch
+ * again. Keying each batch on the send and on exactly who is in it lets Resend
+ * recognise the retry (for 24 hours) and return the original result instead
+ * of sending twice. Recipients are fetched in a fixed order, so the batch that
+ * was cut off is the same batch on the retry.
+ */
+export async function chunkKey(prefix, chunk) {
+  const who = chunk.map((message) => message.to[0]).join("\n");
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(who));
+  const hex = Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, "0")).join("");
+  return `${prefix}/${hex}`;
 }

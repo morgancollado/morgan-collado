@@ -48,15 +48,20 @@ const here = dirname(fileURLToPath(import.meta.url));
 
 let mail;
 let failBatch;
+let batchKeys;
 
 function stubResend() {
   mail = [];
   failBatch = null;
+  batchKeys = [];
   let batches = 0;
   vi.stubGlobal("fetch", async (url, init) => {
+    // The live-site check before a send is a plain GET of the post's page.
+    if (!init?.body) return { ok: true, status: 200 };
     const body = JSON.parse(init.body);
     if (url.endsWith("/emails/batch")) {
       batches += 1;
+      batchKeys.push(init.headers["Idempotency-Key"]);
       if (failBatch === batches) {
         return {
           ok: false,
@@ -198,11 +203,28 @@ describe.skipIf(!URL_)("the reader journey, through the routes", () => {
   it("sends the newest piece of that kind when no slug is given", async () => {
     await signUpAndConfirm("poems@example.com", { poetry: true });
     const { listSendable } = await import("@/lib/newsletter/posts");
-    const newest = listSendable().poetry[0];
+    const { newestOf } = await import("@/lib/newsletter/send");
+    const newest = newestOf(listSendable().poetry);
 
     const result = await sendPost({ kind: "poetry", slug: "  " });
     expect(result).toMatchObject({ status: "sent", slug: newest.slug, sent: 1 });
     expect(mail).toHaveLength(1);
+  });
+
+  it("refuses a real send while the post isn't loading on the site", async () => {
+    await signUpAndConfirm("poems@example.com", { poetry: true });
+    const checkLive = async () => false;
+
+    await expect(sendPost({ kind: "poetry", slug: "doggerel", checkLive })).rejects.toThrow(
+      /isn't loading on the live site yet. Nothing was sent/
+    );
+    expect(mail).toHaveLength(0);
+    expect((await pool.query("select count(*)::int as n from sends")).rows[0].n).toBe(0);
+
+    expect(await sendPost({ kind: "poetry", slug: "doggerel", dryRun: true, checkLive })).toMatchObject({
+      status: "would-send",
+      live: false,
+    });
   });
 
   it("dry run counts recipients and sends and records nothing", async () => {
@@ -272,6 +294,11 @@ describe.skipIf(!URL_)("the reader journey, through the routes", () => {
     expect(mail).toHaveLength(BATCH_LIMIT);
     const first = mail.map((m) => m.to[0]);
 
+    // The batch that failed is keyed by who is in it, so the retry below
+    // carries the same key and Resend could recognise a duplicate.
+    const failedKey = batchKeys[1];
+    expect(failedKey).toMatch(/^newsletter-[0-9a-f-]+\/[0-9a-f]{64}$/);
+
     // A dry run in between reports the resume honestly.
     expect(await sendPost({ kind: "poetry", slug: "doggerel", dryRun: true })).toMatchObject({
       status: "would-send",
@@ -286,6 +313,7 @@ describe.skipIf(!URL_)("the reader journey, through the routes", () => {
       skipped: BATCH_LIMIT,
     });
     const second = mail.map((m) => m.to[0]);
+    expect(batchKeys).toEqual([failedKey]);
 
     expect(second).toHaveLength(50);
     expect(new Set([...first, ...second]).size).toBe(total);

@@ -1,7 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "fs";
-import { readInputs, configProblems, runFromEnv } from "@/lib/newsletter/send-cli";
-import { describeResult, subjectFor } from "@/lib/newsletter/send";
+import { readInputs, configProblems, runFromEnv, secretValues } from "@/lib/newsletter/send-cli";
+import { describeResult, subjectFor, shownSlug, dateKey, newestOf } from "@/lib/newsletter/send";
+import { chunkKey } from "@/lib/newsletter/resend";
 
 /**
  * The "Send newsletter" workflow's form, as the script reads it. The journey
@@ -56,6 +57,56 @@ describe("configProblems", () => {
         /SITE_URL/
       );
     }
+  });
+});
+
+describe("branch and secrets", () => {
+  it("only sends for real from main when running in GitHub Actions", () => {
+    const actions = { ...ready, GITHUB_ACTIONS: "true" };
+    expect(configProblems({ ...actions, GITHUB_REF: "refs/heads/main" })).toEqual([]);
+    expect(configProblems({ ...actions, GITHUB_REF: "refs/heads/some-branch" }).join(" ")).toMatch(
+      /only run from the main branch/
+    );
+    // Locally there is no ref to check.
+    expect(configProblems(ready)).toEqual([]);
+  });
+
+  it("scrubs the database password on its own, not just the whole URL", () => {
+    const values = secretValues({ DATABASE_URL: "postgres://owner:p%40ssw0rd!@db.example/x", RESEND_API_KEY: "re_abcdef" });
+    expect(values).toContain("p@ssw0rd!");
+    expect(values).toContain("re_abcdef");
+  });
+});
+
+describe("what gets echoed back", () => {
+  it("never prints a typed name that could be read as a GitHub command or markdown", () => {
+    expect(shownSlug("Lioness")).toBe('"Lioness"');
+    expect(shownSlug("::stop-commands::x")).toBe("that name");
+    expect(shownSlug("a\n::add-mask::b")).toBe("that name");
+    expect(shownSlug("<img src=x>")).toBe("that name");
+  });
+});
+
+describe("newest", () => {
+  it("compares dates as numbers, so the 10th comes after the 9th", () => {
+    expect(dateKey("2026-11-10")).toBeGreaterThan(dateKey("2026-11-9"));
+    expect(newestOf([{ date: "2026-11-9" }, { date: "2026-11-10" }, { date: "2026-10-31" }])).toEqual({
+      date: "2026-11-10",
+    });
+    expect(newestOf([])).toBeNull();
+  });
+});
+
+describe("batch keys", () => {
+  const batch = (...emails) => emails.map((email) => ({ to: [email] }));
+
+  it("are the same for the same people and differ otherwise", async () => {
+    const a = await chunkKey("newsletter-1", batch("a@x.com", "b@x.com"));
+    expect(await chunkKey("newsletter-1", batch("a@x.com", "b@x.com"))).toBe(a);
+    expect(await chunkKey("newsletter-1", batch("a@x.com", "c@x.com"))).not.toBe(a);
+    expect(await chunkKey("newsletter-2", batch("a@x.com", "b@x.com"))).not.toBe(a);
+    expect(a.length).toBeLessThanOrEqual(256);
+    expect(a).not.toContain("a@x.com");
   });
 });
 
@@ -123,6 +174,11 @@ describe("the workflow file", () => {
   it("passes the form through env, never into the shell command", () => {
     const runLines = workflow.split("\n").filter((line) => /^\s*run:/.test(line));
     for (const line of runLines) expect(line).not.toMatch(/\$\{\{/);
+  });
+
+  it("doesn't cache dependencies or run install scripts in the job holding the keys", () => {
+    expect(workflow).not.toMatch(/cache:\s*npm/);
+    expect(workflow).toMatch(/npm ci --ignore-scripts/);
   });
 
   it("defaults to a dry run", () => {

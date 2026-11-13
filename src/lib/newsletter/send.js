@@ -7,8 +7,8 @@ import {
   recordProgress,
   completeSend,
 } from "@/lib/newsletter/db";
-import { listSendable, loadForSend } from "@/lib/newsletter/posts";
-import { sendNewPost, TOPIC_LABELS } from "@/lib/newsletter/email";
+import { listSendable, loadForSend, isSlugShaped } from "@/lib/newsletter/posts";
+import { sendNewPost, postUrl, TOPIC_LABELS } from "@/lib/newsletter/email";
 
 /**
  * Sending one post to its subscribers, with no web route in front of it.
@@ -29,6 +29,41 @@ export class SendRefused extends Error {
   }
 }
 
+/**
+ * A typed name, safe to print. GitHub reads lines that start with `::` in a
+ * run's output as commands, and the job summary is markdown, so anything that
+ * isn't a plausible file name is not echoed back.
+ */
+export function shownSlug(slug) {
+  return isSlugShaped(slug) ? `"${slug}"` : "that name";
+}
+
+/**
+ * Dates in front matter aren't always zero-padded ("2026-11-9"), so comparing
+ * them as strings puts the 9th after the 10th. This compares them as numbers.
+ */
+export function dateKey(date) {
+  const [y = 0, m = 0, d = 0] = String(date || "").split("-").map((n) => Number.parseInt(n, 10) || 0);
+  return y * 10000 + m * 100 + d;
+}
+
+export function newestOf(items) {
+  return items.reduce((best, item) => (!best || dateKey(item.date) > dateKey(best.date) ? item : best), null);
+}
+
+/**
+ * Is the post actually up on the live site? A post on main whose deploy hasn't
+ * finished, or one only on a branch, would otherwise go out as a dead link.
+ */
+export async function isLive(url) {
+  try {
+    const response = await fetch(url, { method: "GET", redirect: "follow" });
+    return response.status === 200;
+  } catch {
+    return false;
+  }
+}
+
 export function subjectFor(kind, post) {
   return kind === "poetry" ? `New poem: ${post.title}` : `New writing: ${post.title}`;
 }
@@ -45,16 +80,19 @@ export function resolvePost(kind, slug) {
 
   const wanted = (slug || "").trim();
   if (!wanted) {
-    const newest = listSendable()[kind][0];
+    const newest = newestOf(listSendable()[kind]);
     if (!newest) throw new SendRefused(`There is no ${TOPIC_LABELS[kind].toLowerCase()} to send.`);
     return { slug: newest.slug, post: loadForSend(kind, newest.slug) };
   }
 
   const post = loadForSend(kind, wanted);
   if (!post) {
-    const known = listSendable()[kind].slice(0, 10).map((item) => item.slug);
+    const known = [...listSendable()[kind]]
+      .sort((a, b) => dateKey(b.date) - dateKey(a.date))
+      .slice(0, 10)
+      .map((item) => item.slug);
     throw new SendRefused(
-      `No ${TOPIC_LABELS[kind].toLowerCase()} called "${wanted}". The newest are: ${known.join(", ")}.`
+      `No ${TOPIC_LABELS[kind].toLowerCase()} called ${shownSlug(wanted)}. The newest are: ${known.join(", ")}.`
     );
   }
   return { slug: wanted, post };
@@ -68,10 +106,18 @@ export function resolvePost(kind, slug) {
  * recorded deliveries, so running it again the next day never mails anyone
  * twice.
  */
-export async function sendPost({ kind, slug, dryRun = false }) {
+export async function sendPost({ kind, slug, dryRun = false, checkLive = isLive }) {
   const { slug: resolved, post } = resolvePost(kind, slug);
   const subject = subjectFor(kind, post);
-  const base = { kind, slug: resolved, title: post.title, subject, dryRun };
+  const url = postUrl(kind, resolved);
+  const live = await checkLive(url);
+  const base = { kind, slug: resolved, title: post.title, subject, url, live, dryRun };
+
+  if (!dryRun && !live) {
+    throw new SendRefused(
+      `${url} isn't loading on the live site yet. Nothing was sent. Wait for the deploy to finish and run it again.`
+    );
+  }
 
   const recipients = await confirmedRecipients(kind);
 
@@ -120,6 +166,7 @@ export async function sendPost({ kind, slug, dryRun = false }) {
       recipients: pending,
       kind,
       post,
+      idempotencyPrefix: `newsletter-${claim.id}`,
       // Recorded after each accepted batch, so hitting the daily cap costs the
       // remaining recipients and never a redelivery.
       onChunk: async (emails) => {
@@ -154,6 +201,13 @@ export function describeResult(result) {
   const lines = [
     `${result.dryRun ? "Dry run" : "Send"}: ${result.subject} (${result.kind}/${result.slug})`,
   ];
+  if (result.dryRun) {
+    lines.push(
+      result.live
+        ? `Live on the site: ${result.url}`
+        : `Not loading on the live site yet: ${result.url}. A real send would be refused until it is.`
+    );
+  }
   if (result.status === "already-sent") {
     lines.push("Already sent. Running it for real would be refused.");
   } else if (result.status === "would-send") {

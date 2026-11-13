@@ -195,8 +195,8 @@ export async function confirmedRecipients(kind) {
   if (!isTopic(kind)) throw new Error(`Unknown topic: ${kind}`);
   const sql = db();
   return kind === "blog"
-    ? sql`select email, token from subscribers where status = 'confirmed' and blog`
-    : sql`select email, token from subscribers where status = 'confirmed' and poetry`;
+    ? sql`select email, token from subscribers where status = 'confirmed' and blog order by email`
+    : sql`select email, token from subscribers where status = 'confirmed' and poetry order by email`;
 }
 
 export async function listSends() {

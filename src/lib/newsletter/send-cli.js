@@ -12,6 +12,18 @@ import { sendPost, describeResult, SendRefused } from "@/lib/newsletter/send";
 
 const SECRET_KEYS = ["DATABASE_URL", "RESEND_API_KEY"];
 
+/** Every secret value worth scrubbing, including the password inside the database URL. */
+export function secretValues(env) {
+  const values = SECRET_KEYS.map((key) => env[key]).filter(Boolean);
+  try {
+    const password = decodeURIComponent(new URL(env.DATABASE_URL).password || "");
+    if (password) values.push(password, encodeURIComponent(password));
+  } catch {
+    // Not a URL; the whole value is already on the list.
+  }
+  return [...new Set(values)].filter((value) => value.length >= 6);
+}
+
 const KINDS = { poetry: "poetry", blog: "blog", "technical writing": "blog" };
 
 export function readInputs(env) {
@@ -28,6 +40,12 @@ export function configProblems(env) {
   if (!env.DATABASE_URL) problems.push("The DATABASE_URL secret is not set.");
   if (!env.RESEND_API_KEY) problems.push("The RESEND_API_KEY secret is not set.");
   if (!env.NEWSLETTER_FROM) problems.push("The NEWSLETTER_FROM secret is not set.");
+  // A real send from any other branch would mail out links to whatever is
+  // live, which may not include the post. The environment's branch rule is
+  // the real lock; this catches the honest mistake.
+  if (env.GITHUB_ACTIONS === "true" && env.GITHUB_REF !== "refs/heads/main") {
+    problems.push("Real sends only run from the main branch. Pick main under \"Use workflow from\".");
+  }
   const base = env.NEXT_PUBLIC_BASE_URL || "";
   if (!/^https:\/\/[^/]+/.test(base)) {
     problems.push(
@@ -42,7 +60,7 @@ export async function runFromEnv(env = process.env, { log = console.log } = {}) 
   // GitHub masks secrets in its own log, but not necessarily everywhere a
   // line ends up, so anything that quotes one (a driver error echoing its
   // connection string, say) is scrubbed here first.
-  const secrets = SECRET_KEYS.map((key) => env[key]).filter((value) => value && value.length >= 6);
+  const secrets = secretValues(env);
   const say = (line) => {
     const clean = secrets.reduce((text, secret) => text.split(secret).join("***"), String(line));
     lines.push(clean);
@@ -57,7 +75,8 @@ export async function runFromEnv(env = process.env, { log = console.log } = {}) 
 
   const { kind, slug, dryRun, rawKind } = readInputs(env);
   if (!kind) {
-    say(`Unknown kind "${rawKind ?? ""}". Pick poetry or technical writing.`);
+    const shown = /^[a-z ]{1,30}$/i.test(String(rawKind ?? "")) ? `"${rawKind}"` : "that kind";
+    say(`Unknown kind ${shown}. Pick poetry or technical writing.`);
     return finish(1);
   }
 

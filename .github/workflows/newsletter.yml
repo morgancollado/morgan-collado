@@ -38,8 +38,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     # Secrets live on this environment, not on the repository, so no other
-    # workflow can read them. Settings > Environments > newsletter is also
-    # where a required reviewer and a main-only branch rule can be added.
+    # workflow can read them. Its "Deployment branches" rule (main only) is what
+    # stops a run from any other branch, whose workflow and code could differ,
+    # from ever seeing the secrets; a required reviewer adds an approval tap.
     environment: newsletter
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
@@ -48,8 +49,11 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
-          cache: npm
-      - run: npm ci
+          # No dependency cache: a cache is shared with other workflows, and
+          # this job is the one that holds the mailing list's keys.
+      # No install scripts: nothing the send needs uses them, and they would
+      # run arbitrary package code in the job that holds the keys.
+      - run: npm ci --ignore-scripts
       - name: Send
         run: npm run --silent newsletter:send
         env:

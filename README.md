@@ -86,10 +86,22 @@ GitHub's own sign-in and two-factor.
 | Environment secret | `NEWSLETTER_FROM` | Same value as in Vercel |
 | Environment variable | `SITE_URL` | The live site's address, starting `https://` |
 
-Putting them on the environment rather than the repository means no other
-workflow can read them. On the same page you can also tick **Required
-reviewers** (yourself) so every run waits for an approval tap, and set
-**Deployment branches** to `main` only.
+Then, on the same page:
+
+- **Deployment branches and tags** → *Selected branches and tags* → add `main`.
+  This is the important one. A run can be started from any branch, and a
+  branch's copy of the workflow and the send script is whatever was pushed to
+  it; with this rule, only `main` ever sees the secrets.
+- **Required reviewers** → yourself (optional). Every run then waits for an
+  approval tap before it starts.
+
+Two more ways to shrink what these secrets can do, both optional:
+
+- Give GitHub a Resend key with **Sending access** only, limited to your
+  domain, rather than a full-access key.
+- Give GitHub its own Neon role that can only read `subscribers` and read and
+  write `sends` and `send_deliveries`, rather than the database owner's
+  connection string.
 
 **To send:**
 
@@ -110,15 +122,23 @@ Run logs show counts, never subscriber addresses or secrets.
 
 Things worth knowing:
 
-- **A post must be on `main` before it can be emailed.** The workflow reads
-  the same markdown the site is built from, so push and deploy first.
+- **A post must be live before it can be emailed.** The workflow reads the
+  markdown on `main`, then checks the post's page loads on the live site, and
+  refuses to send if it doesn't. A dry run says whether it's live yet.
+- **Real sends only run from `main`.** The script refuses otherwise, and the
+  environment's branch rule keeps the secrets away from other branches anyway.
 - **A post can only be sent once.** A `unique (kind, slug)` constraint in the
   database enforces it, so a second run is refused. To deliberately re-send,
   delete that row from the `sends` table.
 - **A send that stops partway can be resumed.** Every batch the provider
   accepts is recorded per recipient before the next one is attempted, so a
   run that hits the daily cap fails with a count of who has it. Running it
-  again skips everyone already reached, so nobody is mailed twice.
+  again skips everyone already reached, so nobody is mailed twice. Each batch
+  also carries a Resend idempotency key, so even a batch Resend accepted just
+  as the run died isn't sent twice if it's retried within 24 hours.
+- **Don't run it from your laptop while the workflow is running.** Workflow
+  runs never overlap, but a local run and a workflow run on the same post at
+  the same moment could both resume it.
 
 It can also be run locally with the same variables in `.env`-style
 environment:
@@ -135,7 +155,8 @@ unsubscribe button works, and a footer link offers the same thing plus
 
 ### Limits
 
-Resend's free plan allows 3,000 emails a month and **100 a day**. A list larger
+Resend's free plan allows 3,000 emails a month and **100 a day**, and that
+daily count includes confirmation emails from new sign-ups. A list larger
 than that needs either a paid plan, or the send spread over more than one day —
 run the workflow, let it stop when the cap is hit, and run it again the next
 day. The delivery record is what makes that safe.
