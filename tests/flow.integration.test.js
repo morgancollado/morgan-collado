@@ -115,7 +115,6 @@ describe.skipIf(!URL_)("the reader journey, through the routes", () => {
     adminAuthorized = true;
     vi.stubEnv("RESEND_API_KEY", "re_test");
     vi.stubEnv("NEWSLETTER_FROM", "Morgan <news@example.com>");
-    vi.stubEnv("NEWSLETTER_POSTAL_ADDRESS", "PO Box 1, Somewhere");
     stubResend();
     vi.spyOn(console, "error").mockImplementation(() => {});
   });
@@ -141,6 +140,8 @@ describe.skipIf(!URL_)("the reader journey, through the routes", () => {
     expect(mail).toHaveLength(1);
     expect(mail[0].to).toEqual(["reader@example.com"]);
     expect(mail[0].subject).toBe("Confirm your subscription");
+    expect(mail[0].text).toMatch(/asked to hear when I publish new /);
+    expect(mail[0].html).toMatch(/asked to hear when I publish new /);
     const token = tokenFrom(mail[0]);
 
     // Unconfirmed readers get nothing.

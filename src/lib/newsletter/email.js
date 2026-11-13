@@ -33,25 +33,6 @@ export function escapeHtml(value) {
     .replace(/"/g, "&quot;");
 }
 
-/**
- * The physical postal address that has to appear on commercial bulk mail.
- *
- * Required rather than optional, and required only for the notification — the
- * confirmation mail is transactional and outside the rule. A newsletter
- * promoting one's own writing is inside it, and mail without an address is a
- * violation whether or not anyone complains, so this fails the send loudly
- * instead of quietly shipping non-compliant mail.
- */
-export function postalAddress() {
-  const address = process.env.NEWSLETTER_POSTAL_ADDRESS;
-  if (!address) {
-    throw new Error(
-      "NEWSLETTER_POSTAL_ADDRESS is not set. Bulk email has to carry a physical postal address."
-    );
-  }
-  return address;
-}
-
 export function manageUrl(token) {
   return absoluteUrl(`/newsletter/manage?token=${encodeURIComponent(token)}`);
 }
@@ -128,7 +109,7 @@ function blurbText(post) {
 function topicSentence(topics) {
   const names = topics.map((t) => TOPIC_LABELS[t].toLowerCase());
   if (names.length === 2) return `${names[0]} and ${names[1]}`;
-  return names[0] || "new writing";
+  return names[0] || "writing";
 }
 
 /**
@@ -140,14 +121,14 @@ export async function sendConfirmation({ email, token, topics }) {
 
   const html = layout({
     body: `
-<p style="margin:0 0 20px;">Someone — hopefully you — asked to hear when Morgan Collado publishes new ${escapeHtml(what)}.</p>
+<p style="margin:0 0 20px;">Someone — hopefully you — asked to hear when I publish new ${escapeHtml(what)}.</p>
 <p style="margin:0 0 28px;">Confirm and that's the whole arrangement:</p>
 <p style="margin:0 0 28px;"><a href="${url}" style="color:${INK};font-weight:600;">Confirm your subscription →</a></p>
 <p style="margin:0;color:${MUTED};font-size:14px;">If this wasn't you, ignore it. Nothing happens without that click.</p>`,
     footer: `<p style="margin:0;">Sent because someone entered this address at ${escapeHtml(absoluteUrl("/newsletter"))}.</p>`,
   });
 
-  const text = `Someone — hopefully you — asked to hear when Morgan Collado publishes new ${what}.
+  const text = `Someone — hopefully you — asked to hear when I publish new ${what}.
 
 Confirm your subscription:
 ${url}
@@ -175,9 +156,6 @@ export async function sendNewPost({ recipients, kind, post, onChunk }) {
   const subject =
     kind === "poetry" ? `New poem: ${post.title}` : `New writing: ${post.title}`;
   const dateline = formatDate(post.date);
-  // Read before the first message is built: a missing address should stop the
-  // send, not surface halfway through one.
-  const address = postalAddress();
 
   const messages = recipients.map(({ email, token }) => {
     const manage = manageUrl(token);
@@ -193,8 +171,7 @@ ${blurbHtml(post)}
 <p style="margin:0;"><a href="${url}" style="color:${INK};font-weight:600;">Read it on the site →</a></p>`,
       footer: `<p style="margin:0 0 6px;">You're subscribed to ${escapeHtml(label.toLowerCase())}.
 <a href="${manage}" style="color:${MUTED};">Change what you get</a> or
-<a href="${unsubscribe}" style="color:${MUTED};">unsubscribe</a>.</p>
-<p style="margin:0;">${escapeHtml(address)}</p>`,
+<a href="${unsubscribe}" style="color:${MUTED};">unsubscribe</a>.</p>`,
     });
 
     const text = `${label.toUpperCase()}
@@ -207,9 +184,7 @@ ${url}
 
 —
 Change what you get: ${manage}
-Unsubscribe: ${unsubscribe}
-
-${address}`;
+Unsubscribe: ${unsubscribe}`;
 
     return {
       to: [email],
