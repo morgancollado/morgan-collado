@@ -15,7 +15,10 @@ import { absoluteUrl } from "@/lib/site";
 export default function sitemap() {
   const now = new Date();
 
-  const routes = ["/", "/about", "/blog", "/poetry"].map((path) => ({
+  // Only the newsletter's public face is listed. /newsletter/confirm, /manage
+  // and /unsubscribe are token-addressed, and the admin console is private —
+  // all four carry `robots: noindex` of their own.
+  const routes = ["/", "/about", "/blog", "/poetry", "/newsletter"].map((path) => ({
     url: absoluteUrl(path),
     lastModified: now,
   }));

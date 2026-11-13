@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useReducedMotion } from "@/lib/motion";
 import { formatDate, yearOf, folioDate } from "@/lib/format-date";
 import { paper, ink, muted, dim } from "@/lib/editorial";
+import NewsletterSignup from "@/components/newsletter-signup";
 
 function HoverThumb({ active, reduced }) {
   if (!active) return null;
@@ -279,6 +280,13 @@ export default function BlogIndex({ posts }) {
               </Box>
             </Box>
           ))}
+        </Box>
+
+        <Box sx={{ mt: { xs: 8, md: 12 } }}>
+          <NewsletterSignup
+            variant="card"
+            defaultTopics={{ blog: true, poetry: false }}
+          />
         </Box>
       </Container>
 
