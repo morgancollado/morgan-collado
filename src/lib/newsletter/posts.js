@@ -5,9 +5,8 @@ import { isTopic } from "@/lib/newsletter/db";
 /**
  * The bridge between the two content collections and the mailer.
  *
- * Both are read from disk. Anything importing this module is therefore Node
- * runtime only, and needs the `outputFileTracingIncludes` entry in
- * next.config.js so the markdown ships with the lambda.
+ * Both are read from disk, so anything importing this module is Node only. It
+ * runs from the send workflow, not from the site.
  */
 
 const BLOG_FIELDS = ["slug", "title", "description", "date"];
@@ -24,7 +23,7 @@ export function isSlugShaped(slug) {
   return typeof slug === "string" && /^[A-Za-z0-9][A-Za-z0-9-]{0,120}$/.test(slug);
 }
 
-/** Everything sendable, newest first — the admin console's inventory. */
+/** Everything sendable, newest first. A blank slug in the send workflow takes the first. */
 export function listSendable() {
   const posts = getAllPostsSorted(BLOG_FIELDS).map((post) => ({
     kind: "blog",
@@ -48,10 +47,9 @@ export function listSendable() {
 /**
  * One piece, read fresh from disk at send time.
  *
- * The admin page already knows every title, but the send route re-reads rather
- * than trusting what the browser posts back: the body of an email going to
- * real subscribers should come from the repository, not from a request.
- * Returns null for anything that isn't on disk.
+ * The body of an email going to real subscribers comes from the repository,
+ * never from what someone typed into the workflow form. Returns null for
+ * anything that isn't on disk.
  */
 export function loadForSend(kind, slug) {
   if (!isTopic(kind) || !isSlugShaped(slug)) return null;

@@ -47,14 +47,14 @@ clicked its confirmation link.
 ### Setup
 
 Add these to `.env.local` (see `.env.local.example`) and to the Vercel
-project's environment variables:
+project's environment variables. The site needs them for sign-up, confirmation
+and unsubscribe mail:
 
 | Variable | What it's for |
 | --- | --- |
 | `DATABASE_URL` | Neon / Vercel Postgres connection string |
 | `RESEND_API_KEY` | Resend API key |
 | `NEWSLETTER_FROM` | Sender, e.g. `Morgan Collado <notes@morgancollado.com>` |
-| `NEWSLETTER_ADMIN_PASSWORD` | Gates `/newsletter/admin` |
 
 Then verify the sending domain in Resend (Domains → Add, then publish the DKIM
 and SPF records it gives you). Until that resolves, Resend only delivers to
@@ -71,28 +71,61 @@ It's idempotent, so re-running it is safe.
 
 ### Sending
 
-Go to `/newsletter/admin`, unlock it, and each post and poem is listed with
-either a *sent* marker or a **Send…** button. Sending asks for a confirmation
-click, then goes out immediately.
+New posts go out from the **Send newsletter** GitHub Actions workflow
+(`.github/workflows/newsletter.yml`). There is no admin page on the site: only
+someone with write access to this repository can start the workflow, behind
+GitHub's own sign-in and two-factor.
 
-Two things worth knowing:
+**One-time setup** (Settings → Environments → **New environment**, name it
+`newsletter`):
 
-- **A post must be deployed before it can be emailed.** The console reads the
-  content at build time, which is what guarantees you can never email a link
-  that 404s.
+| Where | Name | Value |
+| --- | --- | --- |
+| Environment secret | `DATABASE_URL` | Same value as in Vercel |
+| Environment secret | `RESEND_API_KEY` | Same value as in Vercel |
+| Environment secret | `NEWSLETTER_FROM` | Same value as in Vercel |
+| Environment variable | `SITE_URL` | The live site's address, starting `https://` |
+
+Putting them on the environment rather than the repository means no other
+workflow can read them. On the same page you can also tick **Required
+reviewers** (yourself) so every run waits for an approval tap, and set
+**Deployment branches** to `main` only.
+
+**To send:**
+
+1. Actions → **Send newsletter** → **Run workflow** (on a phone: the GitHub
+   app → this repository → Actions → Send newsletter → Run workflow).
+2. Pick **poetry** or **technical writing**. Leave the piece blank for the
+   newest one, or type its file name without `.md` (e.g. `Lioness`).
+3. Leave **Dry run** ticked the first time. The run's summary says what would
+   go out and to how many people, and flags any missing setup.
+4. Run it again with **Dry run** unticked to send.
+
+The piece is typed rather than picked from a list because GitHub's dropdowns
+have to be written into the workflow file, which would mean editing it for
+every new post. A name that doesn't match is refused and the run lists the
+newest ones.
+
+Run logs show counts, never subscriber addresses or secrets.
+
+Things worth knowing:
+
+- **A post must be on `main` before it can be emailed.** The workflow reads
+  the same markdown the site is built from, so push and deploy first.
 - **A post can only be sent once.** A `unique (kind, slug)` constraint in the
-  database enforces it, so a double-click or a second open tab cannot produce a
-  duplicate blast. To deliberately re-send, delete that row from the `sends`
-  table.
+  database enforces it, so a second run is refused. To deliberately re-send,
+  delete that row from the `sends` table.
 - **A send that stops partway can be resumed.** Every batch the provider
-  accepts is recorded per recipient before the next one is attempted, so a send
-  that hits the daily cap or a function timeout shows as *stopped after N* with
-  a **Resume…** button. Resuming skips everyone already reached — it is not a
-  second send, and nobody is mailed twice.
+  accepts is recorded per recipient before the next one is attempted, so a
+  run that hits the daily cap fails with a count of who has it. Running it
+  again skips everyone already reached, so nobody is mailed twice.
 
-Unlike `QUEEN_PASSWORD`, leaving `NEWSLETTER_ADMIN_PASSWORD` blank **locks**
-the console rather than opening it — a misconfiguration should fail towards
-"nobody can send".
+It can also be run locally with the same variables in `.env`-style
+environment:
+
+```bash
+NEWSLETTER_KIND=poetry NEWSLETTER_DRY_RUN=true npm run newsletter:send
+```
 
 ### Unsubscribing
 
@@ -104,14 +137,13 @@ unsubscribe button works, and a footer link offers the same thing plus
 
 Resend's free plan allows 3,000 emails a month and **100 a day**. A list larger
 than that needs either a paid plan, or the send spread over more than one day —
-press **Send…**, let it stop when the cap is hit, and press **Resume…** the next
+run the workflow, let it stop when the cap is hit, and run it again the next
 day. The delivery record is what makes that safe.
 
-Two other ceilings worth knowing before the list gets big. The send runs inside
-one request with `maxDuration = 60`, at roughly one provider round trip per
-hundred recipients; and it holds every address in memory at once. Both are
-comfortable in the low thousands and neither is the shape for a list past that,
-which wants a queue rather than a button.
+One other ceiling worth knowing before the list gets big: the send holds every
+address in memory at once and makes one provider round trip per hundred
+recipients, inside a job capped at 15 minutes. That is comfortable well into
+the thousands.
 
 ### Tests
 
@@ -120,7 +152,8 @@ npm test
 ```
 
 Unit tests over the parts that decide who gets mail and who gets in — consent
-and confirmation throttling, token and slug shapes, the password gate. No
+and confirmation throttling, token and slug shapes, the send workflow's
+inputs, the password gate. No
 component tests: the bugs this suite exists to prevent have all been in plain
 functions.
 

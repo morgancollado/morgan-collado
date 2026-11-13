@@ -5,10 +5,11 @@ import { dirname, join } from "path";
 import pg from "pg";
 
 /**
- * The whole reader journey through the real route handlers: sign up, confirm,
- * receive a new poem, unsubscribe, stop receiving. Postgres is real (same
- * stand-in for the Neon driver as db.integration.test.js) and Resend is a
- * fetch stub that records what would have been mailed.
+ * The whole reader journey: sign up, confirm, receive a new poem, unsubscribe,
+ * stop receiving. The reader's side goes through the real route handlers; the
+ * sending side goes through what the "Send newsletter" workflow runs. Postgres
+ * is real (same stand-in for the Neon driver as db.integration.test.js) and
+ * Resend is a fetch stub that records what would have been mailed.
  *
  * Runs in its own schema so it can share TEST_DATABASE_URL with the db suite
  * while vitest runs the two files in parallel.
@@ -34,18 +35,13 @@ vi.mock("@neondatabase/serverless", () => ({
   neon: () => (...args) => tagged(...args),
 }));
 
-// The password gate has its own suite; here the console is either open or not.
-let adminAuthorized = true;
-vi.mock("@/lib/newsletter-auth", () => ({
-  newsletterGate: { isAuthorized: async () => adminAuthorized },
-}));
-
 if (URL_) process.env.DATABASE_URL = URL_;
 
 const subscribe = await import("@/app/api/newsletter/subscribe/route");
 const confirm = await import("@/app/api/newsletter/confirm/route");
 const unsubscribe = await import("@/app/api/newsletter/unsubscribe/route");
-const send = await import("@/app/api/newsletter/admin/send/route");
+const { sendPost, SendRefused } = await import("@/lib/newsletter/send");
+const { runFromEnv } = await import("@/lib/newsletter/send-cli");
 const { BATCH_LIMIT } = await import("@/lib/newsletter/resend");
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -112,7 +108,6 @@ describe.skipIf(!URL_)("the reader journey, through the routes", () => {
 
   beforeEach(async () => {
     await pool.query("truncate send_deliveries, sends, subscribers");
-    adminAuthorized = true;
     vi.stubEnv("RESEND_API_KEY", "re_test");
     vi.stubEnv("NEWSLETTER_FROM", "Morgan <news@example.com>");
     stubResend();
@@ -145,33 +140,36 @@ describe.skipIf(!URL_)("the reader journey, through the routes", () => {
     const token = tokenFrom(mail[0]);
 
     // Unconfirmed readers get nothing.
-    let out = await post(send, "/api/newsletter/admin/send", { kind: "poetry", slug: "Lioness" });
-    expect(out.status).toBe(409);
-    expect((await out.json()).error).toMatch(/Nobody is subscribed/);
+    await expect(sendPost({ kind: "poetry", slug: "Lioness" })).rejects.toThrow(
+      /Nobody is subscribed/
+    );
 
     // Confirm, then send.
-    out = await post(confirm, "/api/newsletter/confirm", { token });
+    let out = await post(confirm, "/api/newsletter/confirm", { token });
     expect(await out.json()).toMatchObject({ ok: true, poetry: true, blog: false });
 
     mail = [];
-    out = await post(send, "/api/newsletter/admin/send", { kind: "poetry", slug: "Lioness" });
-    expect(await out.json()).toMatchObject({ ok: true, recipients: 1, subject: "New poem: Lioness" });
+    expect(await sendPost({ kind: "poetry", slug: "Lioness" })).toMatchObject({
+      status: "sent",
+      sent: 1,
+      recipients: 1,
+      subject: "New poem: Lioness",
+    });
     expect(mail).toHaveLength(1);
     expect(mail[0].to).toEqual(["reader@example.com"]);
     expect(mail[0].headers["List-Unsubscribe"]).toContain(`token=${token}`);
 
     // The same poem cannot go out twice.
-    out = await post(send, "/api/newsletter/admin/send", { kind: "poetry", slug: "Lioness" });
-    expect(out.status).toBe(409);
-    expect((await out.json()).error).toMatch(/already been sent/);
+    await expect(sendPost({ kind: "poetry", slug: "Lioness" })).rejects.toThrow(
+      /already been sent/
+    );
 
     // One-click unsubscribe, then the next poem reaches nobody.
     out = await post(unsubscribe, `/api/newsletter/unsubscribe?token=${token}`);
     expect(await out.json()).toMatchObject({ ok: true, email: "reader@example.com" });
 
     mail = [];
-    out = await post(send, "/api/newsletter/admin/send", { kind: "poetry", slug: "doggerel" });
-    expect(out.status).toBe(409);
+    await expect(sendPost({ kind: "poetry", slug: "doggerel" })).rejects.toThrow(SendRefused);
     expect(mail).toHaveLength(0);
   });
 
@@ -180,30 +178,82 @@ describe.skipIf(!URL_)("the reader journey, through the routes", () => {
     await signUpAndConfirm("essays@example.com", { blog: true });
     await signUpAndConfirm("both@example.com", { blog: true, poetry: true });
 
-    await post(send, "/api/newsletter/admin/send", { kind: "poetry", slug: "doggerel" });
+    await sendPost({ kind: "poetry", slug: "doggerel" });
     expect(mail.map((m) => m.to[0]).sort()).toEqual(["both@example.com", "poems@example.com"]);
 
     mail = [];
-    await post(send, "/api/newsletter/admin/send", {
-      kind: "blog",
-      slug: "a-mind-that-only-perceives",
-    });
+    await sendPost({ kind: "blog", slug: "a-mind-that-only-perceives" });
     expect(mail.map((m) => m.to[0]).sort()).toEqual(["both@example.com", "essays@example.com"]);
   });
 
-  it("refuses to send without the admin password, or for a post that isn't on disk", async () => {
+  it("refuses a post that isn't on disk, and names the newest instead", async () => {
     await signUpAndConfirm("poems@example.com", { poetry: true });
 
-    adminAuthorized = false;
-    let out = await post(send, "/api/newsletter/admin/send", { kind: "poetry", slug: "doggerel" });
-    expect(out.status).toBe(401);
-
-    adminAuthorized = true;
     for (const slug of ["not-a-poem", "../../package"]) {
-      out = await post(send, "/api/newsletter/admin/send", { kind: "poetry", slug });
-      expect(out.status).toBe(404);
+      await expect(sendPost({ kind: "poetry", slug })).rejects.toThrow(/The newest are: /);
     }
     expect(mail).toHaveLength(0);
+  });
+
+  it("sends the newest piece of that kind when no slug is given", async () => {
+    await signUpAndConfirm("poems@example.com", { poetry: true });
+    const { listSendable } = await import("@/lib/newsletter/posts");
+    const newest = listSendable().poetry[0];
+
+    const result = await sendPost({ kind: "poetry", slug: "  " });
+    expect(result).toMatchObject({ status: "sent", slug: newest.slug, sent: 1 });
+    expect(mail).toHaveLength(1);
+  });
+
+  it("dry run counts recipients and sends and records nothing", async () => {
+    await signUpAndConfirm("poems@example.com", { poetry: true });
+    await signUpAndConfirm("both@example.com", { blog: true, poetry: true });
+
+    const result = await sendPost({ kind: "poetry", slug: "doggerel", dryRun: true });
+    expect(result).toMatchObject({ status: "would-send", recipients: 2, wouldSend: 2 });
+    expect(mail).toHaveLength(0);
+    expect((await pool.query("select count(*)::int as n from sends")).rows[0].n).toBe(0);
+
+    // A real send afterwards is unaffected, and a dry run after it says so.
+    await sendPost({ kind: "poetry", slug: "doggerel" });
+    expect(mail).toHaveLength(2);
+    mail = [];
+    expect(await sendPost({ kind: "poetry", slug: "doggerel", dryRun: true })).toMatchObject({
+      status: "already-sent",
+    });
+    expect(mail).toHaveLength(0);
+  });
+
+  it("runs from the workflow's environment without printing addresses or secrets", async () => {
+    await signUpAndConfirm("secret-reader@example.com", { poetry: true });
+    const env = {
+      NEWSLETTER_KIND: "poetry",
+      NEWSLETTER_SLUG: "doggerel",
+      DATABASE_URL: "postgres://user:hunter2@db.example/newsletter",
+      RESEND_API_KEY: "re_supersecret",
+      NEWSLETTER_FROM: "Morgan <news@example.com>",
+      NEXT_PUBLIC_BASE_URL: "https://example.com",
+    };
+    const logged = [];
+    const log = (line) => logged.push(line);
+
+    // Dry run is the default when the box isn't explicitly unticked.
+    expect(await runFromEnv(env, { log })).toBe(0);
+    expect(mail).toHaveLength(0);
+    expect(logged.join("\n")).toMatch(/Would send now: 1/);
+
+    expect(await runFromEnv({ ...env, NEWSLETTER_DRY_RUN: "false" }, { log })).toBe(0);
+    expect(mail).toHaveLength(1);
+    expect(logged.join("\n")).toMatch(/Sent now: 1/);
+
+    // A second real run is refused with a non-zero exit, so the run shows red.
+    expect(await runFromEnv({ ...env, NEWSLETTER_DRY_RUN: "false" }, { log })).toBe(1);
+    expect(mail).toHaveLength(1);
+
+    const output = logged.join("\n");
+    for (const secret of ["secret-reader@example.com", "hunter2", "re_supersecret"]) {
+      expect(output).not.toContain(secret);
+    }
   });
 
   it("resumes a send that hit the daily cap without mailing anyone twice", async () => {
@@ -216,15 +266,25 @@ describe.skipIf(!URL_)("the reader journey, through the routes", () => {
     );
 
     failBatch = 2;
-    let out = await post(send, "/api/newsletter/admin/send", { kind: "poetry", slug: "doggerel" });
-    expect(out.status).toBe(500);
-    expect((await out.json()).error).toMatch(`${BATCH_LIMIT} recipients have it`);
+    await expect(sendPost({ kind: "poetry", slug: "doggerel" })).rejects.toThrow(
+      `${BATCH_LIMIT} recipients have it`
+    );
     expect(mail).toHaveLength(BATCH_LIMIT);
     const first = mail.map((m) => m.to[0]);
 
+    // A dry run in between reports the resume honestly.
+    expect(await sendPost({ kind: "poetry", slug: "doggerel", dryRun: true })).toMatchObject({
+      status: "would-send",
+      alreadyDelivered: BATCH_LIMIT,
+      wouldSend: 50,
+    });
+
     stubResend();
-    out = await post(send, "/api/newsletter/admin/send", { kind: "poetry", slug: "doggerel" });
-    expect(await out.json()).toMatchObject({ ok: true, recipients: total, skipped: BATCH_LIMIT });
+    expect(await sendPost({ kind: "poetry", slug: "doggerel" })).toMatchObject({
+      status: "sent",
+      recipients: total,
+      skipped: BATCH_LIMIT,
+    });
     const second = mail.map((m) => m.to[0]);
 
     expect(second).toHaveLength(50);

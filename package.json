@@ -13,7 +13,8 @@
     "test": "vitest run && npm run test:poetry",
     "test:poetry": "node --test --disable-warning=MODULE_TYPELESS_PACKAGE_JSON 'src/**/*.test.mjs'",
     "test:watch": "vitest",
-    "newsletter:migrate": "node scripts/newsletter-migrate.mjs"
+    "newsletter:migrate": "node scripts/newsletter-migrate.mjs",
+    "newsletter:send": "VITE_CJS_IGNORE_WARNING=true vite-node --config vitest.config.js scripts/newsletter-send.mjs"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -37,6 +38,7 @@
     "eslint": "^8",
     "eslint-config-next": "14.0.3",
     "pg": "^8.23.0",
+    "vite-node": "^2.1.9",
     "vitest": "^2.1.9"
   }
 }
