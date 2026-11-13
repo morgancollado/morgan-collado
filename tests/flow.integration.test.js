@@ -140,6 +140,8 @@ describe.skipIf(!URL_)("the reader journey, through the routes", () => {
     expect(mail).toHaveLength(1);
     expect(mail[0].to).toEqual(["reader@example.com"]);
     expect(mail[0].subject).toBe("Confirm your subscription");
+    expect(mail[0].text).toMatch(/asked to hear when I publish new /);
+    expect(mail[0].html).toMatch(/asked to hear when I publish new /);
     const token = tokenFrom(mail[0]);
 
     // Unconfirmed readers get nothing.

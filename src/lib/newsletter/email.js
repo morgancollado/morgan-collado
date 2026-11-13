@@ -121,14 +121,14 @@ export async function sendConfirmation({ email, token, topics }) {
 
   const html = layout({
     body: `
-<p style="margin:0 0 20px;">Someone — hopefully you — asked to hear when Morgan Collado publishes new ${escapeHtml(what)}.</p>
+<p style="margin:0 0 20px;">Someone — hopefully you — asked to hear when I publish new ${escapeHtml(what)}.</p>
 <p style="margin:0 0 28px;">Confirm and that's the whole arrangement:</p>
 <p style="margin:0 0 28px;"><a href="${url}" style="color:${INK};font-weight:600;">Confirm your subscription →</a></p>
 <p style="margin:0;color:${MUTED};font-size:14px;">If this wasn't you, ignore it. Nothing happens without that click.</p>`,
     footer: `<p style="margin:0;">Sent because someone entered this address at ${escapeHtml(absoluteUrl("/newsletter"))}.</p>`,
   });
 
-  const text = `Someone — hopefully you — asked to hear when Morgan Collado publishes new ${what}.
+  const text = `Someone — hopefully you — asked to hear when I publish new ${what}.
 
 Confirm your subscription:
 ${url}
