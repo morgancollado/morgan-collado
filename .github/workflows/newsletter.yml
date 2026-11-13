@@ -1,0 +1,66 @@
+name: Send newsletter
+
+# Started by hand from the Actions tab (or the GitHub mobile app). Only people
+# with write access to the repository can start it, and GitHub's own sign-in
+# and two-factor stand in front of that, so the site itself carries no code
+# that can mail the list.
+on:
+  workflow_dispatch:
+    inputs:
+      kind:
+        description: What to send
+        type: choice
+        options:
+          - poetry
+          - technical writing
+        default: poetry
+      slug:
+        description: Which piece (its file name without .md). Leave blank for the newest.
+        type: string
+        required: false
+        default: ""
+      dry_run:
+        description: Dry run (count recipients, send nothing). Untick to send for real.
+        type: boolean
+        default: true
+
+# Two runs never overlap, so one can't race another for the same post. The
+# database's unique (kind, slug) row is the real guard; this keeps logs sane.
+concurrency:
+  group: newsletter-send
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Secrets live on this environment, not on the repository, so no other
+    # workflow can read them. Its "Deployment branches" rule (main only) is what
+    # stops a run from any other branch, whose workflow and code could differ,
+    # from ever seeing the secrets; a required reviewer adds an approval tap.
+    environment: newsletter
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          # No dependency cache: a cache is shared with other workflows, and
+          # this job is the one that holds the mailing list's keys.
+      # No install scripts: nothing the send needs uses them, and they would
+      # run arbitrary package code in the job that holds the keys.
+      - run: npm ci --ignore-scripts
+      - name: Send
+        run: npm run --silent newsletter:send
+        env:
+          NEWSLETTER_KIND: ${{ inputs.kind }}
+          NEWSLETTER_SLUG: ${{ inputs.slug }}
+          NEWSLETTER_DRY_RUN: ${{ inputs.dry_run }}
+          NEXT_PUBLIC_BASE_URL: ${{ vars.SITE_URL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          NEWSLETTER_FROM: ${{ secrets.NEWSLETTER_FROM }}

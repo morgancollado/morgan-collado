@@ -1,17 +1,16 @@
 /**
  * Shared-password gate.
  *
- * The queen page and the newsletter admin console both want the same thing: no
- * accounts, one password, an httpOnly cookie so the raw password never leaves
- * the server. This is that mechanism, parameterised — the two callers differ
- * only in cookie name, env var, and what an *unset* password means.
+ * No accounts, one password, an httpOnly cookie so the raw password never
+ * leaves the server. Parameterised by cookie name, env var, and what an
+ * *unset* password means.
  *
- * That last difference is the reason `failOpen` is an explicit argument rather
- * than a default. A blank QUEEN_PASSWORD means "I don't want a gate on my
- * personal toy". A blank NEWSLETTER_ADMIN_PASSWORD must mean the opposite —
- * that console can email real people, so an unset password locks it rather
- * than opening it. Getting this backwards is a one-character mistake with a
- * very bad blast radius, so neither caller gets to rely on a default.
+ * That last one is why `failOpen` is an explicit argument rather than a
+ * default. A blank QUEEN_PASSWORD means "I don't want a gate on my personal
+ * toy". A gate in front of anything that can reach real people must mean the
+ * opposite, so an unset password locks it. Getting this backwards is a
+ * one-character mistake with a very bad blast radius, so no caller gets to
+ * rely on a default.
  *
  * The cookie is not the password verifier. An earlier version stored
  * `sha256(salt + password)` and compared the cookie against it, which made the

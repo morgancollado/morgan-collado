@@ -29,7 +29,7 @@ alter table subscribers add column if not exists pending_blog boolean;
 alter table subscribers add column if not exists pending_poetry boolean;
 
 -- One row per post actually emailed. The unique constraint is the thing that
--- makes a double-click, a retry, or a second admin tab physically unable to
+-- makes a double-click, a retry, or a second run physically unable to
 -- send the same post twice.
 create table if not exists sends (
   id         uuid primary key default gen_random_uuid(),

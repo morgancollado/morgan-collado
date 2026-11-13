@@ -150,7 +150,7 @@ If this wasn't you, ignore it. Nothing happens without that click.`;
  * List-Unsubscribe is not garnish. Gmail and Yahoo's bulk-sender rules require
  * it, and mail without it lands in spam regardless of how good the content is.
  */
-export async function sendNewPost({ recipients, kind, post, onChunk }) {
+export async function sendNewPost({ recipients, kind, post, onChunk, idempotencyPrefix }) {
   const label = TOPIC_LABELS[kind];
   const url = postUrl(kind, post.slug);
   const subject =
@@ -198,5 +198,5 @@ Unsubscribe: ${unsubscribe}`;
     };
   });
 
-  return sendBatch(messages, { onChunk });
+  return sendBatch(messages, { onChunk, idempotencyPrefix });
 }

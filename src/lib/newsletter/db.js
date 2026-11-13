@@ -195,8 +195,8 @@ export async function confirmedRecipients(kind) {
   if (!isTopic(kind)) throw new Error(`Unknown topic: ${kind}`);
   const sql = db();
   return kind === "blog"
-    ? sql`select email, token from subscribers where status = 'confirmed' and blog`
-    : sql`select email, token from subscribers where status = 'confirmed' and poetry`;
+    ? sql`select email, token from subscribers where status = 'confirmed' and blog order by email`
+    : sql`select email, token from subscribers where status = 'confirmed' and poetry order by email`;
 }
 
 export async function listSends() {
@@ -212,7 +212,7 @@ export async function listSends() {
  * Claim the right to send this post, or pick up one that stopped partway.
  *
  * The unique (kind, slug) constraint is what makes a double-click, a retry, or
- * a second admin tab unable to start the same post twice. What it deliberately
+ * a second workflow run unable to start the same post twice. What it deliberately
  * does *not* do is block a resume: a send that hit the provider's daily cap or
  * a function timeout has a row but no `completed_at`, and the honest thing is
  * to let it continue rather than to make the operator delete the row and mail
@@ -237,6 +237,18 @@ export async function claimSend({ kind, slug, subject }) {
   if (!row) throw new Error("Could not claim the send.");
   if (row.completed_at) return { alreadySent: true };
   return { id: row.id, resumed: true };
+}
+
+/**
+ * The send row for a post, if there is one, without claiming anything. This is
+ * what a dry run reads to say "already sent" or "would resume" honestly.
+ */
+export async function findSend(kind, slug) {
+  const sql = db();
+  const rows = await sql`
+    select id, completed_at from sends where kind = ${kind} and slug = ${slug}
+  `;
+  return rows[0] || null;
 }
 
 /** Addresses this send has already reached, so a resume can skip them. */
