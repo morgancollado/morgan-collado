@@ -10,7 +10,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "vitest run",
+    "test": "vitest run && npm run test:poetry",
+    "test:poetry": "node --test --disable-warning=MODULE_TYPELESS_PACKAGE_JSON 'src/**/*.test.mjs'",
     "test:watch": "vitest",
     "newsletter:migrate": "node scripts/newsletter-migrate.mjs"
   },

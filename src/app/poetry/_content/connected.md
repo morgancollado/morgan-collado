@@ -89,7 +89,7 @@ A ti
 A tu lengua 
 Este calor 
 El deserto 
-Un manifestación 
+Una manifestación 
 De la intensidad 
 De mi ardor 
 Te lo traigo 

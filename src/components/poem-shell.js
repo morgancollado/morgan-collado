@@ -69,7 +69,6 @@ export default function PoemShell({ poem, neighbors }) {
           fontFamily: "var(--font-playfair)",
         }}
       >
-        <span>Vol. I, No. VI</span>
         <span>Poetry</span>
         {poem.date ? (
           <Box component="time" dateTime={poem.date}>
@@ -188,8 +187,6 @@ export default function PoemShell({ poem, neighbors }) {
         </Container>
       </Box>
 
-      <StanzaRule sx={{ mb: { xs: 5, md: 7 } }} />
-
       {/* The poem */}
       <Container maxWidth={false} sx={{ px: { xs: 3, md: 6 } }}>
         <Box
@@ -202,7 +199,7 @@ export default function PoemShell({ poem, neighbors }) {
             mx: "auto",
           }}
         >
-          <PoemBody stanzas={poem.stanzas} align={poem.align} />
+          <PoemBody stanzas={poem.stanzas} />
         </Box>
       </Container>
 

@@ -106,18 +106,23 @@ function titleSize(title) {
  * fit.
  */
 function verseSize(lines) {
-  const longest = lines.reduce((n, l) => Math.max(n, l.length), 0);
+  const longest = lines.reduce((n, l) => Math.max(n, l.text.length), 0);
   if (longest > 52) return 22;
   if (longest > 40) return 26;
   return 30;
 }
 
+// Satori has no `text-align` on a line that is its own flex box, so a line is
+// placed by aligning the box itself within the verse column.
+const FLEX_ALIGN = { left: "flex-start", center: "center", right: "flex-end" };
+
 function VerseLine({ line, size }) {
-  const tokens = tokenizeEmphasis(line);
+  const tokens = tokenizeEmphasis(line.text);
   return (
     <div
       style={{
         display: "flex",
+        alignSelf: FLEX_ALIGN[line.align],
         // The composed whitespace in "Whole Pieces" is the poem. `pre` keeps
         // it; the card never wraps, so `pre-wrap` would buy nothing.
         whiteSpace: "pre",
@@ -152,15 +157,15 @@ function VerseLine({ line, size }) {
 /**
  * @param {object} props
  * @param {string} props.title      poem title, or the section title
- * @param {string[]} props.lines    the verse to set, already truncated
- * @param {string} props.align      "center" | "left"
+ * @param {{ text: string, align: string }[]} props.lines
+ *   the verse to set, already truncated, each line carrying its own alignment
+ * @param {string} props.align      "left" | "center" | "right", for the title
  * @param {string} props.footer     right-hand footer text (a date, or a count)
  * @param {string} props.imprint    left-hand footer text; omitted for a poem
  *   with no prior publication, since the card must not claim one
  * @param {boolean} props.truncated whether more of the poem follows
  */
 export function OgCard({ title, lines, align, footer, imprint, truncated }) {
-  const centered = align === "center";
   const size = verseSize(lines);
 
   return (
@@ -213,7 +218,7 @@ export function OgCard({ title, lines, align, footer, imprint, truncated }) {
           flexDirection: "column",
           flex: 1,
           justifyContent: "center",
-          alignItems: centered ? "center" : "flex-start",
+          alignItems: FLEX_ALIGN[align],
           padding: "28px 0",
         }}
       >
@@ -228,7 +233,7 @@ export function OgCard({ title, lines, align, footer, imprint, truncated }) {
             letterSpacing: -1,
             color: INK,
             maxWidth: 1000,
-            textAlign: centered ? "center" : "left",
+            textAlign: align,
           }}
         >
           {title}
@@ -249,12 +254,14 @@ export function OgCard({ title, lines, align, footer, imprint, truncated }) {
           –
         </div>
 
+        {/* Spans the plate's full measure so each line can be placed within
+            it — a `{right}` line sits against the right margin. */}
         <div
           style={{
             display: "flex",
             flexShrink: 0,
             flexDirection: "column",
-            alignItems: centered ? "center" : "flex-start",
+            alignSelf: "stretch",
           }}
         >
           {lines.map((line, i) => (
@@ -265,6 +272,8 @@ export function OgCard({ title, lines, align, footer, imprint, truncated }) {
               style={{
                 display: "flex",
                 flexShrink: 0,
+                // Trails the last line shown, wherever that line is set.
+                alignSelf: FLEX_ALIGN[lines[lines.length - 1]?.align],
                 fontFamily: "Playfair Display",
                 fontSize: 28,
                 letterSpacing: 8,

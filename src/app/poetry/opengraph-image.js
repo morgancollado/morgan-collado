@@ -29,7 +29,9 @@ export default async function Image() {
     (
       <OgCard
         title="Poems, unbound"
-        lines={poems.slice(0, CARD_TITLES).map((p) => p.title)}
+        lines={poems
+          .slice(0, CARD_TITLES)
+          .map((p) => ({ text: p.title, align: "left" }))}
         align="left"
         footer={[`${poems.length} poems`, span].filter(Boolean).join(" · ")}
         truncated={poems.length > CARD_TITLES}
