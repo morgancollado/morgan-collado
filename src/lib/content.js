@@ -20,6 +20,14 @@ export function createContentLoader(contentDir) {
     return fs.readdirSync(directory).filter((file) => file.endsWith(".md"));
   }
 
+  function dateOf(value, realSlug) {
+    try {
+      return normalizeDate(value);
+    } catch (error) {
+      throw new Error(`${contentDir}/${realSlug}.md: ${error.message}`);
+    }
+  }
+
   function getBySlug(slug, fields) {
     const realSlug = slug.replace(/\.md$/, "");
     const fullPath = join(directory, `${realSlug}.md`);
@@ -38,7 +46,7 @@ export function createContentLoader(contentDir) {
       }
 
       if (typeof data[field] !== "undefined") {
-        items[field] = field === "date" ? normalizeDate(data[field]) : data[field];
+        items[field] = field === "date" ? dateOf(data[field], realSlug) : data[field];
       }
     });
 
