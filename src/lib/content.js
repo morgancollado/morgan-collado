@@ -1,6 +1,7 @@
 import fs from "fs";
 import { join } from "path";
 import matter from "gray-matter";
+import { normalizeDate, newestFirst } from "@/lib/content-date";
 
 /**
  * Directory-parameterized markdown loader.
@@ -37,7 +38,7 @@ export function createContentLoader(contentDir) {
       }
 
       if (typeof data[field] !== "undefined") {
-        items[field] = data[field];
+        items[field] = field === "date" ? normalizeDate(data[field]) : data[field];
       }
     });
 
@@ -50,9 +51,7 @@ export function createContentLoader(contentDir) {
 
   function getAllSorted(fields) {
     const withDate = fields.includes("date") ? fields : [...fields, "date"];
-    return getAll(withDate).sort((a, b) =>
-      (b.date || "").localeCompare(a.date || "")
-    );
+    return getAll(withDate).sort(newestFirst);
   }
 
   return { getSlugs, getBySlug, getAll, getAllSorted };

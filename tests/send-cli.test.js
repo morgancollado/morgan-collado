@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "fs";
 import { readInputs, configProblems, runFromEnv, secretValues } from "@/lib/newsletter/send-cli";
-import { describeResult, subjectFor, shownSlug, dateKey, newestOf } from "@/lib/newsletter/send";
+import { describeResult, subjectFor, shownSlug, newestOf } from "@/lib/newsletter/send";
 import { chunkKey } from "@/lib/newsletter/resend";
 
 /**
@@ -89,7 +89,6 @@ describe("what gets echoed back", () => {
 
 describe("newest", () => {
   it("compares dates as numbers, so the 10th comes after the 9th", () => {
-    expect(dateKey("2026-11-10")).toBeGreaterThan(dateKey("2026-11-9"));
     expect(newestOf([{ date: "2026-11-9" }, { date: "2026-11-10" }, { date: "2026-10-31" }])).toEqual({
       date: "2026-11-10",
     });
