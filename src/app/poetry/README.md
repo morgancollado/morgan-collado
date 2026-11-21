@@ -37,17 +37,19 @@ renders correctly.
 | Field | Required | Notes |
 | --- | --- | --- |
 | `title` | yes | Falls back to the slug if missing, which you don't want. |
-| `date` | yes | **Must be `"YYYY-MM-DD"`.** See the trap below. |
+| `date` | yes | **Must be `"YYYY-MM-DD"`.** See [Dates](#dates) below. |
 | `align` | no | `"left"`, `"center"` or `"right"`. Absent means left; anything else fails the build. The default for every line; [alignment tags](#alignment) override it. |
 | `themes` | no | See the vocabulary below. Eight of the poems have none. |
 | `source` | no | Only `url` is displayed. `id` and `originalTitle` are provenance and are never rendered. |
 
-### The date trap
+### Dates
 
-Dates are sorted as **strings**, not parsed as dates
-(`(b.date || "").localeCompare(a.date || "")` in `src/lib/content.js`). Only
-`YYYY-MM-DD` sorts correctly. Any other format — `"2012/8/13"`, `"Aug 13 2012"` —
-silently sorts wrong and never raises an error.
+Write dates as `"YYYY-MM-DD"`. `src/lib/content-date.js` reads every date once,
+when the file is loaded: a missing leading zero (`"2026-11-9"`) is padded, an
+unquoted YAML date is read as its UTC day, and a time after the day is ignored.
+Lists then sort by calendar date. Anything that isn't a real day —
+`"2012/8/13"`, `"Aug 13 2012"`, `"2026-02-31"` — fails the build with the file's
+name, rather than sorting somewhere surprising.
 
 Everywhere a date is read or displayed it is pinned to UTC, so a January 1st
 poem doesn't show as December 31st for readers west of Greenwich.

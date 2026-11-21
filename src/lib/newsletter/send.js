@@ -9,6 +9,7 @@ import {
 } from "@/lib/newsletter/db";
 import { listSendable, loadForSend, isSlugShaped } from "@/lib/newsletter/posts";
 import { sendNewPost, postUrl, TOPIC_LABELS } from "@/lib/newsletter/email";
+import { dateKey, newestFirst } from "@/lib/content-date";
 
 /**
  * Sending one post to its subscribers, with no web route in front of it.
@@ -36,15 +37,6 @@ export class SendRefused extends Error {
  */
 export function shownSlug(slug) {
   return isSlugShaped(slug) ? `"${slug}"` : "that name";
-}
-
-/**
- * Dates in front matter aren't always zero-padded ("2026-11-9"), so comparing
- * them as strings puts the 9th after the 10th. This compares them as numbers.
- */
-export function dateKey(date) {
-  const [y = 0, m = 0, d = 0] = String(date || "").split("-").map((n) => Number.parseInt(n, 10) || 0);
-  return y * 10000 + m * 100 + d;
 }
 
 export function newestOf(items) {
@@ -88,7 +80,7 @@ export function resolvePost(kind, slug) {
   const post = loadForSend(kind, wanted);
   if (!post) {
     const known = [...listSendable()[kind]]
-      .sort((a, b) => dateKey(b.date) - dateKey(a.date))
+      .sort(newestFirst)
       .slice(0, 10)
       .map((item) => item.slug);
     throw new SendRefused(
